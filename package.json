@@ -56,5 +56,6 @@
   "scripts": {
     "test": "grunt test"
   },
+  "bin": "src/noflo-server.js",
   "keywords": []
 }
