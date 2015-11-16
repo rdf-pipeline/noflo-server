@@ -1,7 +1,8 @@
-//#!/usr/bin/env node
+#!/usr/bin/env node
 // vim: set filetype=javascript:
 var _ = require('underscore');
 var Promise = require('promise');
+var path = require('path');
 var fs = require('fs');
 var program = require('commander');
 var http = require('http');
@@ -24,8 +25,8 @@ program
 var permissions = {};
 var defaultPermissions = program.permissions.split(',');
 if (program.secret) {
-	permissions[program.secret] = defaultPermissions;
-	defaultPermissions = [];
+    permissions[program.secret] = defaultPermissions;
+    defaultPermissions = [];
 }
 var origin = program.host + ':' + program.port;
 var suffix = '%26secret%3D' + encodeURIComponent(program.secret);
@@ -34,62 +35,67 @@ program.url = 'http://' + origin + '/';
 program.page = 'http://' + origin + '/index.html#runtime/endpoint?protocol%3Dwebsocket%26address%3D' +
     encodeURIComponent(program.socket) + (program.secret ? suffix : '');
 
-var baseDir = process.env.PROJECT_HOME || process.cwd();
+var baseDir = path.join(__dirname, '..');
 
 var serve = serveStatic(baseDir);
 
 var server = http.createServer(function(req, res){
-	var done = finalhandler(req, res);
-	if (req.url == '/') {
-	    res.statusCode = 302;
-	    res.setHeader('Location', program.page);
-	    res.end();
-	} else {
-    	serve(req, res, done);
-	}
+    var done = finalhandler(req, res);
+    if (req.url == '/') {
+        res.statusCode = 302;
+        res.setHeader('Location', program.page);
+        res.end();
+    } else {
+        serve(req, res, done);
+    }
 });
 
-program.graph = program.graph || 'output.json';
-program.output = program.output || program.graph.replace(/.fbp$/,'.json');
+program.graph = path.resolve(process.cwd(), program.graph || 'output.json');
+program.output = path.resolve(process.cwd(), program.output || program.graph.replace(/.fbp$/,'.json'));
 
 Promise.resolve(program.graph).then(function(filename){
-	return promiseResult(fs.exists, fs, program.output).then(function(exists){
-	    if (exists) return program.output;
-	    else return filename;
-	});
+    return promiseResult(fs.exists, fs, program.output).then(function(exists){
+        if (exists) return program.output;
+        else return filename;
+    });
 }).then(function(filename){
-	return promiseResult(fs.exists, fs, filename).then(function(exists){
-	    if (exists) return promiseResult(noflo.graph.loadFile, noflo.graph, filename);
-	    else return noflo.graph.createGraph(filename);
-	});
+    return promiseResult(fs.exists, fs, filename).then(function(exists){
+        if (exists) {
+            console.log("Reading graph from", filename);
+            return promiseResult(noflo.graph.loadFile, noflo.graph, filename);
+        } else return noflo.graph.createGraph(filename);
+    });
 }).then(function(graph){
-	return runtime(server, {
-		defaultGraph: graph,
-		baseDir: baseDir,
-		captureOutput: false,
-		catchExceptions: true,
-		permissions: permissions,
-		defaultPermissions: defaultPermissions
-	});
-}).then(function(rt){
-    return promiseResult(server.listen, server, program.port).then(function(port){
-		console.log('NoFlo runtime ' + rt.version + ' listening at ' + program.socket);
-		console.log('NoFlo UI is available at ' + program.url);
-		console.log('Using ' + baseDir + ' for component loading');
-		console.log('Default permissions are ' + rt.getPermitted().join(', '));
-		return rt;
+    return runtime(server, {
+        defaultGraph: graph,
+        baseDir: baseDir,
+        captureOutput: false,
+        catchExceptions: true,
+        permissions: permissions,
+        defaultPermissions: defaultPermissions
     });
 }).then(function(rt){
-	return promiseResult(process.on, process, 'SIGINT').then(function(){
-	    return _.first(_.values(rt.graph.graphs).filter(_.isObject))
-	});
+    return promiseResult(server.listen, server, program.port).then(function(port){
+        console.log('NoFlo runtime ' + rt.version + ' listening at ' + program.socket);
+        console.log('NoFlo UI is available at ' + program.url);
+        console.log('Using ' + baseDir + ' for noflo-ui');
+        console.log('Default permissions are ' + rt.getPermitted().join(', '));
+        return rt;
+    });
+}).then(function(rt){
+    return promiseResult(process.on, process, 'SIGINT').then(function(){
+        return _.first(_.filter(_.values(rt.graph.graphs), 'nodes'));
+    });
 }).then(function(graph){
-    if (!_.isEmpty(graph.processes)) return graph;
-	return promiseResult(fs.exists, fs, program.output).then(function(exists){
-	    if (exists) return graph;
-	});
+    if (graph && !_.isEmpty(graph.nodes)) return graph;
+    return promiseResult(fs.exists, fs, program.output).then(function(exists){
+        if (exists) return graph;
+    });
 }).then(function(graph){
-    if (graph) return promiseError(fs.writeFile, fs, program.output, JSON.stringify(graph));
+    if (graph) {
+        console.log("Saving graph", program.output);
+        return promiseError(fs.writeFile, fs, program.output, JSON.stringify(graph));
+    }
 }).then(function(){
     process.exit(0);
 }).catch(function(error){
@@ -98,18 +104,18 @@ Promise.resolve(program.graph).then(function(filename){
 });
 
 function promiseError(fn, context /* arguments */) {
-	var args = _.toArray(arguments).splice(2);
-	return new Promise(function(resolve, reject){
-		fn.apply(context, args.concat(function(err){
-			if (err) reject(err);
-			else resolve();
-		}));
-	});
+    var args = _.toArray(arguments).splice(2);
+    return new Promise(function(resolve, reject){
+        fn.apply(context, args.concat(function(err){
+            if (err) reject(err);
+            else resolve();
+        }));
+    });
 }
 
 function promiseResult(fn, context /* arguments */) {
-	var args = _.toArray(arguments).splice(2);
-	return new Promise(function(resolve, reject){
-		fn.apply(context, args.concat(resolve));
-	});
+    var args = _.toArray(arguments).splice(2);
+    return new Promise(function(resolve, reject){
+        fn.apply(context, args.concat(resolve));
+    });
 }
