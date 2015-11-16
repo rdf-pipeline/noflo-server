@@ -21,12 +21,11 @@ If you prefer, you can also start a watcher process that will do a rebuild whene
 
     $ grunt watch
 
-Serve the UI using a webserver, then open the URL it in a web browser. Example:
+Start the server, then open the URL it in a web browser. Example:
 
-    $ npm install simple-server
-    $ ./node_modules/.bin/simple-server . 3005
+    $ node src/noflo-server.js --port 3005
 
-Where 3005 is the port you want the server to run. Once it is built and the server is running you can access the UI at `http://localhost:3005/index.html`
+Where 3005 is the port you want the server to run. Once it is built and the server is running you can access the UI at `http://localhost:3005/`
 
 In addition to this project, the other repository of interest is the [the-graph](https://github.com/the-grid/the-graph) graph editor widget used for editing flows.
 
