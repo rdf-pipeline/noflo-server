@@ -94,7 +94,7 @@ Promise.resolve(program.graph).then(function(filename){
 }).then(function(graph){
     if (graph) {
         console.log("Saving graph", program.output);
-        return promiseError(fs.writeFile, fs, program.output, JSON.stringify(graph));
+        return promiseError(fs.writeFile, fs, program.output, JSON.stringify(graph, null, 2));
     }
 }).then(function(){
     process.exit(0);
