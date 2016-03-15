@@ -3,7 +3,7 @@
   "description": "NoFlo Development Environment",
   "author": "Henri Bergius <henri.bergius@iki.fi>",
   "repo": "noflo/noflo-ui",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "keywords": [
     "fbp",
     "noflo",
@@ -32,7 +32,9 @@
     "jonnor/microflo": "*",
     "gjohnson/uuid": "*",
     "bergie/octo": "*",
-    "visionmedia/superagent": "0.21.0"
+    "visionmedia/superagent": "0.21.0",
+    "jashkenas/underscore": "1.8.3",
+    "flowbased/fbp-spec": "*"
   },
   "noflo": {
     "components": {
@@ -71,11 +73,13 @@
       "ProcessErrorToContext": "components/ProcessErrorToContext.coffee",
       "RemoteLogin": "components/RemoteLogin.coffee",
       "Router": "components/Router.coffee",
+      "RunTests": "components/RunTests.coffee",
       "SearchGraphNodeToContext": "components/SearchGraphNodeToContext.coffee",
       "SetGraphChanged": "components/SetGraphChanged.coffee",
       "SetToContext": "components/SetToContext.coffee",
       "StoreUser": "components/StoreUser.coffee",
       "SubscribeGraph": "components/SubscribeGraph.coffee",
+      "UpdateComponentLibrary": "components/UpdateComponentLibrary.coffee",
       "UpdateFromTree": "components/UpdateFromTree.coffee"
     },
     "graphs": {
@@ -153,15 +157,15 @@
     "components/GetRemoteProjects.coffee",
     "graphs/Delete.fbp",
     "components/PopulateExampleData.coffee",
-    "components/CreateEmptyContext.coffee"
+    "components/CreateEmptyContext.coffee",
+    "components/UpdateComponentLibrary.coffee",
+    "components/RunTests.coffee"
   ],
   "json": [
     "component.json"
   ],
   "files": [
     "css/noflo-ui.css",
-    "preview/iframe.html",
-    "preview/component.json",
     "noflo.ico",
     "app/noflo-200.png",
     "examples.json"

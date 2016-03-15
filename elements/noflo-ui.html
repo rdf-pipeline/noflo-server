@@ -132,6 +132,7 @@
         this.$.project.addEventListener('newgraph', function (event) {
           this.fire('project:save:graph', event.detail);
           this.fire('runtime:sendGraph', event.detail);
+          this.triggerTests();
         }.bind(this));
         this.$.project.addEventListener('newcomponent', function (event) {
           this.fire('project:save:component', event.detail);
@@ -175,9 +176,12 @@
         }.bind(this));
         this.$.componenteditor.addEventListener('changed', function (event) {
           this.fire('project:save:component', event.detail);
+          this.fire('runtime:sendComponent', event.detail);
+          this.triggerTests();
         }.bind(this));
         this.$.componenteditor.addEventListener('specschanged', function (event) {
           this.fire('project:save:spec', event.detail);
+          this.triggerTests();
         }.bind(this));
         this.$.search.addEventListener('search:library', function (event) {
           this.fire('context:search_library', event.detail);
@@ -238,8 +242,8 @@
           }
         }.bind(this));
         this.$.search.addEventListener('specschanged', function (event) {
-            console.log('changed', event.detail);
           this.fire('project:save:spec', event.detail);
+          this.triggerTests();
         }.bind(this));
         this.$.library.editor = this.$.grapheditor;
         this.$.journal.editor = this.$.grapheditor;
@@ -324,6 +328,12 @@
           this.$.main.githubProjects(context.remoteProjects);
           return;
         }
+        if (this.ctx.clearLibrary) {
+          for (var libKey in this.$.grapheditor.$.graph.library) {
+            delete this.$.grapheditor.$.graph.library[libKey];
+          }
+          delete this.ctx.clearLibrary;
+        }
         if (this.ctx.componentDefinition !== undefined && this.ctx.componentDefinition) {
           this.$.grapheditor.registerComponent(this.ctx.componentDefinition);
           this.ctx.componentDefinition = null;
@@ -331,6 +341,9 @@
         if (this.ctx.runtime !== undefined) {
           this.$.runtime.runtime = this.ctx.runtime;
           this.$.context.runtime = this.ctx.runtime;
+        }
+        if (this.ctx.suites) {
+          this.$.runtime.showTests(this.ctx.suites);
         }
         if (this.ctx.state === 'loading') {
           return;
@@ -343,9 +356,6 @@
           this.$.main.open = false;
         } else {
           this.$.main.open = true;
-          for (var libKey in this.$.grapheditor.$.graph.library) {
-            delete this.$.grapheditor.$.graph.library[libKey];
-          }
         }
         if (this.ctx.graphs && this.ctx.graphs.length) {
           var oldGraph = this.$.grapheditor.graph;
@@ -409,6 +419,9 @@
           this.dontAutoHideAlert = context.dontAutoHideAlert || false;
           this.$.alert.classList.add('show');
         }
+      },
+      triggerTests: function () {
+        this.fire('runtime:runTests', this.ctx.project || this.$.project.project);
       },
       hideAlert: function () {
         this.$.alert.classList.remove('show');

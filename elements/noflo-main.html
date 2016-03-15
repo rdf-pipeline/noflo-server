@@ -556,6 +556,7 @@
           }
         }
         this.$.mainaccount.gridToken = this.gridToken;
+        setTimeout(this.fetchFlowhub.bind(this), 100);
       },
       openProject: function (event, details, sender) {
         event.preventDefault();

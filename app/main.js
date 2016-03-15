@@ -1,7 +1,6 @@
 console.time('noflo-ui-init');
 console.time('polymer-ready');
 
-
 window.addEventListener('polymer-ready', function() {
   var noflo = require('noflo');
   var runtime = require('noflo-runtime-webrtc');
@@ -10,9 +9,9 @@ window.addEventListener('polymer-ready', function() {
   var mainGraph = 'noflo-ui/graphs/main.fbp';
 
   var loadGraphs = function(callback) {
-    noflo.graph.loadJSON(require(mainGraph), function (g) {
+    noflo.graph.loadJSON(require(mainGraph), function (err, g) {
       g.baseDir = baseDir;
-      noflo.createNetwork(g, function (n) {
+      noflo.createNetwork(g, function (err, n) {
         n.on('process-error', function (err) {
           console.log(err);
         });
@@ -21,17 +20,29 @@ window.addEventListener('polymer-ready', function() {
     });
   };
   var loadGraphsDebuggable = function(callback) {
-    noflo.graph.loadJSON(require(mainGraph), function (graph) {
+    var secret = Math.random().toString(36).substring(7);
+    noflo.graph.loadJSON(require(mainGraph), function (err, graph) {
+      if (err) {
+        console.log(err);
+      }
       graph.baseDir = baseDir;
       var runtimeOptions = {
         defaultGraph: graph,
-        baseDir: graph.baseDir
+        baseDir: graph.baseDir,
+        permissions: {}
       };
+      runtimeOptions.permissions[secret] = [
+        'protocol:component',
+        'protocol:runtime',
+        'protocol:graph',
+        'protocol:network',
+        'component:getsource',
+        'component:setsource'
+      ];
       var rt = runtime(null, runtimeOptions, true);
       rt.start();
       var ide = 'http://app.flowhub.io';
-      ide = 'http://localhost:8000/index.html'; // TEMP
-      var debugUrl = ide+'#runtime/endpoint?'+encodeURIComponent('protocol=webrtc&address='+rt.signaller+'#'+rt.id);
+      var debugUrl = ide+'#runtime/endpoint?'+encodeURIComponent('protocol=webrtc&address='+rt.signaller+'#'+rt.id+'&secret='+secret);
       var debugLink = document.getElementById('flowhub_debug_url');
       if (debugLink) {
         debugLink.href = debugUrl;

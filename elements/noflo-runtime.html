@@ -1,5 +1,6 @@
 <link rel="import" href="noflo-preview.html">
 <link rel="import" href="noflo-runtime-selector.html">
+<link rel="import" href="noflo-runtime-testdetails.html">
 <polymer-element name="noflo-runtime" attributes="runtimes" class="gpu">
   <template>
     <style>
@@ -18,6 +19,7 @@
         background-position: 0px;
         border-bottom: 1px hsla(190, 90%, 80%, 0.3) solid;
         overflow: hidden;
+        z-index: 2;
       }
 
       #runtime_icon {
@@ -26,6 +28,31 @@
         top: 0px;
         font-size: 72px;
         color: hsl(189, 11%, 10%);
+      }
+
+      #teststatus {
+        position: absolute;
+        right: 0px;
+        z-index: 1;
+        width: 100px;
+      }
+      #teststatus ul {
+        margin: 0px;
+        padding: 0px;
+      }
+      #teststatus ul li {
+        display: inline;
+        padding-left: 8px;
+        line-height: 36px;
+      }
+      #teststatus ul li.pass {
+        color: hsl(135, 98%, 46%);
+      }
+      #teststatus ul li.fail {
+        color: hsl(0, 98%, 46%);
+      }
+      #teststatus ul li.skip {
+        color: hsl( 60, 98%, 46%);
       }
 
       h2 {
@@ -48,6 +75,7 @@
         border: none;
         color: white;
         text-align: center;
+        cursor: pointer;
       }
 
       #address h2 {
@@ -98,31 +126,30 @@
         margin-top: 18px;
       }
     </style>
-    <template if="{{ graph }}">
-      <template if="{{ runtime }}">
-        <i id="runtime_icon" class="fa fa-{{ icon }}"></i>
-        <div id="address" class="{{ { online: online } | tokenList }}">
-          <button title="Connect/Disconnect" on-click="{{ reconnect }}"><i class="fa fa-refresh"></i></button>
-          <h2>{{ runtime.definition.address }}</h2>
-          <button title="Change Runtime" on-click="{{ clearRuntime }}" class="clear"><i class="fa fa-exchange"></i></button>
-        </div>
-        <div id="runcontrol">
-          <template if="{{ online }}">
-            <template if="{{ execution.running }}">
-              <button title="Stop" class="stop" on-click="{{ stop }}"><i class="fa fa-pause"></i></button>
-            </template>
-            <template if="{{ execution.running == false }}">
-              <button title="Start" class="start" on-click="{{ start }}"><i class="fa fa-play"></i></button>
-            </template>
-            <h2>{{ execution.label }}</h2>
+    <template if="{{ runtime }}">
+      <i id="runtime_icon" class="fa fa-{{ icon }}"></i>
+      <div id="address" class="{{ { online: online } | tokenList }}">
+        <button title="Connect/Disconnect" on-click="{{ reconnect }}"><i class="fa fa-refresh"></i></button>
+        <h2>{{ runtime.definition.address }}</h2>
+        <button title="Change Runtime" on-click="{{ clearRuntime }}" class="clear"><i class="fa fa-exchange"></i></button>
+      </div>
+      <div id="teststatus" on-click="{{ showTestDetails }}"></div>
+      <div id="runcontrol">
+        <template if="{{ online }}">
+          <template if="{{ execution.running }}">
+            <button title="Stop" class="stop" on-click="{{ stop }}"><i class="fa fa-pause"></i></button>
           </template>
-        </div>
-      </template>
-      <template if="{{ !runtime }}">
-        <div id="select">
-          <button on-click="{{ selectRuntime }}" class="select">Select runtime</button>
-        </div>
-      </template>
+          <template if="{{ execution.running == false }}">
+            <button title="Start" class="start" on-click="{{ start }}"><i class="fa fa-play"></i></button>
+          </template>
+          <h2>{{ execution.label }}</h2>
+        </template>
+      </div>
+    </template>
+    <template if="{{ graph && !runtime }}">
+      <div id="select">
+        <button on-click="{{ selectRuntime }}" class="select">Select runtime</button>
+      </div>
     </template>
   </template>
   <script>
@@ -130,6 +157,7 @@
       graph: null,
       runtime: null,
       runtimes: [],
+      suites: [],
       online: false,
       execution: {
         label: 'not started',
@@ -179,7 +207,7 @@
           return;
         }
         this.runtime.setMain(this.graph);
-        if (this.runtime.isConnected && this.runtime.isConnected()) {
+        if (this.graph && this.runtime.isConnected && this.runtime.isConnected()) {
           this.online = true;
           this.runtime.sendNetwork('getstatus', {
             graph: this.graph.name || this.graph.properties.id
@@ -253,6 +281,25 @@
         }
         this.runtime.reconnect();
       },
+      showTests: function (suites) {
+        var fbpSpec = require('fbp-spec');
+        this.suites = suites;
+        var container = this.shadowRoot.getElementById('teststatus');
+        if (!container) {
+          return;
+        }
+        React.render(fbpSpec.ui.widgets.TestStatus({
+          suites: this.suites
+        }), container);
+      },
+      showTestDetails: function () {
+        if (!this.suites || !this.suites.length) {
+          return;
+        }
+        var details = document.createElement('noflo-runtime-testdetails');
+        details.suites = this.suites;
+        document.body.appendChild(details);
+      },
       showCard: function () {
         if (this.card || !this.panel) {
           return;
@@ -291,6 +338,7 @@
         this.runtimeSelector.addEventListener('runtime', function (event) {
           var runtime = event.detail;
           runtime.graph = this.graph.properties.id;
+          runtime.project = this.graph.properties.project;
           this.fire('changed', runtime);
           this.fire('runtime', runtime);
         }.bind(this));
@@ -346,7 +394,7 @@
         }
         var notification = new Notification(title, {
           body: message,
-          icon: 'app/noflo-64.png'
+          icon: 'app/$NOFLO_THEME-64.png'
         });
         this.notifications.push(notification);
         notification.addEventListener('close', function () {

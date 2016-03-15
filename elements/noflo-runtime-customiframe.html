@@ -16,7 +16,7 @@
       <h1>Open noflo-browser runtime in preview area</h1>
       <label>
         <span>Base application</span>
-        <input type="text" value="{{ runtimeUrl }}" on-change="{{ generateRuntimeInfo }}">
+        <input type="url" value="{{ runtimeUrl }}" on-change="{{ generateRuntimeInfo }}">
       </label>
       <div class="toolbar">
         <button on-click="{{ close }}">Cancel</button>
@@ -26,7 +26,7 @@
   </template>
   <script>
     Polymer('noflo-runtime-customiframe', {
-      runtimeUrl: 'preview/iframe.html',
+      runtimeUrl: 'http://noflojs.org/noflo-browser/everything.html',
       runtime: {},
       attached: function () {
         document.getElementById('container').classList.add('blur');
@@ -43,7 +43,6 @@
           id: id,
           seenHoursAgo: 1,
           user: "3f3a8187-0931-4611-8963-239c0dff1932", // FIXME: correct
-          secret: "my-super-secret", // FIXME: correct
           label: "noflo-browser iframe",
           description: "running in iframe",
           graph: this.graph.properties.id,

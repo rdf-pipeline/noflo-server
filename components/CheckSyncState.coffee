@@ -21,6 +21,7 @@ getCommit = (repo, sha, token, callback) ->
   githubGet "/repos/#{repo}/git/commits/#{sha}", token, callback
 
 processGraphsTree = (tree, objects, prefix) ->
+  return unless tree
   graphs = tree.tree.filter (entry) ->
     return false unless entry.type is 'blob'
     return false unless entry.path.match '.*\.(fbp|json)$'
@@ -39,6 +40,7 @@ processGraphsTree = (tree, objects, prefix) ->
     entry
 
 processComponentsTree = (tree, objects, prefix) ->
+  return unless tree
   components = tree.tree.filter (entry) ->
     return false unless entry.type is 'blob'
     return false unless entry.path.match '.*\.(coffee|js|hpp|c|py)$'
@@ -57,6 +59,7 @@ processComponentsTree = (tree, objects, prefix) ->
     entry
 
 processSpecsTree = (tree, objects, prefix) ->
+  return unless tree
   specs = tree.tree.filter (entry) ->
     return false unless entry.type is 'blob'
     return false unless entry.path.match '.*\.(yaml|coffee)$'
@@ -74,6 +77,8 @@ processSpecsTree = (tree, objects, prefix) ->
 getRemoteObjects = (repo, sha, token, callback) ->
   getCommit repo, sha, token, (err, commit) ->
     return callback err if err
+    unless commit
+      return callback new Error "No commit found for #{repo} #{sha}"
     getTree repo, commit.tree.sha, token, (err, rootTree) ->
       return callback err if err
 
@@ -142,7 +147,7 @@ createPath = (type, entity) ->
   if type is 'graph'
     return "graphs/#{name}.json"
   componentDir = 'components'
-  componentDir = 'spec' if entity.type = 'spec'
+  componentDir = 'spec' if type is 'spec'
   switch entity.language
     when 'coffeescript' then return "#{componentDir}/#{name}." + 'coffee'
     when 'javascript' then return "#{componentDir}/#{name}.js"
@@ -253,6 +258,7 @@ exports.getComponent = ->
         addToConflict 'component', matching[0], remoteComponent, operations
 
       localOnly = data.project.components.filter (localComponent) ->
+        return false unless localComponent.code.length
         notPushed = true
         for remoteComponent in objects.components
           notPushed = false if localComponent.sha is remoteComponent.sha
@@ -279,6 +285,7 @@ exports.getComponent = ->
         addToConflict 'spec', matching[0], remoteSpec, operations
 
       localOnly = data.project.specs.filter (localSpec) ->
+        return false unless localSpec.code.length
         notPushed = true
         for remoteSpec in objects.specs
           notPushed = false if localSpec.sha is remoteSpec.sha

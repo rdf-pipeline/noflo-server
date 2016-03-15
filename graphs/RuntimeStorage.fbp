@@ -2,9 +2,10 @@ INPORT=LoadData.DB:DB
 INPORT=Dispatch.IN:IN
 INPORT=FindRuntimes.CONTEXT:CONTEXT
 OUTPORT=MergeContext.OUT:CONTEXT
+OUTPORT=UpdateLibrary.RUNTIME:OUT
 
 # Route requests
-'open,connect,sendGraph,sendComponent' -> ROUTES Dispatch(routers/GroupRouter)
+'open,connect,sendGraph,sendComponent,runTests' -> ROUTES Dispatch(routers/GroupRouter)
 Dispatch ROUTE -> START Loading(ui/CreateLoadingContext)
 Loading OUT -> IN MergeContext(core/Merge)
 Dispatch MISSED -> IN ShowErrors(core/Output)
@@ -33,7 +34,10 @@ DirectRuntime CONTEXT -> IN MergeContextPreSubscribe
 # Get components list when connecting to new runtime
 ProjectRuntime RUNTIME -> RUNTIME ListComponents(runtime/ListComponents)
 DirectRuntime RUNTIME -> RUNTIME ListComponents
-ListComponents OUT -> IN MergeContext
+ListComponents OUT -> IN UpdateLibrary(ui/UpdateComponentLibrary)
+ProjectRuntime RUNTIME -> RUNTIME UpdateLibrary
+DirectRuntime RUNTIME -> RUNTIME UpdateLibrary
+UpdateLibrary OUT -> IN MergeContext
 ListComponents ERROR -> IN ShowErrors
 
 # Graph change subscription
@@ -60,5 +64,12 @@ DirectRuntime RUNTIME -> RUNTIME SendNewGraph
 Dispatch OUT[3] -> COMPONENT SendNewComponent(runtime/SendComponent)
 ProjectRuntime RUNTIME -> RUNTIME SendNewComponent
 DirectRuntime RUNTIME -> RUNTIME SendNewComponent
+
+# Running fbp-spec tests on the runtime
+Dispatch OUT[4] -> IN RunTests(ui/RunTests)
+ProjectRuntime RUNTIME -> RUNTIME RunTests
+DirectRuntime RUNTIME -> RUNTIME RunTests
+RunTests CONTEXT -> IN MergeContext
+RunTests ERROR -> IN ShowErrors
 
 LoadData ERROR -> IN ShowErrors
