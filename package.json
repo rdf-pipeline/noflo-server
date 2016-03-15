@@ -10,12 +10,7 @@
     "type": "git",
     "url": "git://github.com/rdf-pipeline/noflo-server"
   },
-  "licenses": [
-    {
-      "type": "Apache-2.0",
-      "url": "http://opensource.org/licenses/apache2.0.php"
-    }
-  ],
+  "license": "Apache-2.0",
   "dependencies": {
     "underscore": "~1.8.3",
     "promise": "~7.0.4",
