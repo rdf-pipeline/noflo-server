@@ -83,19 +83,8 @@ Promise.resolve(program.graph).then(function(filename){
         return rt;
     });
 }).then(function(rt){
-    return promiseResult(process.on, process, 'SIGINT').then(function(){
-        return _.first(_.filter(_.values(rt.graph.graphs), 'nodes'));
-    });
-}).then(function(graph){
-    if (graph && !_.isEmpty(graph.nodes)) return graph;
-    return promiseResult(fs.exists, fs, program.output).then(function(exists){
-        if (exists) return graph;
-    });
-}).then(function(graph){
-    if (graph) {
-        console.log("Saving graph", program.output);
-        return promiseError(fs.writeFile, fs, program.output, JSON.stringify(graph, null, 2));
-    }
+    setInterval(saveGraph(rt), 20000);
+    return promiseResult(process.on, process, 'SIGINT').then(saveGraph(rt));
 }).then(function(){
     process.exit(0);
 }).catch(function(error){
@@ -119,3 +108,18 @@ function promiseResult(fn, context /* arguments */) {
         fn.apply(context, args.concat(resolve));
     });
 }
+
+function saveGraph(rt) {
+    return function() { 
+        var graph = _.first(_.filter(_.values(rt.graph.graphs), 'nodes'));
+        promiseResult(fs.exists, fs, program.output).then(function(exists){
+            if (exists) return graph;
+        }).then(function(graph) { 
+            if (graph) { 
+                console.log('Saving graph',program.output);
+                return promiseError(fs.writeFile, fs, program.output, JSON.stringify(graph, null, 2));
+            }
+        });
+     };
+}
+
