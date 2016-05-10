@@ -12,6 +12,7 @@ var finalhandler = require('finalhandler');
 var path = require('path');
 var noflo = require('noflo');
 var runtime = require('noflo-runtime-websocket');
+var navigator = require('./navigator');
 
 program
   .option('--host <hostname>', 'Host', String, 'localhost')
@@ -45,7 +46,7 @@ var server = http.createServer(function(req, res){
         res.statusCode = 302;
         res.setHeader('Location', program.page);
         res.end();
-    } else {
+    } else if (req.url.indexOf('/nodes/') !== 0) {
         serve(req, res, done);
     }
 });
@@ -66,7 +67,7 @@ Promise.resolve(program.graph).then(function(filename){
         } else return noflo.graph.createGraph(filename);
     });
 }).then(function(graph){
-    return runtime(server, {
+    var rt = runtime(server, {
         defaultGraph: graph,
         baseDir: baseDir,
         captureOutput: false,
@@ -74,6 +75,8 @@ Promise.resolve(program.graph).then(function(filename){
         permissions: permissions,
         defaultPermissions: defaultPermissions
     });
+    navigator(server, '/nodes/', rt);
+    return rt;
 }).then(function(rt){
     return promiseResult(server.listen, server, program.port).then(function(port){
         console.log('NoFlo runtime ' + rt.version + ' listening at ' + program.socket);
