@@ -24,6 +24,7 @@
 </head>
 <body>
 <div class="container">
+    <a href="{{path}}{{search}}" class="pull-right btn btn-link">Back to listing</a>
     <h1>{{node.metadata.label}} <small class="text-muted">{{node.component}}</small></h1>
     <hr/>
     <div class="row">
@@ -90,63 +91,56 @@
             <td colspan="2" class="text-warning">{{from.data}}</td>
             <td>&rarr;</td>
             <td class="text-xs-center text-uppercase">{{to.port}}</td>
-            <td><a href="../{{encodeURI to.node}}">{{to.node}}</a></td>
+            <td><a href="{{../path}}{{encodeURI to.node}}{{../search}}">{{to.node}}</a></td>
         </tr>
     {{/each}}
     </tbody>
     <tbody>
     {{#each from}}
         <tr>
-            <td><a href="../{{encodeURI from.node}}">{{from.node}}</a></td>
+            <td><a href="{{../path}}{{encodeURI from.node}}{{../search}}">{{from.node}}</a></td>
             <td class="text-xs-center text-uppercase">{{from.port}}</td>
             <td>&rarr;</td>
             <td class="text-xs-center text-uppercase">{{to.port}}</td>
-            <td><a href="../{{encodeURI to.node}}">{{to.node}}</a></td>
+            <td><a href="{{../path}}{{encodeURI to.node}}{{../search}}">{{to.node}}</a></td>
         </tr>
     {{/each}}
     </tbody>
     <tbody>
     {{#each to}}
         <tr>
-            <td><a href="../{{encodeURI from.node}}">{{from.node}}</a></td>
+            <td><a href="{{../path}}{{encodeURI from.node}}{{../search}}">{{from.node}}</a></td>
             <td class="text-xs-center text-uppercase">{{from.port}}</td>
             <td>&rarr;</td>
             <td class="text-xs-center text-uppercase">{{to.port}}</td>
-            <td><a href="../{{encodeURI to.node}}">{{to.node}}</a></td>
+            <td><a href="{{../path}}{{encodeURI to.node}}{{../search}}">{{to.node}}</a></td>
         </tr>
     {{/each}}
     </tbody>
     </table>
-    {{#if facade}}
-    <div id="vnis" role="tablist">
-        {{#each facade.vnis}}
-        <div class="panel panel-default">
-            <div class="panel-heading" role="tab">
-                <h4 class="panel-title">
-                    <a class="collapsed" data-toggle="collapse" data-parent="#vnis" href="#vni-{{vnid}}">
-                        {{#if vnid}}{{vnid}}{{else}}Default VNI{{/if}}
-                    </a>
-                </h4>
-            </div>
-            <div id="vni-{{vnid}}" class="panel-collapse collapse" role="tabpanel">
-                <div class="row">
-                    <div class="col-md-6">
-                        <pre class="text-success pre-scrollable">{{toJSON outputState}}</pre>
-                    </div>
-                    <div class="col-md-6">
-                        <pre class="text-danger pre-scrollable">{{toJSON errorState}}</pre>
-                    </div>
-                </div>
-            </div>
+    {{#if vnis}}
+    {{#each vnis}}
+    <div class="card-group">
+        <div class="card card-block">
+            <h4 class="card-title">
+                <a href="?vnid={{@key}}">
+                    {{#if @key}}{{@key}}{{else}}Default VNI{{/if}}
+                </a>
+            </h4>
+            <pre class="text-success pre-scrollable">{{toJSON outputState}}</pre>
         </div>
-        {{/each}}
+        <div class="card card-block">
+            <pre class="text-danger pre-scrollable">{{toJSON errorState}}</pre>
+        </div>
     </div>
+    <br />
+    {{/each}}
+    {{#if search}}
+        <a href="{{path}}{{encodeURI node.id}}">Show all VNIs</a>
+    {{/if}}
     {{/if}}
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js" integrity="sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7" crossorigin="anonymous"></script>
-<script type="text/javascript">
-$('.collapse').collapse('show');
-</script>
 </body>
 </html>

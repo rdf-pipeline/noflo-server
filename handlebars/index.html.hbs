@@ -21,7 +21,7 @@
         <tbody>
         {{#each nodes}}
             <tr>
-                <td><a href="{{encodeURI id}}">{{id}}</a></td>
+                <td><a href="{{../path}}{{encodeURI id}}{{../search}}">{{id}}</a></td>
                 <td>{{component}}</td>
         {{/each}}
         </tbody>

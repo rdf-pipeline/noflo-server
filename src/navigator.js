@@ -2,6 +2,7 @@
 
 var fs = require('fs');
 var path = require('path');
+var querystring = require('querystring');
 var _ = require('underscore');
 var Handlebars = require('handlebars');
 
@@ -53,12 +54,13 @@ module.exports = function(server, path, runtime) {
                 var start = path.length;
                 var len = req.url.length;
                 var q = req.url.indexOf('?', start);
+                var qs = q > 0 ? req.url.substring(q) : '';
                 var end = q > 0 ? q : len;
                 var nodeId = decodeURI(req.url.substring(start, end));
                 if (nodeId) return render.then(function(render) {
-                    return processes(network, facades, render, nodeId, res);
+                    return processes(network, facades, render, path, nodeId, qs, res);
                 }); else return index.then(function(index) {
-                    return listing(network, index, res);
+                    return listing(network, index, path, qs, res);
                 });
             }
         }).catch(function(error){
@@ -68,21 +70,28 @@ module.exports = function(server, path, runtime) {
     });
 };
 
-function listing(network, index, res) {
+function listing(network, index, path, qs, res) {
     res.setHeader('Content-Type', 'text/html');
     res.end(index({
+        path: path,
+        search: qs,
         name: network.graph.name,
         nodes: network.graph.nodes
     }));
 }
 
-function processes(network, facades, render, nodeId, res) {
+function processes(network, facades, render, path, nodeId, qs, res) {
+    var vnid = qs ? querystring.parse(qs.substring(1)).vnid : undefined;
     res.setHeader('Content-Type', 'text/html');
     res.end(render({
+        path: path,
+        search: qs,
         node: _.find(network.graph.nodes, function(node){
             return node.id == nodeId;
         }),
         facade: facades[nodeId],
+        vnis: facades[nodeId] && vnid != null ? _.object([vnid], [facades[nodeId].vnis[vnid]]) :
+            facades[nodeId] ? facades[nodeId].vnis : undefined,
         initializers: _.filter(network.graph.initializers, function(initializer) {
             return initializer.to.node == nodeId;
         }),
