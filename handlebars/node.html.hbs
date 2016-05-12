@@ -90,29 +90,29 @@
             <td colspan="2" class="text-warning">{{from.data}}</td>
             <td>&rarr;</td>
             <td class="text-xs-center text-uppercase">{{to.port}}</td>
-            <td><a href="../{{to.node}}">{{to.node}}</a></td>
+            <td><a href="../{{encodeURI to.node}}">{{to.node}}</a></td>
         </tr>
     {{/each}}
     </tbody>
     <tbody>
     {{#each from}}
         <tr>
-            <td><a href="../{{from.node}}">{{from.node}}</a></td>
+            <td><a href="../{{encodeURI from.node}}">{{from.node}}</a></td>
             <td class="text-xs-center text-uppercase">{{from.port}}</td>
             <td>&rarr;</td>
             <td class="text-xs-center text-uppercase">{{to.port}}</td>
-            <td><a href="../{{to.node}}">{{to.node}}</a></td>
+            <td><a href="../{{encodeURI to.node}}">{{to.node}}</a></td>
         </tr>
     {{/each}}
     </tbody>
     <tbody>
     {{#each to}}
         <tr>
-            <td><a href="../{{from.node}}">{{from.node}}</a></td>
+            <td><a href="../{{encodeURI from.node}}">{{from.node}}</a></td>
             <td class="text-xs-center text-uppercase">{{from.port}}</td>
             <td>&rarr;</td>
             <td class="text-xs-center text-uppercase">{{to.port}}</td>
-            <td><a href="../{{to.node}}">{{to.node}}</a></td>
+            <td><a href="../{{encodeURI to.node}}">{{to.node}}</a></td>
         </tr>
     {{/each}}
     </tbody>

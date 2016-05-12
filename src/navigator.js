@@ -6,8 +6,11 @@ var _ = require('underscore');
 var Handlebars = require('handlebars');
 
 Handlebars.registerHelper('toJSON', function(object){
-    console.log("toJSON", object);
 	return new Handlebars.SafeString(JSON.stringify(object, null, 2));
+});
+
+Handlebars.registerHelper('encodeURI', function(uri){
+    return encodeURI(uri);
 });
 
 var index = new Promise(function(done, fail) {;
@@ -51,7 +54,7 @@ module.exports = function(server, path, runtime) {
                 var len = req.url.length;
                 var q = req.url.indexOf('?', start);
                 var end = q > 0 ? q : len;
-                var nodeId = req.url.substring(start, end);
+                var nodeId = decodeURI(req.url.substring(start, end));
                 if (nodeId) return render.then(function(render) {
                     return processes(network, facades, render, nodeId, res);
                 }); else return index.then(function(index) {
@@ -59,6 +62,7 @@ module.exports = function(server, path, runtime) {
                 });
             }
         }).catch(function(error){
+            res.writeHeade(500, {'Content-Type': 'text/plain'});
             res.end(error.stack ? error.stack : error);
         });
     });
