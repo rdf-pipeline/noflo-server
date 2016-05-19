@@ -46,7 +46,7 @@ var server = http.createServer(function(req, res){
         res.statusCode = 302;
         res.setHeader('Location', program.page);
         res.end();
-    } else if (req.url.indexOf('/nodes/') !== 0) {
+    } else if (req.url.indexOf('/node/') !== 0) {
         serve(req, res, done);
     }
 });
@@ -75,7 +75,7 @@ Promise.resolve(program.graph).then(function(filename){
         permissions: permissions,
         defaultPermissions: defaultPermissions
     });
-    navigator(server, '/nodes/', rt);
+    navigator(server, '/node/', rt);
     return rt;
 }).then(function(rt){
     return promiseResult(server.listen, server, program.port).then(function(port){
