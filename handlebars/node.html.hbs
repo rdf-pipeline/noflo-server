@@ -5,6 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <link href="?data&amp;vnid={{vnid}}" />
+    <link href="?output&amp;vnid={{vnid}}" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
     <link rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.css" />
     <style type="text/css">
@@ -123,7 +125,7 @@
     <div class="card-group">
         <div class="card card-block">
             <h4 class="card-title">
-                <a href="?vnid={{@key}}">
+                <a href="?view&amp;vnid={{@key}}">
                     {{#if @key}}{{@key}}{{else}}Default VNI{{/if}}
                 </a>
             </h4>
@@ -135,9 +137,7 @@
     </div>
     <br />
     {{/each}}
-    {{#if search}}
-        <a href="{{path}}{{encodeURI node.id}}">Show all VNIs</a>
-    {{/if}}
+    <a href="{{path}}{{encodeURI node.id}}?view">Show all VNIs</a>
     {{/if}}
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>

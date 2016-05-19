@@ -7,7 +7,11 @@ var _ = require('underscore');
 var Handlebars = require('handlebars');
 
 Handlebars.registerHelper('toJSON', function(object){
-	return new Handlebars.SafeString(JSON.stringify(object, null, 2));
+    try {
+        return new Handlebars.SafeString(JSON.stringify(object, null, 2));
+    } catch (e) {
+        return new Handlebars.SafeString(e.toString());
+    }
 });
 
 Handlebars.registerHelper('encodeURI', function(uri){
@@ -57,14 +61,34 @@ module.exports = function(server, path, runtime) {
                 var qs = q > 0 ? req.url.substring(q) : '';
                 var end = q > 0 ? q : len;
                 var nodeId = decodeURI(req.url.substring(start, end));
-                if (nodeId) return render.then(function(render) {
-                    return processes(network, facades, render, path, nodeId, qs, res);
-                }); else return index.then(function(index) {
-                    return listing(network, index, path, qs, res);
-                });
+                if (!nodeId) {
+                    return index.then(function(index) {
+                        return listing(network, index, path, qs, res);
+                    });
+                } else {
+                    var vnid = qs && querystring.parse(qs.substring(1)).vnid;
+                    var node = _.find(network.graph.nodes, function(node){
+                        return node.id == nodeId;
+                    });
+                    var vnis = facades[nodeId] && vnid ?
+                        _.object([vnid], [facades[nodeId].vnis[vnid]]) :
+                        facades[nodeId] ? facades[nodeId].vnis : undefined;
+                    if (!qs && !vnis)
+                        return redirect('?view', res);
+                    else if (!qs)
+                        return redirect('?data', res);
+                    else if (qs.indexOf('?data') === 0)
+                        return data(vnis[vnid || ''], res);
+                    else if (qs.indexOf('?output') === 0)
+                        return output(vnis[vnid || ''], res);
+                    else if (qs.indexOf('?view') === 0)
+                        return render.then(function(render) {
+                            return view(network, facades, render, path, vnis, vnid, nodeId, qs, res);
+                        });
+                }
             }
         }).catch(function(error){
-            res.writeHeade(500, {'Content-Type': 'text/plain'});
+            res.writeHead(500, {'Content-Type': 'text/plain'});
             res.end(error.stack ? error.stack : error);
         });
     });
@@ -74,15 +98,39 @@ function listing(network, index, path, qs, res) {
     res.setHeader('Content-Type', 'text/html');
     res.end(index({
         path: path,
-        search: qs,
+        search: qs || '?view',
         name: network.graph.name,
         nodes: network.graph.nodes
     }));
 }
 
-function processes(network, facades, render, path, nodeId, qs, res) {
-    var vnid = qs ? querystring.parse(qs.substring(1)).vnid : undefined;
-    res.setHeader('Content-Type', 'text/html');
+function redirect(target, res) {
+    res.writeHead(303, {'Location': target});
+    res.end();
+}
+
+function data(vni, res) {
+    if (vni) {
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify(vni.outputState.data, null, 2));
+    } else {
+        res.writeHead(404);
+        res.end("No output state available");
+    }
+}
+
+function output(vni, res) {
+    if (vni) {
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify(vni.outputState, null, 2));
+    } else {
+        res.writeHead(404);
+        res.end("No output state available");
+    }
+}
+
+function view(network, facades, render, path, vnis, vnid, nodeId, qs, res) {
+    res.writeHead(200, {'Content-Type': 'text/html'});
     res.end(render({
         path: path,
         search: qs,
@@ -90,8 +138,8 @@ function processes(network, facades, render, path, nodeId, qs, res) {
             return node.id == nodeId;
         }),
         facade: facades[nodeId],
-        vnis: facades[nodeId] && vnid != null ? _.object([vnid], [facades[nodeId].vnis[vnid]]) :
-            facades[nodeId] ? facades[nodeId].vnis : undefined,
+        vnis: vnis,
+        vnid: vnid,
         initializers: _.filter(network.graph.initializers, function(initializer) {
             return initializer.to.node == nodeId;
         }),
