@@ -36,8 +36,8 @@
         <div class="col-md-4">
             <table class="table table-sm">
             <thead>
-                <tr>
-                    <th>Name</th>
+                <tr class="table-info">
+                    <th>IN Port</th>
                     <th>Description</th>
                 </tr>
             </thead>
@@ -45,17 +45,23 @@
             {{#each component.inPorts}}
             {{#if name}}
                 <tr>
-                    <td class="text-uppercase">&rarr; {{name}}</td>
+                    <td class="text-uppercase">{{name}}</td>
                     <td>{{description}}</td>
                 </tr>
             {{/if}}
             {{/each}}
             </tbody>
+            <thead>
+                <tr class="table-info">
+                    <th>OUT Port</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
             <tbody>
             {{#each component.outPorts}}
             {{#if name}}
                 <tr>
-                    <td class="text-uppercase">&larr; {{name}}</td>
+                    <td class="text-uppercase">{{name}}</td>
                     <td>{{description}}</td>
                 </tr>
             {{/if}}
@@ -78,15 +84,16 @@
         </div>
     </div>
     <table class="table table-hover">
+    {{#if initializers}}
     <thead>
-        <tr>
-            <th>Source Node</th>
-            <th class="text-xs-center">Source Port</th>
+        <tr class="table-active">
+            <th colspan="2">IIP Data</th>
             <th></th>
             <th class="text-xs-center">Destination Port</th>
             <th>Destination Node</th>
         </tr>
     </thead>
+    {{/if}}
     <tbody>
     {{#each initializers}}
         <tr>
@@ -97,6 +104,17 @@
         </tr>
     {{/each}}
     </tbody>
+    {{#if from}}
+    <thead>
+        <tr class="table-warning">
+            <th>Source Node</th>
+            <th class="text-xs-center">Source Port</th>
+            <th></th>
+            <th class="text-xs-center">Destination Port</th>
+            <th>Destination Node</th>
+        </tr>
+    </thead>
+    {{/if}}
     <tbody>
     {{#each from}}
         <tr>
@@ -108,6 +126,17 @@
         </tr>
     {{/each}}
     </tbody>
+    {{#if to}}
+    <thead>
+        <tr class="table-success">
+            <th>Source Node</th>
+            <th class="text-xs-center">Source Port</th>
+            <th></th>
+            <th class="text-xs-center">Destination Port</th>
+            <th>Destination Node</th>
+        </tr>
+    </thead>
+    {{/if}}
     <tbody>
     {{#each to}}
         <tr>
@@ -138,6 +167,8 @@
     <br />
     {{/each}}
     <a href="{{path}}{{encodeURI node.id}}?view">Show all VNIs</a>
+    {{else}}
+    <p>No state data (not an RDF Pipeline node)</p>
     {{/if}}
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
