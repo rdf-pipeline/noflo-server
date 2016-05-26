@@ -36,6 +36,14 @@ var render = new Promise(function(done, fail) {;
     return Handlebars.compile(source);
 });
 
+/**
+ * Registers the handle with the server matching request of the given path using
+ * the nodes in the given runtime.
+ * @see https://github.com/rdf-pipeline/framework/wiki/Noflo-Node-Navigator
+ * @param server to register the request event on
+ * @param path the path prefix to match the request url to
+ * @param runtime the noflo runtime that will contain the noflo network
+ */
 module.exports = function(server, path, runtime) {
     var network = new Promise(function(found){
         runtime.network.on('addnetwork', function(network) {
@@ -94,6 +102,14 @@ module.exports = function(server, path, runtime) {
     });
 };
 
+/**
+ * Renders the node listing page.
+ * @param network the active network containing the node
+ * @param index page template in hbs
+ * @param path the prefix of the URL before the nodeId
+ * @param qs query string from the request (including the ?)
+ * @param res response object to write to
+ */
 function listing(network, index, path, qs, res) {
     res.setHeader('Content-Type', 'text/html');
     res.end(index({
@@ -104,11 +120,21 @@ function listing(network, index, path, qs, res) {
     }));
 }
 
+/**
+ * Redirects the agent to the target location.
+ * @param target target location
+ * @param res response object to write to
+ */
 function redirect(target, res) {
     res.writeHead(303, {'Location': target});
     res.end();
 }
 
+/**
+ * Writes the outputState data to the agent.
+ * @param vni object containing the outputState
+ * @param res response object to write to
+ */
 function data(vni, res) {
     if (vni) {
         res.writeHead(200, {'Content-Type': 'application/json'});
@@ -119,6 +145,11 @@ function data(vni, res) {
     }
 }
 
+/**
+ * Writes the outputState to the agent.
+ * @param vni object containing the outputState
+ * @param res response object to write to
+ */
 function output(vni, res) {
     if (vni) {
         res.writeHead(200, {'Content-Type': 'application/json'});
@@ -129,6 +160,18 @@ function output(vni, res) {
     }
 }
 
+/**
+ * Renders the node view page.
+ * @param network the active network containing the node
+ * @param facades hash of all facades by nodeId
+ * @param render page template in hbs
+ * @param path the prefix of the URL before the nodeId
+ * @param vnis set of all vni states for this node
+ * @param vnid vnid state that should be shown
+ * @param nodeId node identifier that should be displayed
+ * @param qs query string from the request (including the ?)
+ * @param res response object to write to
+ */
 function view(network, facades, render, path, vnis, vnid, nodeId, qs, res) {
     res.writeHead(200, {'Content-Type': 'text/html'});
     res.end(render({
