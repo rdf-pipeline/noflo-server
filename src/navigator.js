@@ -1,6 +1,16 @@
-// navigator.js
+// navigator.js 
+
+// The navigator takes incoming server page requests and dynamically generates the appropriate 
+// Web page.  The Web pages currently supported include: 
+//    http://<noflo-server>:<port>/node/
+//    http://<noflo-server>:<port>/node/<nodeId>
+//
+// These pages depend on the handlebar templates to generate the pages: 
+//    index.html.hbs - the node page template
+//    node.html.hbs - the nodeId page template
 
 var fs = require('fs');
+
 var path = require('path');
 var querystring = require('querystring');
 var _ = require('underscore');
@@ -71,7 +81,7 @@ module.exports = function(server, path, runtime) {
                 var nodeId = decodeURI(req.url.substring(start, end));
                 if (!nodeId) {
                     return index.then(function(index) {
-                        return listing(network, index, path, qs, res);
+                        return listing(network, facades, index, path, qs, res);
                     });
                 } else {
                     var vnid = qs && querystring.parse(qs.substring(1)).vnid;
@@ -103,20 +113,49 @@ module.exports = function(server, path, runtime) {
 };
 
 /**
- * Renders the node listing page.
+ * Renders the node listing page using the index.html.hbs template.
+ *
  * @param network the active network containing the node
+ * @param facades hash of RDF pipline component facades
  * @param index page template in hbs
  * @param path the prefix of the URL before the nodeId
  * @param qs query string from the request (including the ?)
  * @param res response object to write to
  */
-function listing(network, index, path, qs, res) {
+function listing(network, facades, index, path, qs, res) {
     res.setHeader('Content-Type', 'text/html');
+
+    // Generate a version of the nodes with the profiler summary metrics
+    var nodes = [];
+    var updateGraphData = [["component name", "ms"]];
+    network.graph.nodes.forEach(function(node) { 
+        if (! ( _.isEmpty(facades) || _.isUndefined(facades[node.id]))) { 
+            var metrics = facades[node.id].profiler.metrics;
+
+            if (!_.isUndefined(metrics.averageUpdateTime)) {
+                updateGraphData.push([node.id, metrics.averageUpdateTime]);
+            }
+
+            nodes.push(_.defaults({numberOfUpdates: metrics.numberOfUpdates,
+                                   averageUpdateTime: metrics.averageUpdateTime + ' ms',
+                                   totalProcessingTime: metrics.totalProcessingTime + ' ms'},
+                                  node
+            ));
+        } else {
+            nodes.push(_.defaults({numberOfUpdates: "n/a",
+                                   averageUpdateTime: "n/a",
+                                   totalProcessingTime: "n/a"},
+                                  node
+            ));
+        }
+    });
+
     res.end(index({
         path: path,
         search: qs || '?view',
-        name: network.graph.name,
-        nodes: network.graph.nodes
+        name: network.graph.name || 'RDF Pipeline',
+        nodes: nodes,
+        updateGraphData: updateGraphData
     }));
 }
 
@@ -161,7 +200,77 @@ function output(vni, res) {
 }
 
 /**
- * Renders the node view page.
+ * Pretty formats a javascript timestamp for human readability
+ */
+function timeStamp(date) {
+    var date = _.isUndefined(date) ? new Date() : new Date(date);
+    return date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + (date.getDate() + 1)).slice(-2) + ' ' +
+           date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + '\n';
+}
+
+/**
+ * Generate a node with the profile metrics added to it
+ *
+ * @param nodes list of all nodes in the pipeline
+ * @param facades hash of all facades by nodeId
+ * @param nodeId node identifier that should be displayed
+ */
+function nodeWithProfile(nodes, facades, nodeId) {
+
+    // get the node we want to display
+    var node = _.find(nodes, function(node){
+            return node.id == nodeId;
+    });
+    node = node || {};
+
+    // If we have a facade for the node, then add the metrics to the node
+    // We will only have a facade if this is an RDF pipeline node
+    if (! ( _.isEmpty(facades) || _.isUndefined(facades[nodeId]))) { 
+
+        var metrics = facades[node.id].profiler.metrics;
+        return _.defaults({profile:[
+                             {"metricName": "Started",
+                              "metricValue": timeStamp(metrics.startTime)},
+                             {"metricName": "Updates",
+                              "metricValue": metrics.numberOfUpdates,
+                              "metricDetails": {"Average": metrics.averageUpdateTime + ' ms',
+                                                "Total": metrics.totalUpdateTime + ' ms'}},
+                             {"metricName": "Events",
+                              "metricValue": metrics.numberOfEvents,
+                              "metricDetails": {"Average": metrics.averageEventTime + ' ms',
+                                                 "Total": metrics.totalEventTime + ' ms'}}, 
+                             {"metricName": "Errors",
+                              "metricValue": metrics.numberOfErrors,
+                              "metricDetails": {"Average": metrics.averageErrorTime + ' ms',
+                                                "Total": metrics.totalErrorTime + ' ms'}},
+                             {"metricName": "Total Processing Time",
+                              "metricValue": metrics.totalProcessingTime + ' ms'}
+                          ]},
+                          node
+        );
+    } else {
+        // Not an RDF pipeline node - go ahead and just set default n/a values
+        return _.defaults({profile:[ 
+                              {"metricName": "Started",
+                               "metricValue": "n/a"},
+                              {"metricName": "Updates",
+                               "metricValue": "n/a"},
+                              {"metricName": "Events",
+                               "metricValue": "n/a"},
+                              {"metricName": "Errors",
+                               "metricValue": "n/a"}, 
+                              {"metricName": "Total Processing Time",
+                               "metricValue": "n/a"}
+                           ] 
+                          },
+                          node
+        );
+    }
+}
+
+/**
+ * Renders the nodeId view page using the node.html.hbs template
+ *
  * @param network the active network containing the node
  * @param facades hash of all facades by nodeId
  * @param render page template in hbs
@@ -177,9 +286,7 @@ function view(network, facades, render, path, vnis, vnid, nodeId, qs, res) {
     res.end(render({
         path: path,
         search: qs,
-        node: _.find(network.graph.nodes, function(node){
-            return node.id == nodeId;
-        }),
+        node: nodeWithProfile(network.graph.nodes, facades, nodeId),
         facade: facades[nodeId],
         vnis: vnis,
         vnid: vnid,
