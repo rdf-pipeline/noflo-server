@@ -12,6 +12,19 @@ You also need the [Grunt](http://gruntjs.com/) build tool:
 
     $ sudo npm install -g grunt-cli
 
+Alternatively, if you dislike installing globally:
+
+    $ npm install grunt-cli
+    $ export PATH=$PWD/node_modules/.bin:$PATH
+    $ type -p grunt-cli ## $PWD/node_modules/.bin/node-cli
+    $ grunt-cli --version
+    grunt-cli v1.2.0
+    grunt v0.4.5
+
+Your versions might (eventually) vary. Note that some authors advise that if your dependencies get completely bolixed, you can delete `node_modules/**` and start again.
+If you do, you'll need to explicitly reinstall `grunt-cli`.
+
+
 This will provide you with all the needed development dependencies. Now you can build a new version by running:
 
     $ grunt build
