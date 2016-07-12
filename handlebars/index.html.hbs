@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{{name}}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+    <link rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.css" />
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/css/rdf-pipeline.css" />
+</head>
+<body>
+<div class="container">
+    <h1>{{name}}</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="listing">Node id</th>
+                <th class="listing">Component name</th>
+                <th class="metrics listing"># of <br />updates</th>
+                <th class="metrics listing">Average <br />update</th>
+                <th class="metrics listing">Total<br />time</th>
+            </tr>
+        </thead>
+        <tbody>
+        {{#each nodes}}
+            <tr>
+                <td class="listing"><a class="component-name" href="{{../path}}{{encodeURI id}}{{../search}}">{{id}}</a></td>
+                <td class="listing">{{component}}</td>
+                <td class="metrics listing">{{numberOfUpdates}}</td>
+                <td class="metrics listing">{{averageUpdateTime}}</td>
+                <td class="metrics listing">{{totalProcessingTime}}</td>
+        {{/each}}
+        </tbody>
+    </table>
+    <div class="graph">
+        <div class="caption">
+            Average update time in ms
+        </div>
+        <div id="averages" class="chart">
+            {{#if updateGraphData}}
+                <!-- Script to load a graph after handlebars has processed the data values -->
+                <script type="text/javascript">
+                    function buildUpdateGraph() { 
+                        google.charts.load('current', {packages: ['corechart', 'bar']});
+                        google.charts.setOnLoadCallback(drawTitleSubtitle);
+                        function drawTitleSubtitle() { 
+                            var data = google.visualization.arrayToDataTable({{toJSON updateGraphData}});
+                            var options = {
+                                titlePosition: 'none',
+                                backgroundColor: '#EEE',
+                                legend: {position: 'none'},
+                                hAxis: {
+                                    title: 'time in ms',
+                                    minValue: 0,
+                                },
+                                vAxis: {
+                                    title: 'component name'
+                                },
+                                bars: 'horizontal'
+                            };
+                            var chart = document.getElementById('averages');
+                            var material = new google.charts.Bar(chart);
+                            material.draw(data, google.charts.Bar.convertOptions(options));
+                            chart.style.opacity = '1';
+                            chart.style.visibility = 'visible';
+                        }
+                    }
+                    window.onload = buildUpdateGraph; 
+                </script>
+            {{/if}}
+        </div>
+        <div class="chartNote">
+            <sup>*</sup>Update time data is available for RDF Pipeline components only.
+        </div>
+    </div>
+    
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js" integrity="sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7" crossorigin="anonymous"></script>
+</body>
+</html>
