@@ -36,24 +36,7 @@
     "grunt-coffeelint": "0.0.13",
     "grunt-contrib-clean": "0.6.0",
     "grunt-contrib-coffee": "0.13.0",
-    "component": "^0.14.0",
-    "grunt-contrib-compress": "0.14.0",
-    "grunt-contrib-connect": "0.7.1",
-    "grunt-contrib-copy": "0.8.2",
-    "grunt-contrib-uglify": "0.11.0",
-    "grunt-contrib-watch": "0.6.1",
-    "grunt-gh-pages": "0.9.1",
-    "grunt-lint-inline": "0.4.4",
-    "grunt-noflo-browser": "0.1.11",
-    "grunt-noflo-manifest": "0.1.11",
-    "grunt-phonegap-build": "0.0.8",
-    "grunt-saucelabs": "8.6.1",
-    "grunt-string-replace": "1.2.0",
-    "grunt-vulcanize": "0.4.2",
-    "grunt-zip": "0.13.0"
-  },
-  "scripts": {
-    "test": "grunt test"
+    "component": "^0.14.0"
   },
   "bin": "src/noflo-server.js",
   "keywords": []

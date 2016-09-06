@@ -1,0 +1,6026 @@
+<!DOCTYPE html><html><head>
+    <meta charset="utf-8">
+    <title>NoFlo Development Environment v0.0.0</title>
+    <link href="https://github.com/noflo/noflo-ui" rel="source">
+    <meta name="description" content="Flow-Based Programming Environment">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="hsl(190, 90%, 45%)">
+    <link rel="manifest" href="manifest.webapp.json">
+    <link rel="apple-touch-icon" href="app/noflo-60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="app/noflo-120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="app/noflo-144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="app/noflo-152.png">
+    <link rel="icon" sizes="192x192" href="app/noflo-192.png">
+    <link rel="icon" sizes="128x128" href="app/noflo-128.png">
+    <link rel="shortcut icon" href="noflo.ico">
+    <script src="node_modules/webcomponents.js/webcomponents.min.js"></script>
+    <style shim-shadowdom="">
+/*******************************
+          Flex Layout
+*******************************/
+
+html /deep/ [layout][horizontal], html /deep/ [layout][vertical] {
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+
+html /deep/ [layout][horizontal][inline], html /deep/ [layout][vertical][inline] {
+  display: -ms-inline-flexbox;
+  display: -webkit-inline-flex;
+  display: inline-flex;
+}
+
+html /deep/ [layout][horizontal] {
+  -ms-flex-direction: row;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+}
+
+html /deep/ [layout][horizontal][reverse] {
+  -ms-flex-direction: row-reverse;
+  -webkit-flex-direction: row-reverse;
+  flex-direction: row-reverse;
+}
+
+html /deep/ [layout][vertical] {
+  -ms-flex-direction: column;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+
+html /deep/ [layout][vertical][reverse] {
+  -ms-flex-direction: column-reverse;
+  -webkit-flex-direction: column-reverse;
+  flex-direction: column-reverse;
+}
+
+html /deep/ [layout][wrap] {
+  -ms-flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+
+html /deep/ [layout][wrap-reverse] {
+  -ms-flex-wrap: wrap-reverse;
+  -webkit-flex-wrap: wrap-reverse;
+  flex-wrap: wrap-reverse;
+}
+
+html /deep/ [flex] {
+  -ms-flex: 1 1 0.000000001px;
+  -webkit-flex: 1;
+  flex: 1;
+  -webkit-flex-basis: 0.000000001px;
+  flex-basis: 0.000000001px;
+}
+
+html /deep/ [vertical][layout] > [flex][auto-vertical], html /deep/ [vertical][layout]::shadow [flex][auto-vertical] {
+  -ms-flex: 1 1 auto;
+  -webkit-flex-basis: auto;
+  flex-basis: auto;
+}
+
+html /deep/ [flex][auto] {
+  -ms-flex: 1 1 auto;
+  -webkit-flex-basis: auto;
+  flex-basis: auto;
+}
+
+html /deep/ [flex][none] {
+  -ms-flex: none;
+  -webkit-flex: none;
+  flex: none;
+}
+
+html /deep/ [flex][one] {
+  -ms-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+}
+
+html /deep/ [flex][two] {
+  -ms-flex: 2;
+  -webkit-flex: 2;
+  flex: 2;
+}
+
+html /deep/ [flex][three] {
+  -ms-flex: 3;
+  -webkit-flex: 3;
+  flex: 3;
+}
+
+html /deep/ [flex][four] {
+  -ms-flex: 4;
+  -webkit-flex: 4;
+  flex: 4;
+}
+
+html /deep/ [flex][five] {
+  -ms-flex: 5;
+  -webkit-flex: 5;
+  flex: 5;
+}
+
+html /deep/ [flex][six] {
+  -ms-flex: 6;
+  -webkit-flex: 6;
+  flex: 6;
+}
+
+html /deep/ [flex][seven] {
+  -ms-flex: 7;
+  -webkit-flex: 7;
+  flex: 7;
+}
+
+html /deep/ [flex][eight] {
+  -ms-flex: 8;
+  -webkit-flex: 8;
+  flex: 8;
+}
+
+html /deep/ [flex][nine] {
+  -ms-flex: 9;
+  -webkit-flex: 9;
+  flex: 9;
+}
+
+html /deep/ [flex][ten] {
+  -ms-flex: 10;
+  -webkit-flex: 10;
+  flex: 10;
+}
+
+html /deep/ [flex][eleven] {
+  -ms-flex: 11;
+  -webkit-flex: 11;
+  flex: 11;
+}
+
+html /deep/ [flex][twelve] {
+  -ms-flex: 12;
+  -webkit-flex: 12;
+  flex: 12;
+}
+
+/* alignment in cross axis */
+
+html /deep/ [layout][start] {
+  -ms-flex-align: start;
+  -webkit-align-items: flex-start;
+  align-items: flex-start;
+}
+
+html /deep/ [layout][center], html /deep/ [layout][center-center] {
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+
+html /deep/ [layout][end] {
+  -ms-flex-align: end;
+  -webkit-align-items: flex-end;
+  align-items: flex-end;
+}
+
+/* alignment in main axis */
+
+html /deep/ [layout][start-justified] {
+  -ms-flex-pack: start;
+  -webkit-justify-content: flex-start;
+  justify-content: flex-start;
+}
+
+html /deep/ [layout][center-justified], html /deep/ [layout][center-center] {
+  -ms-flex-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+}
+
+html /deep/ [layout][end-justified] {
+  -ms-flex-pack: end;
+  -webkit-justify-content: flex-end;
+  justify-content: flex-end;
+}
+
+html /deep/ [layout][around-justified] {
+  -ms-flex-pack: distribute;
+  -webkit-justify-content: space-around;
+  justify-content: space-around;
+}
+
+html /deep/ [layout][justified] {
+  -ms-flex-pack: justify;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+}
+
+/* self alignment */
+
+html /deep/ [self-start] {
+  -ms-align-self: flex-start;
+  -webkit-align-self: flex-start;
+  align-self: flex-start;
+}
+
+html /deep/ [self-center] {
+  -ms-align-self: center;
+  -webkit-align-self: center;
+  align-self: center;
+}
+
+html /deep/ [self-end] {
+  -ms-align-self: flex-end;
+  -webkit-align-self: flex-end;
+  align-self: flex-end;
+}
+
+html /deep/ [self-stretch] {
+  -ms-align-self: stretch;
+  -webkit-align-self: stretch;
+  align-self: stretch;
+}
+
+/*******************************
+          Other Layout
+*******************************/
+
+html /deep/ [block] {
+  display: block;
+}
+
+/* ie support for hidden */
+html /deep/ [hidden] {
+  display: none !important;
+}
+
+html /deep/ [relative] {
+  position: relative;
+}
+
+html /deep/ [fit] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+body[fullbleed] {
+  margin: 0;
+  height: 100vh;
+}
+
+/*******************************
+            Other
+*******************************/
+
+html /deep/ [segment], html /deep/ segment {
+  display: block;
+  position: relative;
+  -webkit-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 1em 0.5em;
+  padding: 1em;
+  background-color: white;
+  -webkit-box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.1);
+  border-radius: 5px 5px 5px 5px;
+}
+
+</style>
+
+<script src="bower_components/polymer/polymer.js"></script>
+
+    <script src="bower_components/klayjs-noflo/klay-noflo.js"></script>
+    <script src="bower_components/hammerjs/hammer.js"></script>
+    <script src="bower_components/react/react-with-addons.js"></script>
+    <script src="bower_components/ease-djdeath/index.js"></script>
+    <script src="bower_components/react.animate-djdeath/react.animate.js"></script>
+    <script src="node_modules/indexeddbshim/dist/indexeddbshim.min.js"></script>
+    
+    <script src="bower_components/rtc/dist/rtc.js"></script>
+    <script src="browser/noflo-ui.js"></script>
+
+    <script src="../bower_components/codemirror/lib/codemirror.js"></script>
+    <script src="../bower_components/codemirror/mode/xml/xml.js"></script>
+    <script src="../bower_components/codemirror/mode/javascript/javascript.js"></script>
+    <script src="../bower_components/codemirror/mode/css/css.js"></script>
+    <script src="../bower_components/codemirror/mode/vbscript/vbscript.js"></script>
+    <script src="../bower_components/codemirror/mode/coffeescript/coffeescript.js"></script>
+    <script src="../bower_components/codemirror/mode/clike/clike.js"></script>
+    <script src="../bower_components/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="../bower_components/codemirror/mode/smalltalk/smalltalk.js"></script>
+    <script src="../bower_components/codemirror/mode/yaml/yaml.js"></script>
+    <script src="../bower_components/codemirror/mode/python/python.js"></script>
+
+    <script src="../bower_components/coffee-script/extras/coffee-script.js"></script>
+    <script src="../bower_components/coffeelint/js/coffeelint.js"></script>
+    <script src="../bower_components/jshint/dist/jshint.js"></script>
+
+    <link rel="stylesheet" href="../bower_components/codemirror/addon/lint/lint.css">
+    <script src="../bower_components/codemirror/addon/lint/lint.js"></script>
+    <script src="../bower_components/codemirror/addon/lint/javascript-lint.js"></script>
+    <script src="../bower_components/codemirror/addon/lint/coffeescript-lint.js"></script>
+    <script src="../bower_components/codemirror/addon/lint/yaml-lint.js"></script>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </head><body class="noflo"><div hidden="">
+<polymer-element name="the-graph-thumb" attributes="graph width height thumbscale thumbrectangle theme" assetpath="bower_components/the-graph/the-graph-thumb/">
+  <template>
+    <canvas id="canvas" width="{{width}}" height="{{height}}" style="position:absolute;top:0;left:0;"></canvas>
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-add-runtime" class="modal-content" on-click="{{ close }}" assetpath="elements/">
+  <template>
+    <style>
+      a {
+        color: hsl(190, 100%, 30%);
+      }
+      p {
+        font-size: 11px;
+      }
+    </style>
+    <div class="modal-container" on-click="{{ bgClick }}">
+      <h1>Add new runtime</h1>
+      <form>
+        <label>
+          Runtime name 
+          <input type="text" value="{{ name }}" placeholder="New local runtime" required="">
+        </label>
+        <label>
+          IP address
+          <input type="text" value="{{ address }}" placeholder="127.0.0.1" required="">
+        </label>
+        <label>
+          Port
+          <input type="text" data-type="int" value="{{ port }}" placeholder="3569" required="">
+        </label>
+        <label>
+          Type
+          <select id="type" value="{{ type }}">
+            <option value="{{ t }}" template="" repeat="{{ t in availableTypes }}">{{ t }}</option>
+          </select>
+        </label>
+        <label>
+          Secret
+          <input type="text" value="{{ secret }}" placeholder="secret-string" required="">
+        </label>
+        <div class="toolbar">
+          <button on-click="{{ create }}" class="{{ { disabled: !canCreate } | tokenList }}">Create</button>
+          <a on-click="{{ close }}">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-type-selector" attributes="runtimes type" assetpath="elements/">
+  <template>
+    <style>
+      :host {
+        top: calc(50% - 220px) !important;
+      }
+      ul.types {
+        padding: 0px;
+        margin: 0px;
+        margin-left: -9px;
+        margin-right: -9px;
+        list-style: none;
+      }
+      ul.types li {
+        width: 274px;
+        height: 105px;
+        overflow: hidden;
+        display: inline-block;
+        text-align: center;
+        background-color: hsl(192, 25%, 75%);
+        color: hsl(189, 50%, 80%);
+        border-radius: 3px;
+        margin-right: 9px;
+        margin-left: 9px;
+        margin-bottom: 18px;
+        position: relative;
+        cursor: pointer;
+        transition: background-color 0.3s ease-in-out;
+      }
+      ul.types li.selected,
+      ul.types li:hover {
+        background-color: hsl(190, 100%, 30%);
+        color: white;
+        cursor: default;
+      }
+      ul.types li.selected p {
+        color: hsl(0, 0%, 80%);
+      }
+      ul.types li h2 {
+        position: absolute;
+        top: 36px;
+        line-height: 36px;
+        width: 180px;
+        text-transform: none;
+        font-size: 10px;
+        text-align: left;
+        white-space: nowrap;
+        left: 18px;
+        padding: 0px;
+        margin: 0px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+      ul.types li p {
+        position: absolute;
+        top: 53px;
+        left: 18px;
+        width: 180px;
+        text-transform: uppercase;
+        font-size: 8px;
+        text-align: left;
+        max-height: 36px;
+        overflow: hidden;
+        color: hsl(189, 50%, 80%);
+      }
+      ul.types li i {
+        font-size: 72px;
+        position: absolute;
+        right: -8px;
+        top: 9px;
+      }
+    </style>
+    <ul class="types">
+      <template repeat="{{ availtype in available }}">
+      <li on-click="{{ selectType }}" data-id="{{ availtype.id }}" class="{{ { selected: type == availtype.id } | tokenList }}">
+        <h2>{{ availtype.label }}</h2>
+        <i class="fa fa-{{ availtype.icon }}"></i>
+        <template if="{{ availtype.runtimes.length === 1 }}">
+        <p>{{ availtype.runtimes.length }} runtime</p>
+        </template>
+        <template if="{{ availtype.runtimes.length > 1 }}">
+        <p>{{ availtype.runtimes.length }} runtimes</p>
+        </template>
+      </li>
+      </template>
+    </ul>
+    </template>
+  
+  
+</polymer-element>
+<polymer-element name="noflo-new-project" attributes="runtimes" class="modal-content" on-click="{{ close }}" assetpath="elements/">
+  <style>
+    :host {
+      background-color: red;
+    }
+  </style>
+  <template>
+    <div class="modal-container" on-click="{{ bgClick }}">
+      <h1>Create new project</h1>
+      <form>
+        <label>
+          Project label
+          <input type="text" value="{{ name }}" placeholder="My Cool Project" required="">
+        </label>
+        <label>
+          Project name
+          <input type="text" value="{{ projectId }}" placeholder="my-project" autocapitalize="off" autocorrect="off" readonly="">
+        </label>
+        <label>
+          Primary Type
+          <noflo-type-selector type="{{ type }}" runtimes="{{ runtimes }}"></noflo-type-selector>
+        </label>
+        <div class="toolbar">
+          <button on-click="{{ send }}" class="{{ { disabled: !canSend } | tokenList }}">Create</button>
+          <a on-click="{{ close }}">Cancel</a>
+        </div>
+      </form></div>
+    
+  </template>
+  
+</polymer-element>
+<polymer-element name="noflo-anonymous" attributes="userRuntimes" extends="noflo-account" assetpath="elements/">
+  <template>
+    <style>
+      :host {
+        text-align: center;
+        display: block;
+        background-color: hsla(0, 0%, 0%, 0.98) !important;
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+      section {
+        display: block;
+        position: relative;
+        padding-left: 72px;
+        padding-right: 72px;
+      }
+      section > h2 {
+        font-size: 17px;
+        line-height: 36px;
+        margin-top: 36px;
+        height: 36px;
+        color: white;
+        text-shadow: 0 1px 0 hsl(190, 100%, 40%);
+        text-transform: none;
+      }
+      .avatar {
+        border-radius: 50px;
+        background-color: black;
+        border: 2px solid hsl(190, 100%, 30%);
+        display: block;
+        position: relative;
+        width: 72px;
+        height: 72px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 36px;
+        margin-bottom: 36px;
+        overflow: hidden;
+        box-sizing: border-box;
+      }
+      .avatar:before {
+        content: '';
+        border: 3px solid black;
+        border-radius: 50px;
+        width: 70px;
+        height: 70px;
+        left: -1px;
+        top: -1px;
+        position: absolute;
+        z-index: 1;
+        box-sizing: border-box;
+      }
+      .avatar.flowhub {
+        border-radius: 11px;
+        border: 1px solid hsl(190, 100%, 30%);
+      }
+      .avatar.noflo {
+        border: 1px solid hsl(190, 100%, 30%);
+      }
+      .avatar.flowhub:before {
+        border: none;
+        border-radius: 6px;
+        width: 72px;
+        height: 72px;
+      }
+      .avatar.noflo:before {
+        border: none;
+      }
+      .avatar img {
+        border: 2px solid hsl(190, 90%, 45%);
+        width: 66px;
+        height: 66px;
+        margin-top: 1px;
+        margin-left: 1px;
+        box-sizing: border-box;
+        border-radius: 50px;
+      }
+      .flowhub img {
+        width: 54px;
+        height: 53px;
+        padding: 6px;
+        margin-top: 8px;
+        border-radius: 6px;
+        box-sizing: border-box;
+      }
+      .noflo img {
+        width: 55px;
+        height: 22px;
+        border: none;
+        margin-top: 23px;
+        margin-left: 5px;
+        border-radius: initial;
+      }
+      h1 {
+        line-height: 18px;
+        margin: 0px;
+        padding: 0px;
+        position: relative;
+      }
+      .toolbar {
+        margin-top: 54px;
+        padding: 1px;
+        border-radius: 3px;
+        border: 1px solid hsl(190, 90%, 45%);
+        color: hsl(190, 90%, 45%);
+        background-color: black;
+        display: inline-block;
+        box-sizing: border-box;
+        margin-bottom: -3px;
+      }
+      .toolbar button,
+      .toolbar a.login {
+        background-color: hsl(190, 90%, 45%);
+        color: hsla(0, 0%, 0%, 0.98);
+        border: none;
+        font-size: 13px;
+        border-radius: 3px;
+        font-family: "SourceCodePro",Helvetica,Arial,sans-serif;
+        height: 36px;
+        padding-left: 36px;
+        padding-right: 36px;
+        margin: 0px;
+      }
+      .toolbar a {
+        font-size: 13px;
+        color: hsl(190, 90%, 45%);
+        text-decoration: none;
+        height: 36px;
+        display: inline-block;
+        line-height: 36px;
+        padding-left: 36px;
+        padding-right: 36px;
+        cursor: pointer;
+      }
+      ul.projects {
+        padding: 0px;
+        margin-top: 36px;
+        margin-bottom: 36px;
+        margin-left: -18px;
+        margin-right: -18px;
+        list-style: none;
+      }
+      ul.projects li {
+        width: 216px;
+        height: 105px;
+        overflow: hidden;
+        display: inline-block;
+        text-align: center;
+        background-color: hsla(0, 0%, 0%, .98);
+        border-radius: 3px;
+        margin-right: 18px;
+        margin-left: 18px;
+        margin-bottom: 36px;
+        position: relative;
+        cursor: pointer;
+      }
+      ul.projects li p {
+        position: absolute;
+        top: 53px;
+        left: 18px;
+        width: 150px;
+        text-transform: uppercase;
+        font-size: 10px;
+        text-align: left;
+        max-height: 36px;
+        overflow: hidden;
+        color: hsl(189, 11%, 50%);
+      }
+      ul.projects li a {
+        color: black;
+        text-decoration: none;
+      }
+    </style>
+    <template if="{{ !true}}">
+      <div class="avatar noflo"><img src="../app/noflo-logo-74.png"></div>
+      <h1>NoFlo Development Environment</h1>
+      <p> Application is in offline mode. You can create local runtime and local project. </p>
+    </template>    
+  </template>
+  
+  </polymer-element>
+
+<polymer-element name="noflo-account-settings" attributes="user gridToken plan theme" class="modal-content" on-click="{{ close }}" assetpath="elements/">
+  <template>
+    <style>
+      .plan strong {
+        text-transform: uppercase;
+        color: black;
+        background-color: hsl(190, 90%, 45%);
+        text-decoration: none;
+        padding: 2px;
+        border-radius: 2px;
+      }
+      .plan .free,
+      .plan .beta,
+      .plan .backer {
+        background-color: hsl(135,90%,45%);
+      }
+      button.refresh {
+        border: none;
+        background-color: transparent;
+      }
+      button.relogin {
+        background-color: transparent;
+        color: hsl(190, 100%, 30%);
+        border: 1px solid hsl(190, 100%, 30%);
+        padding: 2px;
+        border-radius: 3px;
+        font-family: "SourceCodePro",Helvetica,Arial,sans-serif;
+      }
+    </style>
+    <div class="modal-container" on-click="{{ bgClick }}">
+      <h1>Account settings for {{ user.name }}</h1>
+      <form>
+        <label>
+          User Identifier
+          <input type="text" readonly="" value="{{ user.uuid }}">
+        </label>
+        <label>
+          Flowhub plan
+          <div class="plan"><strong class="{{ plan }}">{{ plan }}</strong> <button id="refresh" class="refresh" on-click="{{ checkPlan }}"><i class="fa fa-refresh"></i></button></div>
+          <template if="{{ statusText }}">
+            <div>
+              <span>{{ statusText }}</span>
+              <template if="{{ requestLogin }}">
+                <button class="relogin" on-click="{{ relogin }}">Login</button>
+              </template>
+            </div>
+          </template>
+        </label>
+        <label>
+          Theme
+          <select name="type" value="{{ theme }}">
+            <option value="dark">Lazer</option>
+            <option value="light">Tube</option>
+          </select>
+        </label>
+        <div class="toolbar">
+          <button on-click="{{ send }}">Save</button>
+          <a on-click="{{ close }}">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </template>
+  
+</polymer-element>
+<polymer-element name="noflo-account" attributes="avatar user plan" assetpath="elements/">
+  <template>
+    <style>
+      :host {
+        text-align: center;
+        display: block;
+        background-color: hsla(0, 0%, 0%, 0.98) !important;
+        padding-top: 36px;
+        padding-bottom: 72px;
+        /*
+        background-image: 
+          radial-gradient(2px at 0px 0px, hsla(0, 100%, 100%, 0.2) 1px, hsla(0, 0%, 0%, 0) 1.1px), 
+          radial-gradient(2px at 0px 0px, hsla(210, 51%, 21%, 0.5) 1px, hsla(0, 0%, 0%, 0) 1.1px);
+        background-size: 72px 72px, 18px 18px;
+        background-position: 50% 0px, calc(50% - 9px) 0px;
+        */
+      }
+      section {
+        display: block;
+        position: relative;
+        padding-left: 72px;
+        padding-right: 72px;
+      }
+      section > h2 {
+        font-size: 17px;
+        line-height: 36px;
+        margin-top: 36px;
+        height: 36px;
+        color: white;
+        text-shadow: 0 1px 0 hsl(190, 100%, 40%);
+        text-transform: none;
+      }
+      .avatar {
+        border-radius: 50px;
+        background-color: black;
+        border: 2px solid hsl(190, 100%, 30%);
+        display: block;
+        position: relative;
+        width: 72px;
+        height: 72px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 36px;
+        margin-bottom: 36px;
+        overflow: hidden;
+        box-sizing: border-box;
+      }
+      .avatar:before {
+        content: '';
+        border: 3px solid black;
+        border-radius: 50px;
+        width: 70px;
+        height: 70px;
+        left: -1px;
+        top: -1px;
+        position: absolute;
+        z-index: 1;
+        box-sizing: border-box;
+      }
+      .avatar.flowhub {
+        border-radius: 11px;
+        border: 1px solid hsl(190, 100%, 30%);
+      }
+      .avatar.noflo {
+        border: 1px solid hsl(190, 100%, 30%);
+      }
+      .avatar.flowhub:before {
+        border: none;
+        border-radius: 6px;
+        width: 72px;
+        height: 72px;
+      }
+      .avatar.noflo:before {
+        border: none;
+      }
+      .avatar img {
+        border: 2px solid hsl(190, 90%, 45%);
+        width: 66px;
+        height: 66px;
+        margin-top: 1px;
+        margin-left: 1px;
+        box-sizing: border-box;
+        border-radius: 50px;
+      }
+      .flowhub img {
+        width: 54px;
+        height: 53px;
+        padding: 6px;
+        margin-top: 8px;
+        border-radius: 6px;
+        box-sizing: border-box;
+      }
+      .noflo img {
+        width: 55px;
+        height: 22px;
+        border: none;
+        margin-top: 23px;
+        margin-left: 5px;
+        border-radius: initial;
+      }
+      h1 {
+        line-height: 18px;
+        margin: 0px;
+        padding: 0px;
+        position: relative;
+      }
+      #plan {
+        position: absolute;
+        font-size: 8px;
+        text-transform: uppercase;
+        top: -8px;
+        margin-left: 8px;
+        color: black;
+        background-color: hsl(190, 90%, 45%);
+        line-height: 10px;
+        text-decoration: none;
+        padding: 2px;
+        border-radius: 2px;
+      }
+      #plan.free,
+      #plan.beta,
+      #plan.backer {
+        background-color: hsl(135,90%,45%);
+      }
+      .toolbar {
+        margin-top: 54px;
+        padding: 1px;
+        border-radius: 3px;
+        border: 1px solid hsl(190, 90%, 45%);
+        color: hsl(190, 90%, 45%);
+        background-color: black;
+        display: inline-block;
+        box-sizing: border-box;
+        margin-bottom: -3px;
+      }
+      .toolbar button,
+      .toolbar a.login {
+        background-color: hsl(190, 90%, 45%);
+        color: hsla(0, 0%, 0%, 0.98);
+        border: none;
+        font-size: 13px;
+        border-radius: 3px;
+        font-family: "SourceCodePro",Helvetica,Arial,sans-serif;
+        height: 36px;
+        padding-left: 36px;
+        padding-right: 36px;
+        margin: 0px;
+      }
+      .toolbar a {
+        font-size: 13px;
+        color: hsl(190, 90%, 45%);
+        text-decoration: none;
+        height: 36px;
+        display: inline-block;
+        line-height: 36px;
+        padding-left: 36px;
+        padding-right: 36px;
+        cursor: pointer;
+      }
+
+    </style>
+    <template if="{{ user }}">
+      <template if="{{ avatar }}">
+      <div class="avatar"><img src="{{ avatar }}"></div>
+      </template>
+      <template if="{{ !avatar }}">
+      <div class="avatar noflo"><img src="../app/noflo-logo-74.png"></div>
+      </template>
+      <h1>{{ user.name }} <a href="http://flowhub.io/preorder/" target="_blank" id="plan" class="{{ plan }}">{{ plan }}</a></h1>
+      <div class="toolbar">
+        <a on-click="{{ openSettings }}">Settings</a>
+        <button on-click="{{ logout }}">Logout</button>
+      </div>
+    </template>
+    <template if="{{ !user }}">
+      <div class="avatar noflo"><img src="../app/noflo-logo-74.png"></div>
+      <h1>NoFlo Development Environment</h1>
+      <div class="toolbar">
+        <a id="loginbutton" class="login" on-click="{{ login }}">Login</a>
+      </div>
+    </template>
+  </template>
+  
+  </polymer-element>
+
+<polymer-element name="noflo-new-repository" attributes="runtimes" class="modal-content" on-click="{{ close }}" assetpath="elements/">
+  <style>
+    :host {
+      background-color: red;
+    }
+  </style>
+  <template>
+    <div class="modal-container" on-click="{{ bgClick }}">
+      <h1>Add a new repository</h1>
+      <template if="{{ errorText }}">
+        <div class="error">{{ errorText }}</div>
+      </template>
+      <form>
+        <label>
+          GitHub repository name
+          <input type="text" value="{{ repo }}" placeholder="username/repository" required="">
+        </label>
+        <div class="toolbar">
+          <button on-click="{{ send }}" class="{{ { disabled: !canSend } | tokenList }}">Add</button>
+          <a on-click="{{ close }}">Cancel</a>
+        </div>
+      </form></div>
+    
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-new-runtime" class="modal-content" on-click="{{ close }}" assetpath="elements/">
+  <template>
+    <style>
+      a {
+        color: hsl(190, 100%, 30%);
+      }
+      p {
+        font-size: 11px;
+      }
+      ul.runtimes {
+        padding: 0px;
+        margin: 0px;
+        margin-left: -9px;
+        margin-right: -9px;
+        list-style: none;
+      }
+      ul.runtimes li {
+        display: inline-block;
+      }
+      ul.runtimes li a {
+        width: 274px;
+        height: 105px;
+        overflow: hidden;
+        display: inline-block;
+        text-align: center;
+        background-color: hsl(190, 100%, 30%);
+        color: white;
+        border-radius: 3px;
+        margin-right: 9px;
+        margin-left: 9px;
+        margin-bottom: 18px;
+        position: relative;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      ul.runtimes li h2 {
+        position: absolute;
+        top: 36px;
+        line-height: 36px;
+        width: 180px;
+        text-transform: none;
+        font-size: 10px;
+        text-align: left;
+        white-space: nowrap;
+        left: 18px;
+        padding: 0px;
+        margin: 0px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        text-decoration: none;
+      }
+      ul.runtimes li p {
+        position: absolute;
+        top: 53px;
+        left: 18px;
+        width: 180px;
+        text-transform: uppercase;
+        font-size: 8px;
+        text-align: left;
+        max-height: 36px;
+        overflow: hidden;
+        color: hsl(189, 50%, 80%);
+        text-decoration: none;
+      }
+      ul.runtimes li a i.fa {
+        font-size: 72px;
+        position: absolute;
+        right: -8px;
+        top: 9px;
+        text-decoration: none;
+      }
+    </style>
+    <div class="modal-container" on-click="{{ bgClick }}">
+      <h1>Register new runtime</h1>
+      <p>
+      NoFlo Development Environment supports all flow-based programming runtimes that are compatible with the <a href="http://noflojs.org/documentation/protocol/" target="_blank">FBP protocol</a>.
+      NoFlo Development Environment comes with a bundled <a href="http://noflojs.org" target="_blank">NoFlo</a> runtime for the browser.
+      Here are some other popular ones:
+      </p>
+      <ul class="runtimes">
+      <template repeat="{{ runtime in runtimes }}">
+      <li class="{{ runtime.name }}">
+        <a href="{{ runtime.url }}" target="_blank">
+          <i class="fa fa-{{ runtime.icon }}"></i>
+          <h2>{{ runtime.label }}</h2>
+          <p>{{ runtime.description }}</p>
+        </a>
+      </li>
+      </template>
+      </ul>
+      <p>
+      Once you have installed a runtime, connect it with your Flowhub account by registering it for your <strong>User Identifier</strong>, shown below:
+      </p>
+      <label>
+        User Identifier
+        <input type="text" readonly="" value="{{ user.uuid }}">
+      </label>
+      <div class="toolbar">
+        <button on-click="{{ addRuntime }}">Add manually</button>
+        <button on-click="{{ close }}">Close</button>
+      </div>
+    </div>
+  </template>
+  
+</polymer-element>
+<polymer-element name="noflo-main" attributes="open localProjects graphs components userRuntimes" assetpath="elements/">
+  <template>
+    <style>
+      :host {
+        background-color: hsl(190, 90%, 45%);
+        display: block;
+        z-index: 4;
+        position: fixed;
+        top: 0px;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        overflow-y: auto;
+        height: 100%;
+        width: 100%;
+        transition: height 1s ease-in-out;
+      }
+      section {
+        /*
+        background-image: radial-gradient(1px at 0px 0px, hsl(210, 78%, 10%) 0.5px, hsla(0, 0%, 0%, 0) 1px);
+        background-position: 50% 0px;
+        background-size: 36px 36px;
+        */
+        display: block;
+        position: relative;
+        padding-left: 72px;
+        padding-right: 72px;
+      }
+      section > h2 {
+        font-size: 17px;
+        line-height: 36px;
+        margin-top: 36px;
+        height: 36px;
+        color: white;
+        text-shadow: 0 1px 0 hsl(190, 100%, 40%);
+        text-transform: none;
+      }
+      section > h2 small {
+        font-size: 10px;
+        text-transform: uppercase;
+        color: hsl(189, 50%, 25%);
+      }
+      ul.tabs {
+        position: absolute;
+        display: inline-block;
+        top: 0px;
+        left: calc(50% - 133px);
+        margin: 0px;
+        padding: 0px;
+        list-style: none;
+        padding: 1px;
+      }
+      ul.tabs li {
+        display: inline;
+        line-height: 36px;
+        font-size: 13px;
+        color: hsl(189, 50%, 25%);
+        text-decoration: none;
+        padding-left: 36px;
+        padding-right: 36px;
+        cursor: pointer;
+      }
+      ul.tabs li.selected {
+        border: none;
+        border-radius: 3px;
+        background-color: rgba(0, 42, 51, 0.498039);
+        color: white;
+        border-radius: 3px;
+        padding-top: 8px;
+        padding-bottom: 9px;
+        cursor: default;
+      }
+      ul.projects {
+        padding: 0px;
+        margin-top: 36px;
+        margin-bottom: 36px;
+        margin-left: -18px;
+        margin-right: -18px;
+        list-style: none;
+      }
+      ul.projects li {
+        width: 216px;
+        height: 105px;
+        overflow: hidden;
+        display: inline-block;
+        text-align: center;
+        background-color: hsla(0, 0%, 0%, .98);
+        border-radius: 3px;
+        margin-right: 18px;
+        margin-left: 18px;
+        margin-bottom: 36px;
+        position: relative;
+        cursor: pointer;
+      }
+      ul.projects li.add {
+        background-color: hsl(192, 25%, 92%);
+        color: black;
+        cursor: default;
+      }
+      ul.projects li.remote {
+        cursor: default;
+      }
+      ul.projects li the-graph-thumb {
+        display: block;
+        position: absolute;
+        left: 100px;
+        top: -20px;
+      }
+      section button {
+        background-color: transparent;
+        color: hsl(189, 50%, 25%);
+        font-size: 13px;
+        border-radius: 3px;
+        font-family: "SourceCodePro",Helvetica,Arial,sans-serif;
+        height: 36px;
+        border: none;
+        padding-left: 13px;
+        padding-right: 13px;
+      }
+      ul.projects li button {
+        display: block;
+        border: 1px solid hsl(189, 50%, 25%);
+        position: absolute;
+        right: 18px;
+        top: 36px;
+      }
+      ul.projects li h2 {
+        position: absolute;
+        top: 36px;
+        line-height: 36px;
+        width: 150px;
+        text-transform: none;
+        font-size: 12px;
+        text-align: left;
+        white-space: nowrap;
+        left: 18px;
+        padding: 0px;
+        margin: 0px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+      ul.projects li p {
+        position: absolute;
+        top: 53px;
+        left: 18px;
+        width: 150px;
+        text-transform: uppercase;
+        font-size: 10px;
+        text-align: left;
+        max-height: 36px;
+        overflow: hidden;
+        color: hsl(189, 11%, 50%);
+      }
+      ul.projects li a {
+        color: black;
+        text-decoration: none;
+      }
+
+    </style>
+    <noflo-account id="mainaccount" user="{{ user }}" avatar="{{ avatar }}" plan="{{ plan }}"></noflo-account>  
+    <div id="loginrequired"></div>
+         <section id="projects">
+        <h2>Projects
+            <template if="{{ projectList === 'local' }}">
+            <small>{{ localProjects.length }}</small>
+            </template>
+            <template if="{{ projectList === 'github' }}">
+            <small>{{ remoteProjects.length }}</small>
+            </template>
+            <template if="{{ projectList === 'github' }}">
+            <button on-click="{{ fetchGithub }}"><i id="fetchgithub" class="fa fa-refresh"></i></button>
+            </template>
+        </h2>
+        <ul class="tabs">
+          <template if="{{ projectList === 'local' }}">
+            <li class="selected">On device</li>
+            <template if="{{ githubToken }}">
+            <li on-click="{{ openGithub }}">GitHub</li>
+            </template>
+          </template>
+          <template if="{{ projectList === 'github' }}">
+          <li on-click="{{ openLocal }}">On device</li>
+            <li class="selected">GitHub</li>
+          </template>
+        </ul>
+        <ul class="projects">
+          <template if="{{ projectList === 'local' }}">
+          <li class="add">
+            <h2>New project</h2>
+            <button id="newproject" on-click="{{ newProject }}">Create</button>
+          </li>
+          <template repeat="{{ project in localProjects }}">
+            <li on-click="{{ openProject }}" data-id="{{ project.id }}">
+              <the-graph-thumb graph="{{ project.mainGraph }}" width="200" height="120"></the-graph-thumb>
+              <h2>{{ project.name }}</h2>
+              <template if="{{ project.graphs.length || project.components.length }}">
+              <p>{{ project.graphs.length }}&nbsp;graphs, {{ project.components.length }}&nbsp;components</p>
+              </template>
+              <template if="{{ !project.graphs.length &amp;&amp; !project.components.length }}">
+              <button on-click="{{ deleteProject }}" data-id="{{ project.id }}"><i class="fa fa-trash-o"></i></button>
+              </template>
+            </li>
+          </template>
+          </template>
+          <template if="{{ projectList === 'github' }}">
+          <li class="add">
+            <h2>Add a repository</h2>
+            <button id="newrepository" on-click="{{ newRepository }}">Add</button>
+          </li>
+          <template repeat="{{ project in remoteProjects }}">
+            <li class="remote">
+              <h2>{{ project.repo }}</h2>
+              <button on-click="{{ downloadProject }}" data-repo="{{ project.repo }}"><i class="fa fa-cloud-download"></i></button>
+            </li>
+          </template>
+          </template>
+        </ul>
+      </section>
+    <section id="runtimes">
+      <h2>
+        Runtimes <small>{{ userRuntimes.length }} / {{ runtimes.length }}</small>
+        <button on-click="{{ fetchRuntimes }}"><i id="fetchruntimes" class="fa fa-refresh"></i></button>
+      </h2>
+      <ul class="projects">
+        <template if="{{ user &amp;&amp; true }}">
+          <li class="add">
+            <h2>New runtime</h2>
+            <button on-click="{{ newRuntime }}">Register</button>
+          </li>
+        </template>
+        <template if="{{ !true }}">
+          <li class="add">
+            <h2>Runtime</h2>
+            <button on-click="{{ addRuntime }}">Add new</button>
+          </li>
+        </template>  
+
+        <template repeat="{{ userRuntimes }}">
+          <li on-click="{{ openRuntime }}" data-id="{{ id }}" data-protocol="{{ protocol }}" class="runtime {{ type }}">
+            <h2>{{ label }}</h2>
+            <p>{{ address }}. Seen {{ seenHoursAgo }}h ago</p>
+          </li>
+        </template>
+      </ul>
+    </section>
+    <div id="loginrequiredChrome">
+      <section id="examples">
+        <h2>
+          Examples <small>{{ examples.length }}</small>
+        </h2>
+        <ul class="projects">
+          <template repeat="{{ examples }}">
+          <li on-click="{{ openExample }}" data-id="{{ id }}" class="example">
+            <h2>{{ label }}</h2>
+            <p>{{ address }}</p>
+          </li>
+          </template>
+        </ul>
+      </section>
+    </div>
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="the-graph" attributes="graph menus library width height autolayout theme selectedNodes errorNodes selectedEdges animatedEdges getMenuDef pan scale displaySelectionGroup forceSelection offsetY offsetX" touch-action="none" assetpath="bower_components/the-graph/the-graph/">
+
+
+  <template>
+    <link rel="stylesheet" href="../themes/the-graph-dark.css">
+    <link rel="stylesheet" href="../themes/the-graph-light.css">
+    <div id="svgcontainer"></div>
+  </template>
+
+  <script type="text/javascript" src="bower_components/the-graph/the-graph/the-graph.js"></script>
+  <script type="text/javascript" src="bower_components/the-graph/the-graph/font-awesome-unicode-map.js"></script>
+  <script type="text/javascript" src="bower_components/the-graph/the-graph/the-graph-app.js"></script>
+  <script type="text/javascript" src="bower_components/the-graph/the-graph/the-graph-graph.js"></script>
+  <script type="text/javascript" src="bower_components/the-graph/the-graph/the-graph-node.js"></script>
+  <script type="text/javascript" src="bower_components/the-graph/the-graph/the-graph-node-menu.js"></script>
+  <script type="text/javascript" src="bower_components/the-graph/the-graph/the-graph-node-menu-port.js"></script>
+  <script type="text/javascript" src="bower_components/the-graph/the-graph/the-graph-node-menu-ports.js"></script>
+  <script type="text/javascript" src="bower_components/the-graph/the-graph/the-graph-port.js"></script>
+  <script type="text/javascript" src="bower_components/the-graph/the-graph/the-graph-edge.js"></script>
+  <script type="text/javascript" src="bower_components/the-graph/the-graph/the-graph-iip.js"></script>
+  <script type="text/javascript" src="bower_components/the-graph/the-graph/the-graph-group.js"></script>
+  <script type="text/javascript" src="bower_components/the-graph/the-graph/the-graph-tooltip.js"></script>
+  <script type="text/javascript" src="bower_components/the-graph/the-graph/the-graph-menu.js"></script>
+  <script type="text/javascript" src="bower_components/the-graph/the-graph/the-graph-clipboard.js"></script>
+
+  
+</polymer-element>
+<polymer-element name="the-graph-editor" attributes="grid snap width height autolayout theme selectedNodes errorNodes selectedEdges animatedEdges onContextMenu displaySelectionGroup forceSelection" touch-action="none" assetpath="bower_components/the-graph/the-graph-editor/">
+  <template>
+    <the-graph id="graph" name="{{ graph.properties.name }}" graph="{{nofloGraph}}" menus="{{menus}}" width="{{width}}" height="{{height}}" pan="{{pan}}" scale="{{scale}}" autolayout="{{autolayout}}" theme="{{theme}}" selectednodes="{{selectedNodes}}" errornodes="{{errorNodes}}" selectededges="{{selectedEdges}}" animatededges="{{animatedEdges}}" displayselectiongroup="{{displaySelectionGroup}}" forceselection="{{forceSelection}}" getmenudef="{{getMenuDef}}">
+    </the-graph>
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-library" attributes="editor" assetpath="elements/">
+  
+</polymer-element>
+
+<polymer-element name="number-scrubber" attributes="value min max mod step distance" touch-action="none" on-trackstart="{{onTrackStart}}" on-track="{{onTrack}}" on-trackend="{{onTrackEnd}}" assetpath="elements/">
+  <template>
+    <style>
+      :host {
+        -webkit-user-select: none;      /* disable cut copy paste */
+        -webkit-touch-callout: none;    /* disable callout, image save panel */
+        user-select: none;
+        touch-callout: none;
+
+        cursor: ew-resize;
+
+        display: inline-block;
+        text-align: center;      
+      }
+    </style>
+  </template>
+  
+</polymer-element><polymer-element name="noflo-node-inspector" attributes="node component graph errorLog" class="the-card-content" assetpath="elements/">
+  <template>
+    <style>
+      .ports {
+        margin-bottom: 8px;
+      }
+      ul.ports li {
+        display: block;
+        position: relative;
+        clear: left;
+      }
+      ul.ports li label span {
+        float: left;
+        clear: left;
+        font-size: 12px;
+        padding-top: 0;
+        width: 87px;
+        line-height: 36px;
+        overflow: hidden;
+      }
+
+      ul.ports li p {
+        margin: 0px;
+        padding: 0px;
+        font-size: 10px;
+        margin-left: 87px;
+        margin-bottom: 3px;
+        line-height: 13px;
+        max-height: 26px;
+        overflow: hidden;
+        color: hsl(189, 50%, 80%);
+      }
+
+      /* Hide spinners */
+      input[type=number]::-webkit-inner-spin-button, 
+      input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none; 
+        margin: 0; 
+      }
+      input[type=number] {
+        -moz-appearance:textfield;
+      }
+
+      ul.ports li button {
+        padding: 8px;
+        height: 19px;
+        width: 19px;
+      }
+      ul.ports li label button {
+        background-color: hsl(184, 50%, 11%);
+        color: hsl(184, 40%, 89%);
+        display: block;
+        padding: 8px;
+        height: 36px;
+        width: 36px;
+      }
+      ul.ports li label button:active {
+        color: white;
+      }
+      ul.ports li label i {
+        margin:0;
+      }
+      ul.ports li span.route {
+        /* TODO: route colors */
+        background-color: white;
+        float: none;
+        display: inline-block;
+        width: 125px;
+        height: 1px;
+        padding: 0;
+      }
+      ul.ports .remove-value {
+        background-color: transparent !important;
+        opacity: .3;
+        border: none !important;
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        line-height: 36px;
+        height: 36px;
+        width: 36px;
+        text-align: center;
+        padding: 0px;
+        font-size: 12px;
+      }
+      ul.ports li span.route0  { background-color: hsl(  0,100%,100%); }
+      ul.ports li span.route1  { background-color: hsl(  0, 98%, 46%); }
+      ul.ports li span.route2  { background-color: hsl( 35, 98%, 46%); }
+      ul.ports li span.route3  { background-color: hsl( 60, 98%, 46%); }
+      ul.ports li span.route4  { background-color: hsl(135, 98%, 46%); }
+      ul.ports li span.route5  { background-color: hsl(160, 98%, 46%); }
+      ul.ports li span.route6  { background-color: hsl(185, 98%, 46%); }
+      ul.ports li span.route7  { background-color: hsl(210, 98%, 46%); }
+      ul.ports li span.route8  { background-color: hsl(285, 98%, 46%); }
+      ul.ports li span.route9  { background-color: hsl(310, 98%, 46%); }
+      ul.ports li span.route10 { background-color: hsl(335, 98%, 46%); }
+      
+      
+      ul.ports li input {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        width: 178px;
+        height: 36px;
+        border: none;
+        font-family: "SourceCodePro",Helvetica,Arial,sans-serif;
+        font-size: 10px;
+        padding: 9px 26px 9px 36px;
+        margin: 0px;
+      }
+      ul.ports li input[type="checkbox"] {
+        height: 18px;
+        margin-top: 9px;
+        margin-left: 36px;
+        width: 18px;
+      }
+      ul.ports li input[type="checkbox"]:before {
+        display: block;
+        content: '';
+        width: 177px;
+        height: 36px;
+        margin-top: -9px;
+        margin-left: -36px;
+        background-color: hsla( 0, 0%, 20%, .2);
+        color: hsl( 0, 0%, 75%);
+        border-left: 1px solid hsla( 0, 0%, 75%, 0.1);
+      }
+
+      ul.ports li select {
+        height: 18px;
+        margin-top: 9px;
+        margin-left: 36px;
+        max-width: 110px;
+      }
+
+      ul.ports li  input, 
+      ul.ports li  button  { 
+        background-color: hsla(  0,  0%, 30%, 0.35); 
+        color:             hsl(  0,  0%, 90%);
+      }
+      
+      ul.ports li:nth-child(even) input, 
+      ul.ports li:nth-child(even) button {
+        background-color: hsla(210, 100%, 20%, .1);
+      }
+      ul.ports li:nth-child(odd) input, 
+      ul.ports li:nth-child(odd) button {
+        background-color: hsla(190, 100%, 20%, .1);
+      }
+
+      ul.ports li.route0  input, 
+      ul.ports li.route0  button  { 
+        background-color: hsla(  0,  0%, 30%, 0.35); 
+      }
+      ul.ports li.route1  input, 
+      ul.ports li.route1  button  { 
+        background-color: hsla(  0, 98%, 20%, 0.35); 
+      }
+      ul.ports li.route2  input, 
+      ul.ports li.route2  button  { 
+        background-color: hsla( 35, 98%, 20%, 0.35); 
+      }
+      ul.ports li.route3  input, 
+      ul.ports li.route3  button  { 
+        background-color: hsla( 60, 98%, 20%, 0.35); 
+      }
+      ul.ports li.route4  input, 
+      ul.ports li.route4  button  { 
+        background-color: hsla(135, 98%, 20%, 0.35); 
+      }
+      ul.ports li.route5  input, 
+      ul.ports li.route5  button  { 
+        background-color: hsla(160, 98%, 20%, 0.35); 
+      }
+      ul.ports li.route6  input, 
+      ul.ports li.route6  button  { 
+        background-color: hsla(185, 98%, 20%, 0.35); 
+      }
+      ul.ports li.route7  input, 
+      ul.ports li.route7  button  { 
+        background-color: hsla(210, 98%, 20%, 0.35); 
+      }
+      ul.ports li.route8  input, 
+      ul.ports li.route8  button  { 
+        background-color: hsla(285, 98%, 20%, 0.35); 
+      }
+      ul.ports li.route9  input, 
+      ul.ports li.route9  button  { 
+        background-color: hsla(310, 98%, 20%, 0.35); 
+      }
+      ul.ports li.route10 input, 
+      ul.ports li.route10 button  { 
+        background-color: hsla(335, 98%, 20%, 0.35); 
+      }
+
+
+      ul.ports li.error input {
+        background-color: rgb(121, 18, 18);
+        border: 1px solid red;
+      }
+      
+      
+      ul.ports li         label > span { color: hsl(  0,  0%, 75%);}  
+      ul.ports li.route0  label > span { color: hsl(  0,  0%,100%);}  
+      ul.ports li.route1  label > span { color: hsl(  0, 98%, 46%);}
+      ul.ports li.route2  label > span { color: hsl( 35, 98%, 46%);}
+      ul.ports li.route3  label > span { color: hsl( 60, 98%, 46%);}
+      ul.ports li.route4  label > span { color: hsl(135, 98%, 46%);}
+      ul.ports li.route5  label > span { color: hsl(160, 98%, 46%);}
+      ul.ports li.route6  label > span { color: hsl(185, 98%, 46%);}
+      ul.ports li.route7  label > span { color: hsl(210, 98%, 46%);}
+      ul.ports li.route8  label > span { color: hsl(285, 98%, 46%);}
+      ul.ports li.route9  label > span { color: hsl(310, 98%, 46%);}
+      ul.ports li.route10 label > span { color: hsl(335, 98%, 46%);}
+      
+      
+
+      ul.ports  li        input, 
+      ul.ports  li        button {
+        border-left: 1px solid hsla(  0,  0%, 75%, 0.5); 
+      }
+      ul.ports  li.route0 input, 
+      ul.ports  li.route0 button {
+        border-left: 1px solid hsla(  0,  0%,100%, 0.5); 
+      }
+      ul.ports  li.route1 input, 
+      ul.ports  li.route1 button {
+        border-left: 1px solid hsla(  0, 98%, 46%, 0.5);
+      }
+      ul.ports  li.route2 input, 
+      ul.ports  li.route2 button {
+        border-left: 1px solid hsla( 35, 98%, 46%, 0.5);
+      }
+      ul.ports  li.route3 input, 
+      ul.ports  li.route3 button {
+        border-left: 1px solid hsla( 60, 98%, 46%, 0.5);
+      }
+      ul.ports  li.route4 input, 
+      ul.ports  li.route4 button {
+        border-left: 1px solid hsla(135, 98%, 46%, 0.5);
+      }
+      ul.ports  li.route5 input, 
+      ul.ports  li.route5 button {
+        border-left: 1px solid hsla(160, 98%, 46%, 0.5);
+      }
+      ul.ports  li.route6 input, 
+      ul.ports  li.route6 button {
+        border-left: 1px solid hsla(185, 98%, 46%, 0.5);
+      }
+      ul.ports  li.route7 input, 
+      ul.ports  li.route7 button {
+        border-left: 1px solid hsla(210, 98%, 46%, 0.5);
+      }
+      ul.ports  li.route8 input, 
+      ul.ports  li.route8 button {
+        border-left: 1px solid hsla(285, 98%, 46%, 0.5);
+      }
+      ul.ports  li.route9 input, 
+      ul.ports  li.route9 button {
+        border-left: 1px solid hsla(310, 98%, 46%, 0.5);
+      }
+      ul.ports li.route10 input, 
+      ul.ports li.route10 button {
+        border-left: 1px solid hsla(335, 98%, 46%, 0.5);
+      }
+      
+      number-scrubber,
+      ul.ports li label span:before {
+        display: inline;
+        line-height: 36px;
+        font-size: 10px;
+        float: right;
+        position: absolute;
+        left: 86px;
+        text-transform: uppercase;
+        opacity: 0.5;
+        width: 36px;
+        text-align: center;      
+      }
+
+      number-scrubber {
+        z-index: 5;
+        height: 36px;
+      }
+      
+      ul.ports li.port-type-color label span:before,
+      ul.ports li.port-type-int label span:before,
+      ul.ports li.port-type-number label span:before {
+        content: '#';
+      }
+      ul.ports li.port-type-array label span:before {
+        content: '[]';
+      }
+      ul.ports li.port-type-object label span:before {
+        content: '{}';
+      }
+      ul.ports li.port-type-string label span:before {
+        content: '"';
+      }
+      ul.ports li.port-type-all label span:before {
+        content: '*';
+      }
+
+      ul#errorEvents {
+        max-height: 140px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        clear: left;
+      }
+      ul#errorEvents li {
+        font-size: 10px;
+        line-height: 14px;
+        margin-bottom: 0px;
+        color: hsl(185,100%,75%);
+        max-height: 56px;
+        overflow: hidden;
+        margin-bottom: 2px;
+        padding-bottom: 2px;
+        border-bottom: 1px solid hsla(190, 30%, 2%, 0.4);
+      }
+      button#clear {
+        color: rgb(179, 222, 230);
+        right: 0px;
+        line-height: 36px;
+        background-color: hsla(0, 0%, 0%, 0.7);
+      }
+
+    </style>
+    <header>
+      <h1 on-keydown="{{ checkUpdateLabel }}" on-blur="{{ updateLabel }}" contenteditable="">{{ label }}</h1>
+      <template if="{{ node.label != node.component }}">
+        <h2>{{ node.component }}</h2>
+      </template>
+    </header>
+    <ul class="ports">
+      <template repeat="{{ port in inports }}">
+        <li class="route route{{ port.route }} {{ port.class }} port-type-{{ port.type }}">
+          <label><span title="{{ port.name }}">{{ port.label }}</span>
+
+            <template if="{{ port.type == 'bang' }}">
+              <button name="{{ port.name }}" on-click="{{ sendBang }}"><i class="fa fa-bolt"></i></button>
+            </template>
+            <template if="{{ port.type == 'boolean' }}">
+              <input type="checkbox" name="{{ port.name }}" checked="{{ port.value }}" data-type="{{ port.type }}" on-change="{{ updateValue }}">
+            </template>
+            <template if="{{ port.values }}">
+              <select name="{{ port.name }}" data-type="{{ port.type }}" on-change="{{ updateValue }}" value="{{ port.value }}">
+                <option></option>
+                <template repeat="{{ value in port.values }}">
+                  <option value="[[value]]" selected?="{{ port.value == value }}">[[value]]</option>
+                </template>
+              </select>
+            </template>
+            <template if="{{ port.type == 'int' &amp;&amp; !port.values }}">
+              <number-scrubber name="{{ port.name }}" value="{{port.value}}" step="1" data-type="int" on-scrubstart="{{ scrubStart }}" on-scrub="{{updateValue}}" on-scrubend="{{ scrubEnd }}">#</number-scrubber>
+              <input type="text" data-type="int" name="{{ port.name }}" value="{{ port.value }}" on-change="{{ updateValue }}" on-keydown="{{ checkEnter }}">
+            </template>
+            <template if="{{ port.type == 'number' &amp;&amp; !port.values }}">
+              <number-scrubber name="{{ port.name }}" value="{{ port.value }}" step="0.01" data-type="number" on-scrubstart="{{ scrubStart }}" on-scrub="{{updateValue}}" on-scrubend="{{ scrubEnd }}">#</number-scrubber>
+              <input type="text" data-type="number" name="{{ port.name }}" value="{{ port.value }}" on-change="{{ updateValue }}" on-keydown="{{ checkEnter }}">
+            </template>
+            <template if="{{ port.type != 'bang' &amp;&amp; port.type != 'boolean' &amp;&amp; port.type != 'int' &amp;&amp; port.type != 'number' &amp;&amp; port.type != 'uri' &amp;&amp; !port.values }}">
+              <input type="{{ port.inputType }}" name="{{ port.name }}" value="{{ port.value }}" autocapitalize="off" autocorrect="off" data-type="{{ port.type }}" on-keydown="{{ checkEnter }}" on-change="{{ updateValue }}">
+            </template>
+            <template if="{{ port.type == 'uri' }}">
+              <input type="text" name="{{ port.name }}" data-type="string" on-change="{{ updateValue }}">
+              <input type="file" name="{{ port.name }}" data-type="{{ port.type }}" on-change="{{ updateValue }}">
+            </template>
+            <template if="{{ port.type != 'bang' &amp;&amp; port.value != undefined }}">
+              <button class="remove-value" data-port="{{ port.name }}" on-click="{{ removeValue }}"><i class="fa fa-ban"></i></button>
+            </template>
+
+          </label>
+          <template if="{{ port.description }}">
+          <p>{{ port.description }}</p>
+          </template>
+        </li>
+      </template>
+      <li>
+        <button id="clear" on-click="{{ clearErrors }}" title="Clear Error Log"><i class="fa fa-ban"></i></button>
+      </li>
+      <ul id="errorEvents">
+      </ul>
+    </ul>
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-exported-inspector" attributes="graph publicport privateport direction" class="modal-content" on-click="{{ close }}" assetpath="elements/">
+  <template>
+    <div class="modal-container" on-click="{{ bgClick }}">
+      <h1>Published {{ direction }} port {{ publicport }}</h1>
+      <form>
+        <label>
+          Port name
+          <input type="text" value="{{ name }}" required="">
+        </label>
+        <div class="toolbar">
+          <button on-click="{{ send }}" class="{{ { disabled: !canSend } | tokenList }}">Rename</button>
+          <a on-click="{{ close }}">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-new-graph" attributes="project runtimes" class="modal-content" on-click="{{ close }}" assetpath="elements/">
+  <template>
+    <div class="modal-container" on-click="{{ bgClick }}">
+      <h1>Create new graph</h1>
+      <form>
+        <label>
+          Graph name
+          <input type="text" value="{{ name }}" placeholder="MyCoolGraph" required="">
+        </label>
+        <label>
+          Type
+          <noflo-type-selector type="{{ type }}" runtimes="{{ runtimes }}"></noflo-type-selector>
+        </label>
+        <div class="toolbar">
+          <button on-click="{{ send }}" class="{{ { disabled: !canSend } | tokenList }}">Create</button>
+          <a on-click="{{ close }}">Cancel</a>
+        </div>
+      </form></div>
+    
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-group-inspector" attributes="graph group groupdescription nodes" class="modal-content" on-click="{{ close }}" assetpath="elements/">
+  <template>
+    <div class="modal-container" on-click="{{ bgClick }}">
+      <h1>
+        <template if="{{ group }}">
+        {{ group }}
+        </template>
+        <template if="{{ !group }}">
+        New
+        </template>
+        group containing {{ nodes.length }} nodes
+      </h1>
+      <form>
+        <label>
+          Group name
+          <input type="text" value="{{ name }}" placeholder="processing" required="">
+        </label>
+        <label>
+          Group description
+          <input type="text" value="{{ description }}" placeholder="The nodes that process things" required="">
+        </label>
+        <div class="toolbar">
+          <button on-click="{{ send }}">
+            <template if="{{ group }}">
+            Rename
+            </template>
+            <template if="{{ !group }}">
+            Create
+            </template>
+          </button>
+          <a on-click="{{ close }}">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="the-card-stack" attributes="type" assetpath="elements/">
+  
+</polymer-element>
+<polymer-element name="the-card" attributes="type" assetpath="elements/">
+  <template>
+    <content select="h1"></content>
+    <content></content>
+  </template>
+  <style>
+    the-card {
+      display: block;
+    }
+    h1 {
+      margin: 0px;
+    }
+  </style>
+  
+</polymer-element>
+
+<polymer-element name="the-panel" attributes="edge size handle open automatic" on-click="{{ handleClicked }}" assetpath="elements/">
+  <template>
+    <style>
+      @host {
+        :scope {
+          position: fixed;
+          overflow: hidden;
+        }
+      }
+    </style>
+    <content select="header"></content>
+    <content select="main"></content>
+    <content select="footer"></content>
+  </template>
+  
+</polymer-element>
+<polymer-element name="noflo-context" attributes="project graphs component node edge search" assetpath="elements/">
+  <template>
+    <style>
+      #context {
+        position: fixed;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        left: 36px;
+        top: 72px;
+        width: calc(72px * 4);
+        max-height: calc(100% - 72px);
+        box-sizing: border-box;
+        display: block;
+        overflow-y: auto;
+        overflow-x: visible;
+      }
+    </style>
+    <section id="context"></section>
+    <the-panel id="fixed" edge="right" size="324" handle="36" automatic="false">
+      <header></header>
+      <main></main>
+      <footer></footer>
+    </the-panel>
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-preview" attributes="runtime maximized" assetpath="elements/">
+  <template>
+    <style>
+      :host {
+        padding: 0px;
+        height: none;
+        max-height: none;
+        overflow: hidden;
+      }
+      :host(.the-card-content){
+        max-height: none !important;
+        padding: 18px 0 0 0 !important;
+      }
+      :host(.the-card-content.maximized) header h1 {
+        left: 18px !important;
+      }
+      header h1 {
+        left: 0px !important;
+      }
+      ul.toolbar2right {
+        right: 0px;
+      }
+      .blue-button {
+        background-color: transparent;
+      }
+      #preview {
+        text-align: center;
+      }
+      #preview pre {
+        max-height: 304px;
+        color: #7ee67e;
+        font-size: 10px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        text-align: left;
+        margin-bottom: 0px;
+        -webkit-user-select: initial;
+        user-select: initial;
+      }
+      #preview img {
+        max-width: 265px;
+        max-height: 265px;
+      }
+      #preview.maximized img {
+        max-width: 100%;
+        max-height: 100%;
+      }
+
+      #preview-iframe {
+        display: block;
+        border: none;
+        width: 252px;
+        height: 360px;
+        margin-top: 0;
+      }
+
+      #preview.maximized {
+        height: 576px;
+        padding: 0 18px;
+      }
+      #preview.maximized #preview-iframe {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+    <header>
+      <h1>Preview</h1>
+    </header>
+    <ul class="toolbar toolbar2right">
+      <template if="{{ !maximized }}">
+        <li><button class="blue-button" on-click="{{ maximizeToggle }}"><i class="fa fa-arrows-alt"></i>&nbsp;Maximize</button></li>
+      </template>
+      <template if="{{ maximized }}">
+        <li><button class="blue-button" on-click="{{ maximizeToggle }}"><i class="fa fa-arrow-right"></i>&nbsp;Minimize</button></li>
+      </template>
+    </ul>
+    <div id="preview" class="{{ { maximized: maximized } | tokenList }}"></div>
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-runtime-browserdebug" attributes="graph" class="modal-content" on-click="{{ close }}" assetpath="elements/">
+  <template>
+    <style>
+    #runtimeLink {
+      width: 100%;
+    }
+    #qrcode {
+      width: 300px;
+      height: 300px;
+    }
+    .info {
+      clear: both;
+    }
+    </style>
+    <div class="modal-container" on-click="{{ bgClick }}">
+      <h1>Launch noflo-browser device</h1>
+      <label>
+        <span>Base application</span>
+        <input type="text" value="{{ baseApp }}" on-change="{{ generateRuntimeInfo }}">
+      </label>
+      <div class="info">
+        <div><a id="runtimeLink" href="{{ runtimeUrl }}">Launch</a></div>
+        <div><img id="qrcode" src="{{ qrCodeUrl }}"></div>
+      </div>
+      <div class="toolbar">
+        <button on-click="{{ close }}">Cancel</button>
+        <button on-click="{{ connectRuntime }}">Connect</button>
+      </div>
+    </div>
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-runtime-customiframe" attributes="graph" class="modal-content" on-click="{{ close }}" assetpath="elements/">
+  <template>
+    <style>
+    #runtimeLink {
+      width: 100%;
+    }
+    #qrcode {
+      width: 300px;
+      height: 300px;
+    }
+    .info {
+      clear: both;
+    }
+    </style>
+    <div class="modal-container" on-click="{{ bgClick }}">
+      <h1>Open noflo-browser runtime in preview area</h1>
+      <label>
+        <span>Base application</span>
+        <input type="url" value="{{ runtimeUrl }}" on-change="{{ generateRuntimeInfo }}">
+      </label>
+      <div class="toolbar">
+        <button on-click="{{ close }}">Cancel</button>
+        <button on-click="{{ connectRuntime }}">Connect</button>
+      </div>
+    </div>
+  </template>
+  
+</polymer-element>
+<polymer-element name="noflo-runtime-selector" attributes="graph" class="modal-content" on-click="{{ close }}" assetpath="elements/">
+  <template>
+    <style>
+      ul.runtimes {
+        padding: 0px;
+        margin-top: 36px;
+        margin-left: -9px;
+        margin-right: -9px;
+        margin-bottom: 18px;
+        list-style: none;
+      }
+      ul.runtimes li {
+        width: 274px;
+        height: 105px;
+        overflow: hidden;
+        display: inline-block;
+        text-align: center;
+        background-color: hsl(192, 25%, 60%);
+        color: white;
+        transition: background-color 0.3s ease-in-out;
+        border-radius: 3px;
+        margin-right: 9px;
+        margin-left: 9px;
+        margin-bottom: 18px;
+        position: relative;
+        cursor: pointer;
+      }
+      ul.runtimes li.selected,
+      ul.runtimes li:hover {
+        background-color: hsl(190, 100%, 30%);
+        color: white;
+        cursor: default;
+      }
+      ul.runtimes li h2 {
+        position: absolute;
+        top: 36px;
+        line-height: 36px;
+        width: 180px;
+        text-transform: none;
+        font-size: 10px;
+        text-align: left;
+        white-space: nowrap;
+        left: 18px;
+        padding: 0px;
+        margin: 0px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+      ul.runtimes li p {
+        position: absolute;
+        top: 53px;
+        left: 18px;
+        width: 180px;
+        text-transform: uppercase;
+        font-size: 8px;
+        text-align: left;
+        max-height: 36px;
+        overflow: hidden;
+        color: hsl(189, 50%, 80%);
+      }
+    </style>
+    <div class="modal-container" on-click="{{ bgClick }}">
+      <h1>Select runtime for {{ graph.name }}</h1>
+      <template if="{{ available.length }}">
+        <ul class="runtimes">
+          <template repeat="{{ runtime in available }}">
+          <li on-click="{{ selectRuntime }}" data-id="{{ runtime.id }}" class="{{ runtime.type }}">
+            <h2>{{ runtime.label }}</h2>
+            <p>{{ runtime.address }}.<br>Seen {{ runtime.seenHoursAgo }}h ago</p>
+          </li>
+          </template>
+        </ul>
+      </template>
+      <template if="{{ !available.length }}">
+        <p>No compatible runtimes available.</p>
+      </template>
+      <div class="toolbar">
+        <button on-click="{{ close }}">Cancel</button>
+      </div>
+    </div>
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-runtime-testdetails" class="modal-content" on-click="{{ close }}" assetpath="elements/">
+  <template>
+    <style>
+      #testlisting ul {
+        padding: 0px;
+      }
+      li .suite-header label.topic {
+        font-weight: bold;
+      }
+      li .suite-header label {
+        display: inline !important;
+        padding-right: 1em;
+      }
+      li.testsuite {
+        margin-bottom: 1em;
+      }
+      li {
+        list-style: none;
+      }
+      li label {
+        display: inline;
+        margin-top: 7px !important;
+      }
+      li label.assertion {
+        padding-left: 8px;
+      }
+      li label.error {
+        padding-left: 8px;
+        font-style: italic;
+      }
+      li.pass {
+        color: hsl(135, 98%, 46%);
+        list-style: disc;
+      }
+      li.fail {
+        color: hsl(0, 98%, 46%);
+        list-style: square;
+      }
+    </style>
+    <div class="modal-container" on-click="{{ bgClick }}">
+      <div id="testlisting"></div>
+      <div class="toolbar">
+        <button on-click="{{ close }}">Close</button>
+      </div>
+    </div>
+  </template>
+  
+
+</polymer-element><polymer-element name="noflo-runtime" attributes="runtimes" class="gpu" assetpath="elements/">
+  <template>
+    <style>
+      :host {
+        position: fixed;
+        right: 36px;
+        padding-left: 18px;
+        box-sizing: border-box;
+        top: 0;
+        color: hsl(189, 50%, 80%);
+        width: 288px;
+        height: 72px;
+        background-color: hsla(0, 0%, 0%, 0.98) !important;
+        background-image: radial-gradient(1px at 0px 0px, hsl(210, 50%, 60%) 0.5px, hsla(0, 0%, 0%, 0) 1px);
+        background-size: calc(100% - 1px);
+        background-position: 0px;
+        border-bottom: 1px hsla(190, 90%, 80%, 0.3) solid;
+        overflow: hidden;
+        z-index: 2;
+      }
+
+      #runtime_icon {
+        position: absolute;
+        right: 8px;
+        top: 0px;
+        font-size: 72px;
+        color: hsl(189, 11%, 10%);
+      }
+
+      #teststatus {
+        position: absolute;
+        right: 0px;
+        z-index: 1;
+        width: 100px;
+      }
+      #teststatus ul {
+        margin: 0px;
+        padding: 0px;
+      }
+      #teststatus ul li {
+        display: inline;
+        padding-left: 8px;
+        line-height: 36px;
+      }
+      #teststatus ul li.pass {
+        color: hsl(135, 98%, 46%);
+      }
+      #teststatus ul li.fail {
+        color: hsl(0, 98%, 46%);
+      }
+      #teststatus ul li.skip {
+        color: hsl( 60, 98%, 46%);
+      }
+
+      h2 {
+        font-size: 14px;
+        width: 216px;
+        font-weight: normal;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        line-height: 36px;
+        margin: 0px;
+        padding: 0px;
+      }
+
+      button {
+        width: 36px;
+        height: 36px;
+        font-size: 10px;
+        background-color: transparent;
+        border: none;
+        color: white;
+        text-align: center;
+        cursor: pointer;
+      }
+
+      #address h2 {
+        position: absolute;
+        left: 54px;
+        width: 180px;
+        top: 0px;
+        color: hsl(189, 50%, 80%);
+      }
+
+      #address, #address button {
+        color: #e70215;
+      }
+      .online#address, .online#address button {
+        color: #01d159;
+      }
+      #address button.clear {
+        position: absolute;
+        right: 0px;
+        color: hsl(189, 50%, 80%);
+      }
+
+      #runcontrol h2 {
+        position: absolute;
+        left: 54px;
+        top: 36px;
+      }
+      #runcontrol button {
+        color: hsl(189, 50%, 80%);
+      }
+
+      #select {
+        text-align: center;
+      }
+      #select button.select {
+        width: auto;
+        height: auto;
+        background-color: hsl(190, 90%, 45%);
+        color: hsla(0, 0%, 0%, 0.98);
+        border: none;
+        font-size: 13px;
+        border-radius: 3px;
+        font-family: "SourceCodePro",Helvetica,Arial,sans-serif;
+        height: 36px;
+        padding-left: 36px;
+        padding-right: 36px;
+        margin: 0px;
+        margin-top: 18px;
+      }
+    </style>
+    <template if="{{ runtime }}">
+      <i id="runtime_icon" class="fa fa-{{ icon }}"></i>
+      <div id="address" class="{{ { online: online } | tokenList }}">
+        <button title="Connect/Disconnect" on-click="{{ reconnect }}"><i class="fa fa-refresh"></i></button>
+        <h2>{{ runtime.definition.address }}</h2>
+        <button title="Change Runtime" on-click="{{ clearRuntime }}" class="clear"><i class="fa fa-exchange"></i></button>
+      </div>
+      <div id="teststatus" on-click="{{ showTestDetails }}"></div>
+      <div id="runcontrol">
+        <template if="{{ online }}">
+          <template if="{{ execution.running }}">
+            <button title="Stop" class="stop" on-click="{{ stop }}"><i class="fa fa-pause"></i></button>
+          </template>
+          <template if="{{ execution.running == false }}">
+            <button title="Start" class="start" on-click="{{ start }}"><i class="fa fa-play"></i></button>
+          </template>
+          <h2>{{ execution.label }}</h2>
+        </template>
+      </div>
+    </template>
+    <template if="{{ graph &amp;&amp; !runtime }}">
+      <div id="select">
+        <button on-click="{{ selectRuntime }}" class="select">Select runtime</button>
+      </div>
+    </template>
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="the-graph-nav" attributes="width height editor hide" touch-action="none" assetpath="bower_components/the-graph/the-graph-nav/">
+  <template>
+    <style>
+      #thumb, 
+      #outcanvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        overflow: visible;
+      }
+      #viewrect {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 200px;
+        height: 150px;
+        border: 1px solid hsla(190, 100%, 80%, 0.4);
+        border-style: dotted;
+      }
+    </style>
+    <the-graph-thumb id="thumb" graph="{{ editor.nofloGraph }}" thumbrectangle="{{thumbrectangle}}" width="{{width}}" height="{{height}}" thumbscale="{{thumbscale}}" hide="{{hide}}" theme="{{ editor.theme }}">
+    </the-graph-thumb>
+    <canvas id="outcanvas" width="{{width}}" height="{{height}}" style="position:absolute;top:0;left:0;"></canvas>
+    <div id="viewrect"></div>
+  </template>
+  
+</polymer-element>
+<polymer-element name="noflo-journal" attributes="graph editor panel" assetpath="elements/">
+  <template>
+    <style>
+      #controls {
+        display: block;
+        position: fixed;
+        right: 36px;
+        bottom: 0;
+        width: 288px;
+        height: 180px;
+        color: hsl(189, 50%, 80%);
+        box-sizing: border-box;
+        background-color: hsla(0, 0%, 0%, 0.98) !important;
+        background-image: radial-gradient(1px at 0px 0px, hsl(210, 50%, 60%) 0.5px, hsla(0, 0%, 0%, 0) 1px);
+        background-size: calc(100% - 1px);
+        background-position: 0px -1px;
+        border-top: 1px solid hsla(190, 90%, 80%, 0.3);
+      }
+
+      #controls button {
+        line-height: 36px;
+        border: none;
+        background-color: transparent;
+        font-size: 14px;
+        width: 72px;
+        color: hsl(189, 50%, 80%);
+      }
+      #controls button.undo {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+      }
+      #controls button.redo {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+      }
+      #controls button.disabled {
+        color: rgba(179, 222, 230, 0.2);
+      }
+      #controls button.autolayout {
+        position: absolute;
+        left: calc(50% - 18px);
+        bottom: 0;
+      }
+
+      #nav {
+        position: absolute;
+        left: 0;
+        top: 0;
+      }
+    </style>
+    <div id="controls">
+      <template if="{{ graph }}">
+        <the-graph-nav id="nav" width="288" height="144" editor="{{ editor }}" hide="{{ hidenav }}"></the-graph-nav>
+
+        <button title="Undo" class="undo {{ { disabled: !canUndo } | tokenList }}" on-click="{{ undo }}"><i class="fa fa-undo"></i></button>
+        <template if="{{ klay }}">
+          <button title="Autolayout" class="autolayout" on-click="{{ autolayout }}"><i class="fa fa-magic"></i></button>
+        </template>
+        <button title="Redo" class="redo {{ { disabled: !canRedo } | tokenList }}" on-click="{{ redo }}"><i class="fa fa-repeat"></i></button>
+      </template>
+    </div>
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-component-editor" attributes="component width height" assetpath="elements/">
+  <template>
+    <style type="text/css">
+      :host {
+        background-color: black;
+        overflow: hidden;
+      }
+      .CodeMirror {
+        height: 100%;
+        cursor: text;
+      }
+      .CodeMirror-scroll {
+        height: 100%;
+      }
+      #code,
+      #tests {
+        display: block;
+        width: 50%;
+        height: 100%;
+        position: absolute;
+        left: 0px;
+        top: 72px;
+      }
+      #tests {
+        left: auto;
+        right: 0px;
+      }
+      #code h1,
+      #tests h1 {
+        margin: 0;
+        line-height: 36px;
+        padding-left: 36px;
+        font-size: 14px;
+        text-transform: uppercase;
+        color: white;
+      }
+      #code h1 {
+        text-align: right;
+      }
+    </style>
+    <link rel="stylesheet" href="../bower_components/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="../bower_components/codemirror/addon/lint/lint.css">
+    <link rel="stylesheet" href="../bower_components/codemirror/theme/mdn-like.css">
+    <link rel="stylesheet" href="../css/codemirror-noflo.css">
+    <section id="code">
+      <h1>Implementation</h1>
+      <div id="code_editor"></div>
+    </section>
+    <section id="tests">
+      <h1>Tests</h1>
+      <div id="tests_editor"></div>
+    </section>
+    <script type="text/plain" id="CoffeeScriptExample">
+noflo = require 'noflo'
+
+exports.getComponent = ->
+  c = new noflo.Component
+  c.description = 'Forwards packets and metadata in the same way it receives them'
+  c.icon = 'forward'
+  c.inPorts.add 'in',
+    datatype: 'all'
+    description: 'Packet to forward'
+  c.outPorts.add 'out',
+    datatype: 'all'
+
+  noflo.helpers.WirePattern c,
+    in: ['in']
+    out: 'out'
+    forwardGroups: true
+    async: true
+  , (data, groups, out, callback) ->
+    # do something with data
+    # send it on outport
+    out.send data
+
+    # let WirePattern know we are done
+    do callback
+  c
+    </script>
+    <script type="text/plain" id="JavaScriptExample">
+var noflo = require('noflo');
+
+exports.getComponent = function() {
+  var c = new noflo.Component();
+  c.description = 'Forwards packets and metadata in the same way it receives them';
+  c.icon = 'forward';
+  c.inPorts.add('in', {
+    datatype: 'all',
+    description: 'Packet to forward'
+  });
+  c.outPorts.add('out', {
+    datatype: 'all'
+  });
+  noflo.helpers.WirePattern(c, {
+    "in": ['in'],
+    out: 'out',
+    forwardGroups: true,
+    async: true
+  }, function(data, groups, out, callback) {
+    // do something with data
+    // send output
+    out.send(data);
+    // tell WirePattern we are done
+    return callback();
+  });
+  return c;
+};
+    </script>
+    <script type="text/plain" id="ES2015Example">
+import noflo from 'noflo';
+
+export var getComponent = function() {
+  var c = new noflo.Component();
+  c.description = 'Forwards packets and metadata in the same way it receives them';
+  c.icon = 'forward';
+  c.inPorts.add('in', {
+    datatype: 'all',
+    description: 'Packet to forward'
+  });
+  c.outPorts.add('out', {
+    datatype: 'all'
+  });
+  noflo.helpers.WirePattern(c, {
+    "in": ['in'],
+    out: 'out',
+    forwardGroups: true,
+    async: true
+  }, function(data, groups, out, callback) {
+    // do something with data
+    // send output
+    out.send(data);
+    // tell WirePattern we are done
+    return callback();
+  });
+  return c;
+};
+    </script>
+    <script type="text/plain" id="ImgfloCExample">
+/* This file is an image processing operation for GEGL */
+
+#ifdef GEGL_PROPERTIES
+    // Dummy prop, for testing
+    property_double (x, "X", 0.0)
+        ui_range (0.0, 1024.0)
+        ui_meta ("unit", "pixel-coordinate")
+#else
+
+#define GEGL_OP_POINT_FILTER
+#include "gegl-op.h"
+
+#ifndef IMGFLO_OP_NAME
+#define IMGFLO_OP_NAME(orig) orig
+#endif
+
+static void prepare(GeglOperation *operation)
+{
+    const Babl *format = babl_format("YA float");
+    gegl_operation_set_format(operation, "input", format);
+    gegl_operation_set_format(operation, "output", format);
+}
+
+gboolean
+process(GeglOperation *op, void *in_buf, void *out_buf, glong samples,
+        const GeglRectangle *roi, gint level)
+{
+    float *in = in_buf;
+    float *out = out_buf;
+    while (samples--) {
+        *out++ = *in++;
+        *out++ = *in++;
+    }
+    return TRUE;
+}
+
+static void
+gegl_op_class_init (GeglOpClass *klass)
+{
+  GeglOperationClass *operation_class = GEGL_OPERATION_CLASS(klass);
+  GeglOperationPointFilterClass *point_filter_class = GEGL_OPERATION_POINT_FILTER_CLASS(klass);
+  point_filter_class->process = process;
+  operation_class->prepare = prepare;
+  gegl_operation_class_set_keys (operation_class,
+      "name",        IMGFLO_OP_NAME("myop2"),
+      "title",       "imgflo: Dynamic Flowhub",
+      "categories" , "dev",
+      "description", "First GEGL op written in Flowhub 22",
+  NULL);
+}
+
+
+#endif
+    </script>
+    <script type="text/plain" id="SuperColliderExample">
+SynthDef("MyFilter", {
+    arg in=SndFloLibrary.silentIn, out=SndFloLibrary.silentOut, freq=4400;
+    Out.ar(out, BLowPass.ar(In.ar(in), freq))
+},
+    metadata: (
+        description: "my filter",
+        specs: (
+            freq: ControlSpec(20, 20000, \exp, 0.1, 2200, "Hz")
+        )
+    )
+)
+    </script>
+  </template>
+
+  
+</polymer-element>
+
+<polymer-element name="noflo-menu" assetpath="elements/">
+  <template>
+    <ul class="toolbar2right">
+      <template repeat="{{ buttons }}">
+        <li><button on-click="{{ clicked }}" id="{{ id }}"><i class="fa fa-{{ icon }}"></i> {{ label }}</button></li>
+      </template>
+    </ul>
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-search-graph-results" attributes="editor results search" assetpath="elements/">
+  <template>
+    <style>
+      .search-results-header h1 {
+        color: hsla(188, 15%, 60%, 0.8);
+        padding-left: 25px;
+        font-size: 12px !important;
+      }
+      .search-results-header i {
+        padding: 0;
+        margin: 0;
+        line-height: 36px;
+        width: 36px;
+        left: -10px;
+        position: absolute;
+        text-align: center;
+      }
+
+      .search-results-list {
+        -webkit-box-sizing: border-box;
+        -mox-box-sizing: border-box;
+        box-sizing: border-box;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        background-color: black;
+        border-right: 1px solid hsla(190, 90%, 80%, 0.3);
+      }
+
+      .search-results-item {
+        -webkit-box-sizing: border-box;
+        -mox-box-sizing: border-box;
+        box-sizing: border-box;
+        min-height: 36px;
+        position: relative;
+        cursor: cell;
+        padding-top: 18px !important;
+        padding-right: 12px !important;
+      }
+      .search-results-item i {
+        color: hsla(191, 100%, 92%, 0.898039);
+        position: absolute;
+        top: 18px;
+        left: 0;
+        width: 36px;
+        text-align: center;
+        padding: 0;
+        margin: 0;
+      }
+      .search-results-item h2 {
+        position: absolute;
+        margin: 0;
+        display: block;
+        left: 36px;
+        top: 18px;
+        height: 36px;
+        width: calc(100% - 36px);
+        font-size: 12px;
+        text-overflow: ellipsis;
+        text-transform: uppercase;
+        white-space: nowrap;
+        overflow-x: hidden;
+      }
+      .search-results-item p {
+        position: relative;
+        display: block;
+        left: 8px;
+        padding: 0px;
+        margin: 0px;
+        margin-top: 24px;
+        height: auto;
+        line-height: calc(36px / 3);
+        font-size: 10px;
+        color: hsla(188, 15%, 60%, 0.8);
+        text-shadow: hsl(0, 0%, 0%) 0px 1px 1px;
+      }
+
+    </style>
+    <ul class="search-results-list">
+      <template repeat="{{ result, index in results }}">
+        <li class="search-results-item" data-index="{{ index }}" on-click="{{ clicked }}">
+          <i class="fa fa-cog"></i>
+          <h2>{{ result.metadata.label }}</h2>
+          <p>{{ result.component }}</p>
+        </li>
+      </template>
+    </ul>
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-search-library-results" attributes="results search" assetpath="elements/">
+  <template>
+    <style>
+      .search-results-header h1 {
+        color: hsla(188, 15%, 60%, 0.8);
+        padding-left: 25px;
+        font-size: 12px !important;
+      }
+      .search-results-header i {
+        padding: 0;
+        margin: 0;
+        line-height: 36px;
+        width: 36px;
+        left: -10px;
+        position: absolute;
+        text-align: center;
+      }
+
+      .search-results-list {
+        -webkit-box-sizing: border-box;
+        -mox-box-sizing: border-box;
+        box-sizing: border-box;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        background-color: black;
+        border-right: 1px solid hsla(190, 90%, 80%, 0.3);
+      }
+
+      .search-results-item {
+        -webkit-box-sizing: border-box;
+        -mox-box-sizing: border-box;
+        box-sizing: border-box;
+        min-height: 36px;
+        position: relative;
+        cursor: cell;
+        padding-top: 18px !important;
+        padding-right: 12px !important;
+      }
+      .search-results-item i {
+        color: hsla(191, 100%, 92%, 0.898039);
+        position: absolute;
+        top: 18px;
+        left: 0;
+        width: 36px;
+        text-align: center;
+        padding: 0;
+        margin: 0;
+      }
+      .search-results-item h2 {
+        position: absolute;
+        margin: 0;
+        display: block;
+        left: 36px;
+        top: 18px;
+        height: 36px;
+        width: calc(100% - 36px);
+        font-size: 12px;
+        text-overflow: ellipsis;
+        text-transform: uppercase;
+        white-space: nowrap;
+        overflow-x: hidden;
+      }
+      .search-results-item p {
+        position: relative;
+        display: block;
+        left: 8px;
+        padding: 0px;
+        margin: 0px;
+        margin-top: 24px;
+        height: auto;
+        line-height: calc(36px / 3);
+        font-size: 10px;
+        color: hsla(188, 15%, 60%, 0.8);
+        text-shadow: hsl(0, 0%, 0%) 0px 1px 1px;
+      }
+
+    </style>
+    <ul class="search-results-list">
+      <template repeat="{{ result, index in results }}">
+        <li class="search-results-item" data-index="{{ index }}" on-click="{{ clicked }}">
+          <i class="fa fa-{{ result.icon }}"></i>
+          <h2>{{ result.label }}</h2>
+          <p>{{ result.description }}</p>
+        </li>
+      </template>
+    </ul>
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-graph-inspector" attributes="graph" class="modal-content" on-click="{{ close }}" assetpath="elements/">
+  <template>
+    <style>
+      textarea {
+        height: 144px;
+      }
+      p {
+        font-size: 13px;
+        line-height: 18px;
+      }
+      p a, label a {
+        color: rgb(0, 127, 153);
+        text-decoration: none;
+      }
+      div.hidden {
+        display: none;
+      }
+      a#download {
+        position: absolute;
+        right: 36px;
+        top: 36px;
+        width: 36px;
+        display: block;
+        height: 36px;
+        line-height: 36px;
+        background-color: rgb(0, 127, 153);
+        text-align: center;
+        border-radius: 6px;
+        color: white;
+      }
+      button.delete {
+        position: absolute;
+        right: 36px;
+        border: 0px solid hsla( 0, 98%, 46%, .8) !important;
+        color: hsla( 0, 98%, 46%, .8) !important;
+      }
+      ul.tabs {
+        display: block;
+        margin: 0px;
+        padding: 0px;
+        list-style: none;
+        padding: 1px;
+        text-align: center;
+      }
+      ul.tabs li {
+        display: inline;
+        line-height: 36px;
+        font-size: 13px;
+        color: hsl(189, 50%, 25%);
+        text-decoration: none;
+        padding-left: 36px;
+        padding-right: 36px;
+        cursor: pointer;
+      }
+      ul.tabs li.selected {
+        border: none;
+        border-radius: 3px;
+        background-color: rgba(0, 42, 51, 0.498039);
+        color: white;
+        border-radius: 3px;
+        padding-top: 8px;
+        padding-bottom: 9px;
+        cursor: default;
+      }
+    </style>
+    <link rel="stylesheet" href="../bower_components/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="../bower_components/codemirror/theme/mdn-like.css">
+    <link rel="stylesheet" href="../css/codemirror-noflo.css">
+
+    <div class="modal-container" on-click="{{ bgClick }}">
+      <h1 on-keydown="{{ checkUpdateName }}" on-blur="{{ updateName }}" contenteditable="">{{ graph.name }}</h1>
+      <template if="{{ downloadUrl }}">
+        <a href="{{ downloadUrl }}" id="download" download="{{ graph.name }}.json"><i class="fa fa-download"></i></a>
+      </template>
+      <template if="{{ isMain }}">
+      <p>Main graph of project {{ project.name }}.</p>
+      </template>
+      <template if="{{ inGraph.length }}">
+      <p>Used as subgraph in
+      <template repeat="{{ parent in inGraph }}">
+        <a href="#project/{{ project.id }}/{{ parent.properties.id }}">
+          {{ parent.name }}
+        </a>
+      </template>
+      .</p>
+      </template>
+      <ul class="tabs">
+        <li id="properties" on-click="{{ setView }}" class="{{ {selected: view == 'properties' } | tokenList }}">Properties</li>
+        <template if="{{ type == 'noflo-browser' }}">
+        <li id="html" on-click="{{ setView }}" class="{{ {selected: view == 'html' } | tokenList }}">HTML</li>
+        </template>
+        <template if="{{ spec }}">
+        <li id="tests" on-click="{{ setView }}" class="{{ {selected: view == 'tests' } | tokenList }}">Tests</li>
+        </template>
+      </ul>
+      <div class="{{ {hidden: view != 'properties' } | tokenList }}">
+      <label>
+        <span>Description</span>
+        <input type="text" value="{{ description }}">
+      </label>
+      <label>
+        <span>Icon <a href="http://fontawesome.io/icons/" target="_blank"><i class="fa fa-question-circle"></i></a></span>
+        <input type="text" value="{{ icon }}">
+      </label>
+      <label>
+        <span>Type</span>
+        <noflo-type-selector type="{{ type }}" runtimes="{{ runtimes }}"></noflo-type-selector>
+      </label>
+      </div>
+      <div class="{{ {hidden: view != 'html' } | tokenList }}">
+      <label id="html_editor">
+        <span>Preview contents</span>
+      </label>
+      </div>
+      <div class="{{ {hidden: view != 'tests' } | tokenList }}">
+      <label id="tests_editor">
+        <span>Tests</span>
+      </label>
+      </div>
+      <div class="toolbar">
+        <button on-click="{{ save }}">Save</button>
+        <a on-click="{{ close }}">Cancel</a>
+        <button class="delete" on-click="{{ delete }}">Delete</button>
+      </div>
+    </div>
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-component-inspector" class="modal-content" on-click="{{ close }}" assetpath="elements/">
+  <template>
+    <style>
+      button.delete {
+        position: absolute;
+        right: 36px;
+        border: 0px solid hsla( 0, 98%, 46%, .8) !important;
+        color: hsla( 0, 98%, 46%, .8) !important;
+      }
+    </style>
+    <div class="modal-container" on-click="{{ bgClick }}">
+      <h1>{{ component.name }} settings</h1>
+      <template if="{{ errorText }}">
+        <div class="error">{{ errorText }}</div>
+      </template>
+      <form>
+        <div class="toolbar">
+          <!-- <button on-click="{{ send }}">Save</button> -->
+          <a on-click="{{ close }}">Cancel</a>
+          <button class="delete" on-click="{{ delete }}">Delete</button>
+        </div>
+      </form></div>
+    
+  </template>
+  
+</polymer-element>
+<polymer-element name="noflo-search" class="gpu" attributes="editor results graphs component" assetpath="elements/">
+  <template>
+    <style>
+      :host {
+        background-color: hsl(187, 45%, 5%);
+        position: fixed;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+
+        left: 36px;
+        top: 0;
+        color: white;
+        width: calc(72px * 4);
+        height: 72px;
+        font-size: 10px;
+        white-space: nowrap;
+      }
+      input {
+        background-color: hsl(187, 45%, 5%);
+        background-image: none;
+        font-family: "SourceCodePro",Helvetica,Arial,sans-serif;
+        border: none;
+        padding: 0px;
+        padding-right: 10px;
+        padding-left: 10px;
+        color: white;
+        width: 245px;
+        height: 36px;
+        display: inline;
+      }
+      button {
+        width: 36px;
+        height: 36px;
+        margin: 0px;
+        margin-left: -5px;
+        padding: 0px;
+        display: inline;
+        display: inline;
+
+        font-size: 10px;
+        background-color: transparent;
+        border: none;
+        color: white;
+        text-align: center;
+        cursor: pointer;
+      }
+
+      :host(.overlay) #breadcrumb {
+        width: calc(72px * 4);
+        display: block;
+      }
+      #breadcrumb {
+        position: relative;
+        overflow: hidden;
+        width: 0px;
+        height: 71px;
+        left: 0px;
+        top: 0px;
+        z-index: 1;
+
+        /*transition: width 0.3s ease-in-out;*/
+        display: none;
+        /*box-sizing: border-box;*/
+
+        background-color: hsla(0, 0%, 0%, 0.98) !important;
+        background-image: radial-gradient(1px at 0px 0px, hsl(210, 50%, 60%) 0.5px, hsla(0, 0%, 0%, 0) 1px);
+        background-size: calc(100% - 1px);
+        background-position: 0px;
+        border-bottom: 1px hsla(190, 90%, 80%, 0.3) solid;
+
+      }
+      #breadcrumb a#parentlink {
+        color: hsl(189, 50%, 80%);
+        text-decoration: none;
+        padding-right: 9px;
+      }
+      #breadcrumb i.fa-search {
+        position: absolute;
+        line-height: 72px;
+        right: 54px;
+        font-size: 15px;
+        color: hsl(189, 50%, 80%);
+        cursor: text;
+      }
+      #clear,
+      #breadcrumb #graphinspector,
+      #breadcrumb #componentinspector,
+      #breadcrumb #readonly {
+        position: absolute;
+        right: 9px;
+        top: 0px;
+        line-height: 72px;
+        display: block;
+        height: 72px;
+        font-size: 15px;
+        color: hsl(189, 50%, 80%);
+      }
+      #clear {
+        color: hsl(189, 50%, 50%);
+      }
+      #breadcrumb h1 {
+        display: inline-block;
+        line-height: 72px;
+        font-size: 15px;
+        margin: 0px;
+        padding: 0px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 156px;
+        font-weight: normal;
+        padding-left: 18px;
+        cursor: pointer;
+      }
+      :host(.overlay) #search {
+        display: none;
+      }
+      #search {
+        display: block;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        background-color: hsl(192, 25%, 92%);
+        color: black;
+        font-family: "SourceCodePro",Helvetica,Arial,sans-serif;
+        border: none;
+        padding: 0px;
+        padding-right: 54px;
+        padding-left: 18px;
+        width: calc(72px * 3 - 1px);
+        height: 71px;
+        /*box-sizing: border-box;*/
+        font-size: 12px;
+        display: inline;
+        background-image: radial-gradient(1px at 0px 0px, hsl(210, 50%, 60%) 0.5px, hsla(0, 0%, 0%, 0) 1px);
+        background-size: calc(100% - 1px);
+        background-position: 0px;
+        border-bottom: 1px hsla(190, 90%, 80%, 0.3) solid;
+        border-right: 1px hsla(190, 90%, 80%, 0.08) solid;
+        border-radius: none;
+      }
+      #search #speech {
+        color: hsl(190, 90%, 45%);
+      }
+
+      #search.components {
+        background-color: hsl(192, 25%, 92%);
+        transition: background-color 0.3s linear;
+      }
+      #search.components::-webkit-input-placeholder {
+        color: hsl(190, 90%, 45%);
+      }
+      #search.processes {
+        background-color: hsl(161, 79%, 68%);
+        transition: background-color 0.3s linear;
+      }
+      #search.processes::-webkit-input-placeholder {
+        color: hsl(190, 90%, 45%);
+      }
+
+    </style>
+    <div id="breadcrumb" on-click="{{ focus }}">
+      <template if="{{ !component || !component.name }}">
+      <i class="fa fa-search"></i>
+      </template>
+      <h1 title="Search">
+        <template if="{{ project &amp;&amp; parentPath }}">
+        <a href="#project/{{ project.id }}{{ parentPath }}" id="parentlink" title="Back"><i class="fa fa-angle-left"></i></a>
+        </template>
+        <template if="{{ graph &amp;&amp; (!component || !component.name) }}">
+        {{ graph.name }}
+        </template>
+        <template if="{{ component &amp;&amp; component.name }}">
+        {{ component.name }}
+        </template>
+      </h1>
+      <template if="{{ graph &amp;&amp; (!component || !component.name) }}">
+      <button on-click="{{ showGraphInspector }}" id="graphinspector" title="Graph properties"><i class="fa fa-cog"></i></button>
+      </template>
+      <template if="{{ !graph &amp;&amp; component &amp;&amp; component.name }}">
+      <button on-click="{{ showComponentInspector }}" id="componentinspector" title="Component properties"><i class="fa fa-cog"></i></button>
+      </template>
+      <template if="{{ (component &amp;&amp; component.readonly) || (graph &amp;&amp; graph.properties.readonly) }}">
+      <i id="readonly" class="fa fa-lock"></i>
+      </template>
+    </div>
+    <input id="search" placeholder="Search components" on-keydown="{{ switchSearch }}" value="{{ search }}" type="text" autocapitalize="off" autocorrect="off" x-webkit-speech="">
+    <button id="clear" on-click="{{ clearSearch }}" title="Clear search"><i class="fa fa-times"></i></button>
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-new-component" attributes="project" class="modal-content" on-click="{{ close }}" assetpath="elements/">
+  <template>
+    <div class="modal-container" on-click="{{ bgClick }}">
+      <h1>Create new component</h1>
+      <form>
+        <label>
+          Component name
+          <input type="text" value="{{ name }}" placeholder="MyCoolComponent" required="">
+        </label>
+        <label>
+          Language
+          <select name="type" value="{{ language }}">
+            <option value="coffeescript">CoffeeScript</option>
+            <option value="javascript">JavaScript</option>
+            <option value="es2015">ES2015 (Babel)</option>
+            <option value="c">C</option>
+            <option value="c++">C++</option>
+            <option value="supercollider">SuperCollider</option>
+            <option value="python">Python</option>
+          </select>
+        </label>
+        <div class="toolbar">
+          <button on-click="{{ send }}" class="{{ { disabled: !canSend } | tokenList }}">Create</button>
+          <a on-click="{{ close }}">Cancel</a>
+        </div>
+      </form></div>
+    
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-project-inspector" class="modal-content" on-click="{{ close }}" assetpath="elements/">
+  <template>
+    <style>
+      button.delete {
+        position: absolute;
+        right: 36px;
+        border: 0px solid hsla( 0, 98%, 46%, .8) !important;
+        color: hsla( 0, 98%, 46%, .8) !important;
+      }
+    </style>
+    <div class="modal-container" on-click="{{ bgClick }}">
+      <h1>{{ project.name }} settings</h1>
+      <template if="{{ errorText }}">
+        <div class="error">{{ errorText }}</div>
+      </template>
+      <form>
+        <template if="{{ !false }}">
+          <label>
+            <span>GitHub repository</span>
+            <input type="text" value="{{ repo }}" placeholder="username/my-project" autocapitalize="off" autocorrect="off" required="">
+          </label>
+        </template>
+        <label>
+          <span>Project label</span>
+          <input type="text" value="{{ name }}" placeholder="My Cool Project" required="">
+        </label>
+        <label>
+          <span>Main graph</span>
+          <select name="type" value="{{ main }}">
+            <template repeat="{{ graph in project.graphs }}">
+            <option value="{{ graph.properties.id }}">{{ graph.name }}</option>
+            </template>
+          </select>
+        </label>
+        <div class="toolbar">
+          <button on-click="{{ send }}">Save</button>
+          <a on-click="{{ close }}">Cancel</a>
+          <template if="{{ !false }}">
+            <a href="https://github.com/new" target="_blank">New Repository</a>
+          </template>
+          <button class="delete" on-click="{{ delete }}">Delete</button>
+        </div>
+      </form></div>
+    
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-project-sync" class="modal-content" on-click="{{ close }}" assetpath="elements/">
+  <template>
+    <div class="modal-container" on-click="{{ bgClick }}">
+      <h1>Synchronize with <i class="fa fa-github"></i> {{ operation.repo }}</h1>
+      <template if="{{ statusText }}">
+        <div>{{ statusText }}</div>
+      </template>
+      <form>
+        <table>
+          <template repeat="{{ entry in operation.conflict }}">
+          <tr>
+            <th>{{ entry.path }}</th>
+            <td>
+              <select name="{{ entry.path }}" style="font-family: FontAwesome,SourceCodePro,Helvetica,Arial,sans-serif;" on-change="{{ choose }}">
+                <option value="push"> push</option>
+                <option value="pull"> pull</option>
+                <option value="noop"> ignore</option>
+              </select>
+            </td>
+          </tr>
+          </template>
+          <template repeat="{{ entry in operation.push }}">
+          <tr>
+            <th>{{ entry.path }}</th>
+            <td>
+              <select name="{{ entry.path }}" style="font-family: FontAwesome,SourceCodePro,Helvetica,Arial,sans-serif;" on-change="{{ choose }}">
+                <option value="push"> push</option>
+                <option value="noop"> ignore</option>
+              </select>
+            </td>
+          </tr>
+          </template>
+          <template repeat="{{ entry in operation.pull }}">
+          <tr>
+            <th>{{ entry.path }}</th>
+            <td>
+              <select name="{{ entry.path }}" style="font-family: FontAwesome,SourceCodePro,Helvetica,Arial,sans-serif;" on-change="{{ choose }}">
+                <option value="pull"> pull</option>
+                <option value="noop"> ignore</option>
+              </select>
+            </td>
+          </tr>
+          </template>
+        </table>
+        <template if="{{ hasPush }}">
+          <label>
+            <span>Commit message</span>
+            <input type="text" value="{{ message }}" required="">
+          </label>
+        </template>
+        <div class="toolbar">
+          <button on-click="{{ send }}" class="{{ { disabled: !hasOp } | tokenList }}">Synchronize</button>
+          <a on-click="{{ close }}">Cancel</a>
+        </div>
+      </form></div>
+    
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-project" attributes="project graph component" assetpath="elements/">
+  <template>
+    <style>
+      h2 {
+        font-size: 16px;
+        line-height: 36px;
+        text-transform: none;
+        font-weight: normal;
+        padding: 0px;
+        margin: 0px;
+      }
+      ul.graphs {
+        margin-bottom: 144px;
+      }
+      ul.graphs li {
+        width: 245px;
+        height: 70px;
+        overflow: hidden;
+        float: left;
+        text-align: center;
+        background-color: hsl(190, 90%, 45%);
+        color: black;
+        border-radius: 3px;
+        margin-right: 0px;
+        margin-left: 0px;
+        margin-bottom: 5px;
+        position: relative;
+        cursor: pointer;
+      }
+      ul.graphs li.add {
+        background-color: hsl(192, 25%, 92%);
+        color: black;
+        cursor: default;
+      }
+      ul.graphs li the-graph-thumb {
+        display: block;
+        position: absolute;
+        left: 100px;
+        top: -20px;
+      }
+      ul.graphs li i.fa {
+        display: block;
+        position: absolute;
+        right: 17px;
+        top: 17px;
+        font-size: 36px;
+        color: black;
+      }
+      ul.graphs li button {
+        display: block;
+        position: absolute;
+        right: 17px;
+        top: 17px;
+        background-color: transparent;
+        color: hsl(190, 100%, 30%);
+        border: 1px solid hsl(190, 100%, 30%);
+        font-size: 13px;
+        border-radius: 3px;
+        font-family: "SourceCodePro",Helvetica,Arial,sans-serif;
+        height: 36px;
+        padding-left: 13px;
+        padding-right: 13px;
+      }
+      ul.graphs li h2 {
+        position: absolute;
+        top: 18px;
+        left: 17px;
+        width: 75px;
+        text-transform: none;
+        font-size: 13px;
+        text-align: left;
+        white-space: nowrap;
+      }
+      main {
+        overflow-y: auto;
+        max-height: calc(100% - 72px);
+      }
+      main.repo {
+        max-height: calc(100% - 72px * 2);
+      }
+      main::-webkit-scrollbar {
+        display: none;
+      }
+      footer {
+        background-color: transparent;
+        display: block;
+        position: absolute;
+        bottom: 0px;
+        left: 0px;
+        padding-left: 36px;
+        width: 325px;
+        padding-right: 36px;
+        box-sizing: border-box;
+        overflow: hidden;
+        height: 72;
+        transition: background-color 0.3s ease-in-out;
+      }
+      the-panel#account[open] ::shadow footer {
+        background-color: hsl(190, 90%, 45%);
+      }
+      footer h1 {
+        font-size: 17px;
+        line-height: 36px;
+        text-align: center;
+        margin: 0;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      footer button {
+        background-color: white;
+        color: hsl(190, 90%, 45%);
+        border: none;
+        font-size: 13px;
+        border-radius: 3px;
+        font-family: "SourceCodePro",Helvetica,Arial,sans-serif;
+        height: 36px;
+        padding-left: 17px;
+        padding-right: 17px;
+        line-height: 36px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        cursor: pointer;
+      }
+      footer button:disabled {
+        opacity: 0.5;
+      }
+    </style>
+    <the-panel id="account" edge="left" size="324" handle="36" automatic="false">
+      <header>
+        <template if="{{ project }}">
+        <h1>{{ project.name }}</h1>
+        </template>
+        <template if="{{ !project }}">
+        <h1>Sketch</h1>
+        </template>
+      </header>
+      <main class="{{ (project.repo ? 'repo' : 'norepo') }}">
+        <ul>
+          <li><a on-click="{{ openHome }}"><i class="fa fa-home"></i>Home</a></li>
+          <template if="{{ project }}">
+          <li><a on-click="{{ openSettings }}"><i class="fa fa-cog"></i>Settings</a></li>
+          </template>
+        </ul>
+        <template if="{{ project }}">
+        <h2>Graphs</h2>
+        <ul class="graphs">
+          <li class="add">
+            <h2>New graph</h2>
+            <button on-click="{{ newGraph }}">Create</button>
+          </li>
+          <template repeat="{{ graph in project.graphs }}">
+          <li on-click="{{ openGraph }}" data-id="{{ graph.properties.id }}">
+            <the-graph-thumb graph="{{ graph }}" width="200" height="120"></the-graph-thumb>
+            <h2>{{ graph.name }}</h2>
+          </li>
+          </template>
+        </ul>
+        <template if="{{ canComponent }}">
+        <h2>Components</h2>
+        <ul class="graphs">
+          <li class="add">
+            <h2>New component</h2>
+            <button on-click="{{ newComponent }}">Create</button>
+          </li>
+          <template repeat="{{ component in project.components }}">
+          <li on-click="{{ openComponent }}" data-id="{{ component.name }}">
+            <h2>{{ component.name }}</h2>
+            <template if="{{ component.language == 'coffeescript' }}">
+            <i class="fa fa-coffee"></i>
+            </template>
+            <template if="{{ component.language != 'coffeescript' }}">
+            <i class="fa fa-code"></i>
+            </template>
+          </li>
+          </template>
+        </ul>
+        </template>
+        </template>
+      </main>
+      <template if="{{ project.repo }}">
+      <footer>
+        <h1 title="{{ project.repo }}"><i class="fa fa-github"></i> {{ project.repo }}</h1>
+        <button on-click="{{ synchronize }}">
+          <i class="fa fa-cloud-upload"></i>
+          <span>Synchronize</span>
+        </button>
+      </footer>
+      </template>
+    </the-panel>
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-edge-menu" attributes="edges" class="the-card-content sticky-head" assetpath="elements/">
+  <template>
+    <style>
+      ul.toolbar2right {
+        right: 0px !important;
+      }
+      ul.routes {
+        margin: 0;
+        margin-left: 0px;
+        margin-right: 0px;
+        padding-top: 10px;
+      }
+      ul.routes li {
+        display: inline-block;
+        position: relative;
+        float: left;
+        margin: 0px;
+        height: 26px;
+      }
+      ul.routes li button:hover {
+        opacity: 1;
+      }
+      ul.routes li button {
+        opacity: 0.7;
+        display: block;
+        padding: 0px;
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        -webkit-box-sizing: border-box;
+           -mox-box-sizing: border-box;
+                box-sizing: border-box;
+        border: none;
+      }
+
+      .routes button {
+        width: 25px !important;
+        height: 20px !important;
+        background-color: hsla(  0, 98%, 100%, .8); 
+        border: 1px solid hsl(  0, 98%, 46%);
+      }
+      .routes button.route0  { 
+        background-color: hsla(  0, 98%, 100%, .8); 
+        border-color:      hsl(  0, 98%, 46%); 
+      }
+      .routes button.route1  { 
+        background-color: hsla(  0, 98%, 46%, .8); 
+        border-color:      hsl(  0, 98%, 46%); 
+      }
+      .routes button.route2  { 
+        background-color: hsla( 35, 98%, 46%, .8); 
+        border-color:      hsl( 35, 98%, 46%); 
+      }
+      .routes button.route3  { 
+        background-color: hsla( 60, 98%, 46%, .8); 
+        border-color:      hsl( 60, 98%, 46%); 
+      }
+      .routes button.route4  { 
+        background-color: hsla(135, 98%, 46%, .8); 
+        border-color:      hsl(135, 98%, 46%); 
+      }
+      .routes button.route5  { 
+        background-color: hsla(160, 98%, 46%, .8); 
+        border-color:      hsl(160, 98%, 46%);
+      }
+      .routes button.route6  { 
+        background-color: hsla(185, 98%, 46%, .8); 
+        border-color:      hsl(185, 98%, 46%);
+      }
+      .routes button.route7  { 
+        background-color: hsla(210, 98%, 46%, .8); 
+        border-color:      hsl(210, 98%, 46%);
+      }
+      .routes button.route8  { 
+        background-color: hsla(285, 98%, 46%, .8); 
+        border-color:      hsl(285, 98%, 46%);
+      }
+      .routes button.route9  { 
+        background-color: hsla(310, 98%, 46%, .8); 
+        border-color:      hsl(310, 98%, 46%);
+      }
+      .routes button.route10 { 
+        background-color: hsla(335, 98%, 46%, .8); 
+        border-color:      hsl(335, 98%, 46%);
+      }
+      
+      .routes  button.route0:hover  { background-color: hsla(  0, 98%, 100%, 1); }
+      .routes  button.route1:hover  { background-color: hsla(  0, 98%, 46%, 1); }
+      .routes  button.route2:hover  { background-color: hsla( 35, 98%, 46%, 1); }
+      .routes  button.route3:hover  { background-color: hsla( 60, 98%, 46%, 1); }
+      .routes  button.route4:hover  { background-color: hsla(135, 98%, 46%, 1); }
+      .routes  button.route5:hover  { background-color: hsla(160, 98%, 46%, 1); }
+      .routes  button.route6:hover  { background-color: hsla(185, 98%, 46%, 1); }
+      .routes  button.route7:hover  { background-color: hsla(210, 98%, 46%, 1); }
+      .routes  button.route8:hover  { background-color: hsla(285, 98%, 46%, 1); }
+      .routes  button.route9:hover  { background-color: hsla(310, 98%, 46%, 1); }
+      .routes button.route10:hover  { background-color: hsla(335, 98%, 46%, 1); }
+      
+    </style>
+    <header>
+      <h1 class="clear" on-click="{{ clear }}">{{ edges.length}} <template if="{{ edges.length > 1 }}">Edges</template><template if="{{ edges.length == 1 }}">Edge</template></h1>    
+    </header>
+    <ul class="toolbar toolbar2right">
+      <template if="{{ secure }}">
+        <li><button class="blue-button" on-click="{{ setUnsecure }}"><i class="fa fa-lock"></i>&nbsp;Secure</button></li>
+      </template>
+      <template if="{{ !secure }}">
+        <li><button class="blue-button" on-click="{{ setSecure }}"><i class="fa fa-unlock"></i>&nbsp;Visible</button></li>
+      </template>
+    </ul>
+    <ul class="routes">
+      <template repeat="{{ route in routes }}">
+        <li><button name="{{ route }}" class="route{{ route }}" on-click="{{ setRoute }}"></button></li>
+      </template>
+    </ul>    
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-edge-inspector" attributes="edge graph showlogs" class="the-card-content" assetpath="elements/">
+  <template>
+    <style>
+      h1 {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 10px;
+        width: 100%;
+      }
+      h1 .connection {
+        text-transform: uppercase;
+        font-size: 9px;
+      }
+      h1 .connection.route0 { color: #fff; }
+      h1 .connection.route1 { color: hsl(  0,  98%, 46%); }
+      h1 .connection.route2 { color: hsl( 35,  98%, 46%); }
+      h1 .connection.route3 { color: hsl( 60,  98%, 46%); }
+      h1 .connection.route4 { color: hsl(135,  98%, 46%); }
+      h1 .connection.route5 { color: hsl(160,  98%, 46%); }
+      h1 .connection.route6 { color: hsl(185,  98%, 46%); }
+      h1 .connection.route7 { color: hsl(210,  98%, 46%); }
+      h1 .connection.route8 { color: hsl(285,  98%, 46%); }
+      h1 .connection.route9 { color: hsl(310,  98%, 46%); }
+      h1 .connection.route10 {color: hsl(335,  98%, 46%); }
+
+      ul#events {
+        max-height: 140px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        clear: left;
+      }
+      ul#events li {
+        font-size: 10px;
+        line-height: 14px;
+        margin-bottom: 0px;
+        color: hsl(185,100%,75%);
+        max-height: 56px;
+        overflow: hidden;
+        margin-bottom: 2px;
+        padding-bottom: 2px;
+        border-bottom: 1px solid hsla(190, 30%, 2%, 0.4);
+      }
+      ul#events li.connect {
+        border-top: 1px solid #80ff80;
+        height: 3px;
+        margin-bottom: 3px;
+      }
+      ul#events li.begingroup {
+        color: hsl(189, 50%, 80%);
+      }
+      ul#events li.begingroup:before {
+        display: inline;
+        content: '<';
+      }
+      ul#events li.begingroup:after {
+        display: inline;
+        content: '>';
+      }
+      ul#events li.endgroup {
+        color: hsl(189, 50%, 80%);
+      }
+      ul#events li.endgroup:before {
+        display: inline;
+        content: '</';
+      }
+      ul#events li.endgroup:after {
+        display: inline;
+        content: '>';
+      }
+      ul#events li.disconnect {
+        border-bottom: 1px solid #ff8080;
+        height: 3px;
+        margin-bottom: 3px;
+      }
+      ul#events img {
+        margin: 5px;
+        max-width: 100px;
+      }
+      button#clear {
+        color: rgb(179, 222, 230);
+        position: absolute;
+        right: 0px;
+        top: 9px;
+        line-height: 36px;
+        background-color: hsla(0, 0%, 0%, 0.7);
+      }
+    </style>
+    <h1>{{ sourceNode }} <span class="connection route{{ route }}">{{ sourcePort }} ➞ {{ targetPort }}</span> {{ targetNode }}</h1>
+    <button id="clear" on-click="{{ clear }}" title="Clear log"><i class="fa fa-ban"></i></button>
+    <ul id="events">
+    </ul>
+  </template>
+  
+</polymer-element>
+<polymer-element name="noflo-packets" assetpath="elements/">
+
+</polymer-element>
+
+<polymer-element name="noflo-alert" attributes="message isError offerHTTPS" assetpath="elements/">
+  <template>
+    <style>
+      :host {
+        text-align: center;
+        background-color: hsl(35, 98%, 46%);
+        color: white;
+        border-bottom: 1px black solid;
+        padding: 18px;
+      }
+      :host(.error) {
+        background-color: hsl(0, 98%, 46%);
+      }
+      a {
+        color: hsl(0, 98%, 46%);
+        background-color: white;
+        display: inline-block;
+        padding: 9px;
+        text-decoration: none;
+        font-size: 12px;
+        border-radius: 3px;
+      }
+
+      /* /deep/ animations don't work: https://github.com/Polymer/polymer/issues/141#issuecomment-31887427 */
+      /* only animate when on-screen */
+      .fa-spin {
+        -webkit-animation: none !important;
+        animation: none !important;
+      }
+      :host(.show) .fa-spin {
+        -webkit-animation: fa-spin 2s infinite linear !important;
+        animation: fa-spin 2s infinite linear !important;
+      }
+      @-webkit-keyframes fa-spin {
+        0% {
+          -webkit-transform: rotate(0deg);
+          transform: rotate(0deg);
+        }
+        100% {
+          -webkit-transform: rotate(359deg);
+          transform: rotate(359deg);
+        }
+      }
+      @keyframes fa-spin {
+        0% {
+          -webkit-transform: rotate(0deg);
+          transform: rotate(0deg);
+        }
+        100% {
+          -webkit-transform: rotate(359deg);
+          transform: rotate(359deg);
+        }
+      }
+    </style>
+    <template if="{{ isError }}">
+      <i class="fa fa-warning"></i>
+    </template>
+    <template if="{{ !isError &amp;&amp; !offerHTTPS }}">
+      <i class="fa fa-spinner fa-spin"></i>
+    </template>
+    <template if="{{ offerHTTPS }}">
+      <i class="fa fa-lock"></i>
+      This app is available securely at <a href="https://app.flowhub.io/">https://app.flowhub.io/</a> - <a href="https://docs.flowhub.io/article/75-security-with-https-and-wss">about</a>
+    </template>
+    <content></content>
+    {{ message }}
+    <template if="{{ isError }}">
+      <a href="{{ _hack_ }}#" class="button">go home</a>
+    </template>
+  </template>
+  
+</polymer-element>
+<polymer-element name="noflo-ui" attributes="width height" assetpath="elements/">
+  <template>
+    <style>
+      #grapheditor {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+      #componenteditor {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 36px;
+        right: 0;
+        z-index: 0;
+      }
+      #alert {
+        box-sizing: border-box;
+        position: fixed;
+        top: -144px;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        max-height: 144px;
+        overflow: hidden;
+        transition: top 0.3s ease-in-out;
+      }
+      #alert.show {
+        top: 0;
+      }
+    </style>
+    <noflo-main id="main"></noflo-main>
+    <the-graph-editor id="grapheditor" width="{{ width }}" height="{{ height }}"></the-graph-editor>
+    <noflo-library id="library"></noflo-library>
+    <noflo-context id="context"></noflo-context>
+    <noflo-runtime id="runtime"></noflo-runtime>
+    <noflo-journal id="journal"></noflo-journal>
+    <noflo-component-editor id="componenteditor" width="{{ width }}" height="{{ height }}"></noflo-component-editor>
+    <noflo-search id="search"></noflo-search>
+    <noflo-project id="project"></noflo-project>
+    <noflo-packets id="packets"></noflo-packets>
+    <noflo-alert id="alert" on-click="{{ hideAlert }}"></noflo-alert>
+  </template>
+  
+</polymer-element>
+
+<polymer-element name="noflo-polymer" attributes="element inports outports" assetpath="browser/noflo-noflo-polymer/noflo-polymer/">
+  
+</polymer-element>
+
+
+</div><noflo-polymer name="noflo-ui" inports="user context width height" outports="event"></noflo-polymer>
+    <style shim-shadowdom="">
+
+
+ /* Modified to work with shadowdom with `html /deep/ ` in front of everything */
+
+/*!
+ *  Font Awesome 4.2.0 by @davegandy - http://fontawesome.io - @fontawesome
+ *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
+ */
+/* FONT PATH
+ * -------------------------- */
+@font-face {
+  font-family: 'FontAwesome';
+  src: url("bower_components/font-awesome/fonts/fontawesome-webfont.eot?v=4.2.0");
+  src: url("bower_components/font-awesome/fonts/fontawesome-webfont.eot?#iefix&v=4.2.0") format('embedded-opentype'), url("bower_components/font-awesome/fonts/fontawesome-webfont.woff?v=4.2.0") format('woff'), url("bower_components/font-awesome/fonts/fontawesome-webfont.ttf?v=4.2.0") format('truetype'), url("bower_components/font-awesome/fonts/fontawesome-webfont.svg?v=4.2.0#fontawesomeregular") format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+html /deep/ .fa {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+/* makes the font 33% larger relative to the icon container */
+html /deep/ .fa-lg {
+  font-size: 1.33333333em;
+  line-height: 0.75em;
+  vertical-align: -15%;
+}
+html /deep/ .fa-2x {
+  font-size: 2em;
+}
+html /deep/ .fa-3x {
+  font-size: 3em;
+}
+html /deep/ .fa-4x {
+  font-size: 4em;
+}
+html /deep/ .fa-5x {
+  font-size: 5em;
+}
+html /deep/ .fa-fw {
+  width: 1.28571429em;
+  text-align: center;
+}
+html /deep/ .fa-ul {
+  padding-left: 0;
+  margin-left: 2.14285714em;
+  list-style-type: none;
+}
+html /deep/ .fa-ul > li {
+  position: relative;
+}
+html /deep/ .fa-li {
+  position: absolute;
+  left: -2.14285714em;
+  width: 2.14285714em;
+  top: 0.14285714em;
+  text-align: center;
+}
+html /deep/ .fa-lihtml /deep/ .fa-lg {
+  left: -1.85714286em;
+}
+html /deep/ .fa-border {
+  padding: .2em .25em .15em;
+  border: solid 0.08em #eeeeee;
+  border-radius: .1em;
+}
+html /deep/ .fa.pull-right {
+  float: right;
+}
+html /deep/ .fa.pull-left {
+  float: left;
+}
+html /deep/ .fa.pull-left {
+  margin-right: .3em;
+}
+html /deep/ .fa.pull-right {
+  margin-left: .3em;
+}
+html /deep/ .fa-spin {
+  -webkit-animation: fa-spin 2s infinite linear;
+  animation: fa-spin 2s infinite linear;
+}
+@-webkit-keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+@keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+html /deep/ .fa-rotate-90 {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+  -webkit-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+html /deep/ .fa-rotate-180 {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+  -webkit-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+html /deep/ .fa-rotate-270 {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+  -webkit-transform: rotate(270deg);
+  -ms-transform: rotate(270deg);
+  transform: rotate(270deg);
+}
+html /deep/ .fa-flip-horizontal {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1);
+  -webkit-transform: scale(-1, 1);
+  -ms-transform: scale(-1, 1);
+  transform: scale(-1, 1);
+}
+html /deep/ .fa-flip-vertical {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1);
+  -webkit-transform: scale(1, -1);
+  -ms-transform: scale(1, -1);
+  transform: scale(1, -1);
+}
+:root .fa-rotate-90,
+:root .fa-rotate-180,
+:root .fa-rotate-270,
+:root .fa-flip-horizontal,
+:root .fa-flip-vertical {
+  filter: none;
+}
+html /deep/ .fa-stack {
+  position: relative;
+  display: inline-block;
+  width: 2em;
+  height: 2em;
+  line-height: 2em;
+  vertical-align: middle;
+}
+html /deep/ .fa-stack-1x,
+html /deep/ .fa-stack-2x {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+html /deep/ .fa-stack-1x {
+  line-height: inherit;
+}
+html /deep/ .fa-stack-2x {
+  font-size: 2em;
+}
+html /deep/ .fa-inverse {
+  color: #ffffff;
+}
+/* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
+   readers do not read off random characters that represent icons */
+html /deep/ .fa-glass:before {
+  content: "\f000";
+}
+html /deep/ .fa-music:before {
+  content: "\f001";
+}
+html /deep/ .fa-search:before {
+  content: "\f002";
+}
+html /deep/ .fa-envelope-o:before {
+  content: "\f003";
+}
+html /deep/ .fa-heart:before {
+  content: "\f004";
+}
+html /deep/ .fa-star:before {
+  content: "\f005";
+}
+html /deep/ .fa-star-o:before {
+  content: "\f006";
+}
+html /deep/ .fa-user:before {
+  content: "\f007";
+}
+html /deep/ .fa-film:before {
+  content: "\f008";
+}
+html /deep/ .fa-th-large:before {
+  content: "\f009";
+}
+html /deep/ .fa-th:before {
+  content: "\f00a";
+}
+html /deep/ .fa-th-list:before {
+  content: "\f00b";
+}
+html /deep/ .fa-check:before {
+  content: "\f00c";
+}
+html /deep/ .fa-remove:before,
+html /deep/ .fa-close:before,
+html /deep/ .fa-times:before {
+  content: "\f00d";
+}
+html /deep/ .fa-search-plus:before {
+  content: "\f00e";
+}
+html /deep/ .fa-search-minus:before {
+  content: "\f010";
+}
+html /deep/ .fa-power-off:before {
+  content: "\f011";
+}
+html /deep/ .fa-signal:before {
+  content: "\f012";
+}
+html /deep/ .fa-gear:before,
+html /deep/ .fa-cog:before {
+  content: "\f013";
+}
+html /deep/ .fa-trash-o:before {
+  content: "\f014";
+}
+html /deep/ .fa-home:before {
+  content: "\f015";
+}
+html /deep/ .fa-file-o:before {
+  content: "\f016";
+}
+html /deep/ .fa-clock-o:before {
+  content: "\f017";
+}
+html /deep/ .fa-road:before {
+  content: "\f018";
+}
+html /deep/ .fa-download:before {
+  content: "\f019";
+}
+html /deep/ .fa-arrow-circle-o-down:before {
+  content: "\f01a";
+}
+html /deep/ .fa-arrow-circle-o-up:before {
+  content: "\f01b";
+}
+html /deep/ .fa-inbox:before {
+  content: "\f01c";
+}
+html /deep/ .fa-play-circle-o:before {
+  content: "\f01d";
+}
+html /deep/ .fa-rotate-right:before,
+html /deep/ .fa-repeat:before {
+  content: "\f01e";
+}
+html /deep/ .fa-refresh:before {
+  content: "\f021";
+}
+html /deep/ .fa-list-alt:before {
+  content: "\f022";
+}
+html /deep/ .fa-lock:before {
+  content: "\f023";
+}
+html /deep/ .fa-flag:before {
+  content: "\f024";
+}
+html /deep/ .fa-headphones:before {
+  content: "\f025";
+}
+html /deep/ .fa-volume-off:before {
+  content: "\f026";
+}
+html /deep/ .fa-volume-down:before {
+  content: "\f027";
+}
+html /deep/ .fa-volume-up:before {
+  content: "\f028";
+}
+html /deep/ .fa-qrcode:before {
+  content: "\f029";
+}
+html /deep/ .fa-barcode:before {
+  content: "\f02a";
+}
+html /deep/ .fa-tag:before {
+  content: "\f02b";
+}
+html /deep/ .fa-tags:before {
+  content: "\f02c";
+}
+html /deep/ .fa-book:before {
+  content: "\f02d";
+}
+html /deep/ .fa-bookmark:before {
+  content: "\f02e";
+}
+html /deep/ .fa-print:before {
+  content: "\f02f";
+}
+html /deep/ .fa-camera:before {
+  content: "\f030";
+}
+html /deep/ .fa-font:before {
+  content: "\f031";
+}
+html /deep/ .fa-bold:before {
+  content: "\f032";
+}
+html /deep/ .fa-italic:before {
+  content: "\f033";
+}
+html /deep/ .fa-text-height:before {
+  content: "\f034";
+}
+html /deep/ .fa-text-width:before {
+  content: "\f035";
+}
+html /deep/ .fa-align-left:before {
+  content: "\f036";
+}
+html /deep/ .fa-align-center:before {
+  content: "\f037";
+}
+html /deep/ .fa-align-right:before {
+  content: "\f038";
+}
+html /deep/ .fa-align-justify:before {
+  content: "\f039";
+}
+html /deep/ .fa-list:before {
+  content: "\f03a";
+}
+html /deep/ .fa-dedent:before,
+html /deep/ .fa-outdent:before {
+  content: "\f03b";
+}
+html /deep/ .fa-indent:before {
+  content: "\f03c";
+}
+html /deep/ .fa-video-camera:before {
+  content: "\f03d";
+}
+html /deep/ .fa-photo:before,
+html /deep/ .fa-image:before,
+html /deep/ .fa-picture-o:before {
+  content: "\f03e";
+}
+html /deep/ .fa-pencil:before {
+  content: "\f040";
+}
+html /deep/ .fa-map-marker:before {
+  content: "\f041";
+}
+html /deep/ .fa-adjust:before {
+  content: "\f042";
+}
+html /deep/ .fa-tint:before {
+  content: "\f043";
+}
+html /deep/ .fa-edit:before,
+html /deep/ .fa-pencil-square-o:before {
+  content: "\f044";
+}
+html /deep/ .fa-share-square-o:before {
+  content: "\f045";
+}
+html /deep/ .fa-check-square-o:before {
+  content: "\f046";
+}
+html /deep/ .fa-arrows:before {
+  content: "\f047";
+}
+html /deep/ .fa-step-backward:before {
+  content: "\f048";
+}
+html /deep/ .fa-fast-backward:before {
+  content: "\f049";
+}
+html /deep/ .fa-backward:before {
+  content: "\f04a";
+}
+html /deep/ .fa-play:before {
+  content: "\f04b";
+}
+html /deep/ .fa-pause:before {
+  content: "\f04c";
+}
+html /deep/ .fa-stop:before {
+  content: "\f04d";
+}
+html /deep/ .fa-forward:before {
+  content: "\f04e";
+}
+html /deep/ .fa-fast-forward:before {
+  content: "\f050";
+}
+html /deep/ .fa-step-forward:before {
+  content: "\f051";
+}
+html /deep/ .fa-eject:before {
+  content: "\f052";
+}
+html /deep/ .fa-chevron-left:before {
+  content: "\f053";
+}
+html /deep/ .fa-chevron-right:before {
+  content: "\f054";
+}
+html /deep/ .fa-plus-circle:before {
+  content: "\f055";
+}
+html /deep/ .fa-minus-circle:before {
+  content: "\f056";
+}
+html /deep/ .fa-times-circle:before {
+  content: "\f057";
+}
+html /deep/ .fa-check-circle:before {
+  content: "\f058";
+}
+html /deep/ .fa-question-circle:before {
+  content: "\f059";
+}
+html /deep/ .fa-info-circle:before {
+  content: "\f05a";
+}
+html /deep/ .fa-crosshairs:before {
+  content: "\f05b";
+}
+html /deep/ .fa-times-circle-o:before {
+  content: "\f05c";
+}
+html /deep/ .fa-check-circle-o:before {
+  content: "\f05d";
+}
+html /deep/ .fa-ban:before {
+  content: "\f05e";
+}
+html /deep/ .fa-arrow-left:before {
+  content: "\f060";
+}
+html /deep/ .fa-arrow-right:before {
+  content: "\f061";
+}
+html /deep/ .fa-arrow-up:before {
+  content: "\f062";
+}
+html /deep/ .fa-arrow-down:before {
+  content: "\f063";
+}
+html /deep/ .fa-mail-forward:before,
+html /deep/ .fa-share:before {
+  content: "\f064";
+}
+html /deep/ .fa-expand:before {
+  content: "\f065";
+}
+html /deep/ .fa-compress:before {
+  content: "\f066";
+}
+html /deep/ .fa-plus:before {
+  content: "\f067";
+}
+html /deep/ .fa-minus:before {
+  content: "\f068";
+}
+html /deep/ .fa-asterisk:before {
+  content: "\f069";
+}
+html /deep/ .fa-exclamation-circle:before {
+  content: "\f06a";
+}
+html /deep/ .fa-gift:before {
+  content: "\f06b";
+}
+html /deep/ .fa-leaf:before {
+  content: "\f06c";
+}
+html /deep/ .fa-fire:before {
+  content: "\f06d";
+}
+html /deep/ .fa-eye:before {
+  content: "\f06e";
+}
+html /deep/ .fa-eye-slash:before {
+  content: "\f070";
+}
+html /deep/ .fa-warning:before,
+html /deep/ .fa-exclamation-triangle:before {
+  content: "\f071";
+}
+html /deep/ .fa-plane:before {
+  content: "\f072";
+}
+html /deep/ .fa-calendar:before {
+  content: "\f073";
+}
+html /deep/ .fa-random:before {
+  content: "\f074";
+}
+html /deep/ .fa-comment:before {
+  content: "\f075";
+}
+html /deep/ .fa-magnet:before {
+  content: "\f076";
+}
+html /deep/ .fa-chevron-up:before {
+  content: "\f077";
+}
+html /deep/ .fa-chevron-down:before {
+  content: "\f078";
+}
+html /deep/ .fa-retweet:before {
+  content: "\f079";
+}
+html /deep/ .fa-shopping-cart:before {
+  content: "\f07a";
+}
+html /deep/ .fa-folder:before {
+  content: "\f07b";
+}
+html /deep/ .fa-folder-open:before {
+  content: "\f07c";
+}
+html /deep/ .fa-arrows-v:before {
+  content: "\f07d";
+}
+html /deep/ .fa-arrows-h:before {
+  content: "\f07e";
+}
+html /deep/ .fa-bar-chart-o:before,
+html /deep/ .fa-bar-chart:before {
+  content: "\f080";
+}
+html /deep/ .fa-twitter-square:before {
+  content: "\f081";
+}
+html /deep/ .fa-facebook-square:before {
+  content: "\f082";
+}
+html /deep/ .fa-camera-retro:before {
+  content: "\f083";
+}
+html /deep/ .fa-key:before {
+  content: "\f084";
+}
+html /deep/ .fa-gears:before,
+html /deep/ .fa-cogs:before {
+  content: "\f085";
+}
+html /deep/ .fa-comments:before {
+  content: "\f086";
+}
+html /deep/ .fa-thumbs-o-up:before {
+  content: "\f087";
+}
+html /deep/ .fa-thumbs-o-down:before {
+  content: "\f088";
+}
+html /deep/ .fa-star-half:before {
+  content: "\f089";
+}
+html /deep/ .fa-heart-o:before {
+  content: "\f08a";
+}
+html /deep/ .fa-sign-out:before {
+  content: "\f08b";
+}
+html /deep/ .fa-linkedin-square:before {
+  content: "\f08c";
+}
+html /deep/ .fa-thumb-tack:before {
+  content: "\f08d";
+}
+html /deep/ .fa-external-link:before {
+  content: "\f08e";
+}
+html /deep/ .fa-sign-in:before {
+  content: "\f090";
+}
+html /deep/ .fa-trophy:before {
+  content: "\f091";
+}
+html /deep/ .fa-github-square:before {
+  content: "\f092";
+}
+html /deep/ .fa-upload:before {
+  content: "\f093";
+}
+html /deep/ .fa-lemon-o:before {
+  content: "\f094";
+}
+html /deep/ .fa-phone:before {
+  content: "\f095";
+}
+html /deep/ .fa-square-o:before {
+  content: "\f096";
+}
+html /deep/ .fa-bookmark-o:before {
+  content: "\f097";
+}
+html /deep/ .fa-phone-square:before {
+  content: "\f098";
+}
+html /deep/ .fa-twitter:before {
+  content: "\f099";
+}
+html /deep/ .fa-facebook:before {
+  content: "\f09a";
+}
+html /deep/ .fa-github:before {
+  content: "\f09b";
+}
+html /deep/ .fa-unlock:before {
+  content: "\f09c";
+}
+html /deep/ .fa-credit-card:before {
+  content: "\f09d";
+}
+html /deep/ .fa-rss:before {
+  content: "\f09e";
+}
+html /deep/ .fa-hdd-o:before {
+  content: "\f0a0";
+}
+html /deep/ .fa-bullhorn:before {
+  content: "\f0a1";
+}
+html /deep/ .fa-bell:before {
+  content: "\f0f3";
+}
+html /deep/ .fa-certificate:before {
+  content: "\f0a3";
+}
+html /deep/ .fa-hand-o-right:before {
+  content: "\f0a4";
+}
+html /deep/ .fa-hand-o-left:before {
+  content: "\f0a5";
+}
+html /deep/ .fa-hand-o-up:before {
+  content: "\f0a6";
+}
+html /deep/ .fa-hand-o-down:before {
+  content: "\f0a7";
+}
+html /deep/ .fa-arrow-circle-left:before {
+  content: "\f0a8";
+}
+html /deep/ .fa-arrow-circle-right:before {
+  content: "\f0a9";
+}
+html /deep/ .fa-arrow-circle-up:before {
+  content: "\f0aa";
+}
+html /deep/ .fa-arrow-circle-down:before {
+  content: "\f0ab";
+}
+html /deep/ .fa-globe:before {
+  content: "\f0ac";
+}
+html /deep/ .fa-wrench:before {
+  content: "\f0ad";
+}
+html /deep/ .fa-tasks:before {
+  content: "\f0ae";
+}
+html /deep/ .fa-filter:before {
+  content: "\f0b0";
+}
+html /deep/ .fa-briefcase:before {
+  content: "\f0b1";
+}
+html /deep/ .fa-arrows-alt:before {
+  content: "\f0b2";
+}
+html /deep/ .fa-group:before,
+html /deep/ .fa-users:before {
+  content: "\f0c0";
+}
+html /deep/ .fa-chain:before,
+html /deep/ .fa-link:before {
+  content: "\f0c1";
+}
+html /deep/ .fa-cloud:before {
+  content: "\f0c2";
+}
+html /deep/ .fa-flask:before {
+  content: "\f0c3";
+}
+html /deep/ .fa-cut:before,
+html /deep/ .fa-scissors:before {
+  content: "\f0c4";
+}
+html /deep/ .fa-copy:before,
+html /deep/ .fa-files-o:before {
+  content: "\f0c5";
+}
+html /deep/ .fa-paperclip:before {
+  content: "\f0c6";
+}
+html /deep/ .fa-save:before,
+html /deep/ .fa-floppy-o:before {
+  content: "\f0c7";
+}
+html /deep/ .fa-square:before {
+  content: "\f0c8";
+}
+html /deep/ .fa-navicon:before,
+html /deep/ .fa-reorder:before,
+html /deep/ .fa-bars:before {
+  content: "\f0c9";
+}
+html /deep/ .fa-list-ul:before {
+  content: "\f0ca";
+}
+html /deep/ .fa-list-ol:before {
+  content: "\f0cb";
+}
+html /deep/ .fa-strikethrough:before {
+  content: "\f0cc";
+}
+html /deep/ .fa-underline:before {
+  content: "\f0cd";
+}
+html /deep/ .fa-table:before {
+  content: "\f0ce";
+}
+html /deep/ .fa-magic:before {
+  content: "\f0d0";
+}
+html /deep/ .fa-truck:before {
+  content: "\f0d1";
+}
+html /deep/ .fa-pinterest:before {
+  content: "\f0d2";
+}
+html /deep/ .fa-pinterest-square:before {
+  content: "\f0d3";
+}
+html /deep/ .fa-google-plus-square:before {
+  content: "\f0d4";
+}
+html /deep/ .fa-google-plus:before {
+  content: "\f0d5";
+}
+html /deep/ .fa-money:before {
+  content: "\f0d6";
+}
+html /deep/ .fa-caret-down:before {
+  content: "\f0d7";
+}
+html /deep/ .fa-caret-up:before {
+  content: "\f0d8";
+}
+html /deep/ .fa-caret-left:before {
+  content: "\f0d9";
+}
+html /deep/ .fa-caret-right:before {
+  content: "\f0da";
+}
+html /deep/ .fa-columns:before {
+  content: "\f0db";
+}
+html /deep/ .fa-unsorted:before,
+html /deep/ .fa-sort:before {
+  content: "\f0dc";
+}
+html /deep/ .fa-sort-down:before,
+html /deep/ .fa-sort-desc:before {
+  content: "\f0dd";
+}
+html /deep/ .fa-sort-up:before,
+html /deep/ .fa-sort-asc:before {
+  content: "\f0de";
+}
+html /deep/ .fa-envelope:before {
+  content: "\f0e0";
+}
+html /deep/ .fa-linkedin:before {
+  content: "\f0e1";
+}
+html /deep/ .fa-rotate-left:before,
+html /deep/ .fa-undo:before {
+  content: "\f0e2";
+}
+html /deep/ .fa-legal:before,
+html /deep/ .fa-gavel:before {
+  content: "\f0e3";
+}
+html /deep/ .fa-dashboard:before,
+html /deep/ .fa-tachometer:before {
+  content: "\f0e4";
+}
+html /deep/ .fa-comment-o:before {
+  content: "\f0e5";
+}
+html /deep/ .fa-comments-o:before {
+  content: "\f0e6";
+}
+html /deep/ .fa-flash:before,
+html /deep/ .fa-bolt:before {
+  content: "\f0e7";
+}
+html /deep/ .fa-sitemap:before {
+  content: "\f0e8";
+}
+html /deep/ .fa-umbrella:before {
+  content: "\f0e9";
+}
+html /deep/ .fa-paste:before,
+html /deep/ .fa-clipboard:before {
+  content: "\f0ea";
+}
+html /deep/ .fa-lightbulb-o:before {
+  content: "\f0eb";
+}
+html /deep/ .fa-exchange:before {
+  content: "\f0ec";
+}
+html /deep/ .fa-cloud-download:before {
+  content: "\f0ed";
+}
+html /deep/ .fa-cloud-upload:before {
+  content: "\f0ee";
+}
+html /deep/ .fa-user-md:before {
+  content: "\f0f0";
+}
+html /deep/ .fa-stethoscope:before {
+  content: "\f0f1";
+}
+html /deep/ .fa-suitcase:before {
+  content: "\f0f2";
+}
+html /deep/ .fa-bell-o:before {
+  content: "\f0a2";
+}
+html /deep/ .fa-coffee:before {
+  content: "\f0f4";
+}
+html /deep/ .fa-cutlery:before {
+  content: "\f0f5";
+}
+html /deep/ .fa-file-text-o:before {
+  content: "\f0f6";
+}
+html /deep/ .fa-building-o:before {
+  content: "\f0f7";
+}
+html /deep/ .fa-hospital-o:before {
+  content: "\f0f8";
+}
+html /deep/ .fa-ambulance:before {
+  content: "\f0f9";
+}
+html /deep/ .fa-medkit:before {
+  content: "\f0fa";
+}
+html /deep/ .fa-fighter-jet:before {
+  content: "\f0fb";
+}
+html /deep/ .fa-beer:before {
+  content: "\f0fc";
+}
+html /deep/ .fa-h-square:before {
+  content: "\f0fd";
+}
+html /deep/ .fa-plus-square:before {
+  content: "\f0fe";
+}
+html /deep/ .fa-angle-double-left:before {
+  content: "\f100";
+}
+html /deep/ .fa-angle-double-right:before {
+  content: "\f101";
+}
+html /deep/ .fa-angle-double-up:before {
+  content: "\f102";
+}
+html /deep/ .fa-angle-double-down:before {
+  content: "\f103";
+}
+html /deep/ .fa-angle-left:before {
+  content: "\f104";
+}
+html /deep/ .fa-angle-right:before {
+  content: "\f105";
+}
+html /deep/ .fa-angle-up:before {
+  content: "\f106";
+}
+html /deep/ .fa-angle-down:before {
+  content: "\f107";
+}
+html /deep/ .fa-desktop:before {
+  content: "\f108";
+}
+html /deep/ .fa-laptop:before {
+  content: "\f109";
+}
+html /deep/ .fa-tablet:before {
+  content: "\f10a";
+}
+html /deep/ .fa-mobile-phone:before,
+html /deep/ .fa-mobile:before {
+  content: "\f10b";
+}
+html /deep/ .fa-circle-o:before {
+  content: "\f10c";
+}
+html /deep/ .fa-quote-left:before {
+  content: "\f10d";
+}
+html /deep/ .fa-quote-right:before {
+  content: "\f10e";
+}
+html /deep/ .fa-spinner:before {
+  content: "\f110";
+}
+html /deep/ .fa-circle:before {
+  content: "\f111";
+}
+html /deep/ .fa-mail-reply:before,
+html /deep/ .fa-reply:before {
+  content: "\f112";
+}
+html /deep/ .fa-github-alt:before {
+  content: "\f113";
+}
+html /deep/ .fa-folder-o:before {
+  content: "\f114";
+}
+html /deep/ .fa-folder-open-o:before {
+  content: "\f115";
+}
+html /deep/ .fa-smile-o:before {
+  content: "\f118";
+}
+html /deep/ .fa-frown-o:before {
+  content: "\f119";
+}
+html /deep/ .fa-meh-o:before {
+  content: "\f11a";
+}
+html /deep/ .fa-gamepad:before {
+  content: "\f11b";
+}
+html /deep/ .fa-keyboard-o:before {
+  content: "\f11c";
+}
+html /deep/ .fa-flag-o:before {
+  content: "\f11d";
+}
+html /deep/ .fa-flag-checkered:before {
+  content: "\f11e";
+}
+html /deep/ .fa-terminal:before {
+  content: "\f120";
+}
+html /deep/ .fa-code:before {
+  content: "\f121";
+}
+html /deep/ .fa-mail-reply-all:before,
+html /deep/ .fa-reply-all:before {
+  content: "\f122";
+}
+html /deep/ .fa-star-half-empty:before,
+html /deep/ .fa-star-half-full:before,
+html /deep/ .fa-star-half-o:before {
+  content: "\f123";
+}
+html /deep/ .fa-location-arrow:before {
+  content: "\f124";
+}
+html /deep/ .fa-crop:before {
+  content: "\f125";
+}
+html /deep/ .fa-code-fork:before {
+  content: "\f126";
+}
+html /deep/ .fa-unlink:before,
+html /deep/ .fa-chain-broken:before {
+  content: "\f127";
+}
+html /deep/ .fa-question:before {
+  content: "\f128";
+}
+html /deep/ .fa-info:before {
+  content: "\f129";
+}
+html /deep/ .fa-exclamation:before {
+  content: "\f12a";
+}
+html /deep/ .fa-superscript:before {
+  content: "\f12b";
+}
+html /deep/ .fa-subscript:before {
+  content: "\f12c";
+}
+html /deep/ .fa-eraser:before {
+  content: "\f12d";
+}
+html /deep/ .fa-puzzle-piece:before {
+  content: "\f12e";
+}
+html /deep/ .fa-microphone:before {
+  content: "\f130";
+}
+html /deep/ .fa-microphone-slash:before {
+  content: "\f131";
+}
+html /deep/ .fa-shield:before {
+  content: "\f132";
+}
+html /deep/ .fa-calendar-o:before {
+  content: "\f133";
+}
+html /deep/ .fa-fire-extinguisher:before {
+  content: "\f134";
+}
+html /deep/ .fa-rocket:before {
+  content: "\f135";
+}
+html /deep/ .fa-maxcdn:before {
+  content: "\f136";
+}
+html /deep/ .fa-chevron-circle-left:before {
+  content: "\f137";
+}
+html /deep/ .fa-chevron-circle-right:before {
+  content: "\f138";
+}
+html /deep/ .fa-chevron-circle-up:before {
+  content: "\f139";
+}
+html /deep/ .fa-chevron-circle-down:before {
+  content: "\f13a";
+}
+html /deep/ .fa-html5:before {
+  content: "\f13b";
+}
+html /deep/ .fa-css3:before {
+  content: "\f13c";
+}
+html /deep/ .fa-anchor:before {
+  content: "\f13d";
+}
+html /deep/ .fa-unlock-alt:before {
+  content: "\f13e";
+}
+html /deep/ .fa-bullseye:before {
+  content: "\f140";
+}
+html /deep/ .fa-ellipsis-h:before {
+  content: "\f141";
+}
+html /deep/ .fa-ellipsis-v:before {
+  content: "\f142";
+}
+html /deep/ .fa-rss-square:before {
+  content: "\f143";
+}
+html /deep/ .fa-play-circle:before {
+  content: "\f144";
+}
+html /deep/ .fa-ticket:before {
+  content: "\f145";
+}
+html /deep/ .fa-minus-square:before {
+  content: "\f146";
+}
+html /deep/ .fa-minus-square-o:before {
+  content: "\f147";
+}
+html /deep/ .fa-level-up:before {
+  content: "\f148";
+}
+html /deep/ .fa-level-down:before {
+  content: "\f149";
+}
+html /deep/ .fa-check-square:before {
+  content: "\f14a";
+}
+html /deep/ .fa-pencil-square:before {
+  content: "\f14b";
+}
+html /deep/ .fa-external-link-square:before {
+  content: "\f14c";
+}
+html /deep/ .fa-share-square:before {
+  content: "\f14d";
+}
+html /deep/ .fa-compass:before {
+  content: "\f14e";
+}
+html /deep/ .fa-toggle-down:before,
+html /deep/ .fa-caret-square-o-down:before {
+  content: "\f150";
+}
+html /deep/ .fa-toggle-up:before,
+html /deep/ .fa-caret-square-o-up:before {
+  content: "\f151";
+}
+html /deep/ .fa-toggle-right:before,
+html /deep/ .fa-caret-square-o-right:before {
+  content: "\f152";
+}
+html /deep/ .fa-euro:before,
+html /deep/ .fa-eur:before {
+  content: "\f153";
+}
+html /deep/ .fa-gbp:before {
+  content: "\f154";
+}
+html /deep/ .fa-dollar:before,
+html /deep/ .fa-usd:before {
+  content: "\f155";
+}
+html /deep/ .fa-rupee:before,
+html /deep/ .fa-inr:before {
+  content: "\f156";
+}
+html /deep/ .fa-cny:before,
+html /deep/ .fa-rmb:before,
+html /deep/ .fa-yen:before,
+html /deep/ .fa-jpy:before {
+  content: "\f157";
+}
+html /deep/ .fa-ruble:before,
+html /deep/ .fa-rouble:before,
+html /deep/ .fa-rub:before {
+  content: "\f158";
+}
+html /deep/ .fa-won:before,
+html /deep/ .fa-krw:before {
+  content: "\f159";
+}
+html /deep/ .fa-bitcoin:before,
+html /deep/ .fa-btc:before {
+  content: "\f15a";
+}
+html /deep/ .fa-file:before {
+  content: "\f15b";
+}
+html /deep/ .fa-file-text:before {
+  content: "\f15c";
+}
+html /deep/ .fa-sort-alpha-asc:before {
+  content: "\f15d";
+}
+html /deep/ .fa-sort-alpha-desc:before {
+  content: "\f15e";
+}
+html /deep/ .fa-sort-amount-asc:before {
+  content: "\f160";
+}
+html /deep/ .fa-sort-amount-desc:before {
+  content: "\f161";
+}
+html /deep/ .fa-sort-numeric-asc:before {
+  content: "\f162";
+}
+html /deep/ .fa-sort-numeric-desc:before {
+  content: "\f163";
+}
+html /deep/ .fa-thumbs-up:before {
+  content: "\f164";
+}
+html /deep/ .fa-thumbs-down:before {
+  content: "\f165";
+}
+html /deep/ .fa-youtube-square:before {
+  content: "\f166";
+}
+html /deep/ .fa-youtube:before {
+  content: "\f167";
+}
+html /deep/ .fa-xing:before {
+  content: "\f168";
+}
+html /deep/ .fa-xing-square:before {
+  content: "\f169";
+}
+html /deep/ .fa-youtube-play:before {
+  content: "\f16a";
+}
+html /deep/ .fa-dropbox:before {
+  content: "\f16b";
+}
+html /deep/ .fa-stack-overflow:before {
+  content: "\f16c";
+}
+html /deep/ .fa-instagram:before {
+  content: "\f16d";
+}
+html /deep/ .fa-flickr:before {
+  content: "\f16e";
+}
+html /deep/ .fa-adn:before {
+  content: "\f170";
+}
+html /deep/ .fa-bitbucket:before {
+  content: "\f171";
+}
+html /deep/ .fa-bitbucket-square:before {
+  content: "\f172";
+}
+html /deep/ .fa-tumblr:before {
+  content: "\f173";
+}
+html /deep/ .fa-tumblr-square:before {
+  content: "\f174";
+}
+html /deep/ .fa-long-arrow-down:before {
+  content: "\f175";
+}
+html /deep/ .fa-long-arrow-up:before {
+  content: "\f176";
+}
+html /deep/ .fa-long-arrow-left:before {
+  content: "\f177";
+}
+html /deep/ .fa-long-arrow-right:before {
+  content: "\f178";
+}
+html /deep/ .fa-apple:before {
+  content: "\f179";
+}
+html /deep/ .fa-windows:before {
+  content: "\f17a";
+}
+html /deep/ .fa-android:before {
+  content: "\f17b";
+}
+html /deep/ .fa-linux:before {
+  content: "\f17c";
+}
+html /deep/ .fa-dribbble:before {
+  content: "\f17d";
+}
+html /deep/ .fa-skype:before {
+  content: "\f17e";
+}
+html /deep/ .fa-foursquare:before {
+  content: "\f180";
+}
+html /deep/ .fa-trello:before {
+  content: "\f181";
+}
+html /deep/ .fa-female:before {
+  content: "\f182";
+}
+html /deep/ .fa-male:before {
+  content: "\f183";
+}
+html /deep/ .fa-gittip:before {
+  content: "\f184";
+}
+html /deep/ .fa-sun-o:before {
+  content: "\f185";
+}
+html /deep/ .fa-moon-o:before {
+  content: "\f186";
+}
+html /deep/ .fa-archive:before {
+  content: "\f187";
+}
+html /deep/ .fa-bug:before {
+  content: "\f188";
+}
+html /deep/ .fa-vk:before {
+  content: "\f189";
+}
+html /deep/ .fa-weibo:before {
+  content: "\f18a";
+}
+html /deep/ .fa-renren:before {
+  content: "\f18b";
+}
+html /deep/ .fa-pagelines:before {
+  content: "\f18c";
+}
+html /deep/ .fa-stack-exchange:before {
+  content: "\f18d";
+}
+html /deep/ .fa-arrow-circle-o-right:before {
+  content: "\f18e";
+}
+html /deep/ .fa-arrow-circle-o-left:before {
+  content: "\f190";
+}
+html /deep/ .fa-toggle-left:before,
+html /deep/ .fa-caret-square-o-left:before {
+  content: "\f191";
+}
+html /deep/ .fa-dot-circle-o:before {
+  content: "\f192";
+}
+html /deep/ .fa-wheelchair:before {
+  content: "\f193";
+}
+html /deep/ .fa-vimeo-square:before {
+  content: "\f194";
+}
+html /deep/ .fa-turkish-lira:before,
+html /deep/ .fa-try:before {
+  content: "\f195";
+}
+html /deep/ .fa-plus-square-o:before {
+  content: "\f196";
+}
+html /deep/ .fa-space-shuttle:before {
+  content: "\f197";
+}
+html /deep/ .fa-slack:before {
+  content: "\f198";
+}
+html /deep/ .fa-envelope-square:before {
+  content: "\f199";
+}
+html /deep/ .fa-wordpress:before {
+  content: "\f19a";
+}
+html /deep/ .fa-openid:before {
+  content: "\f19b";
+}
+html /deep/ .fa-institution:before,
+html /deep/ .fa-bank:before,
+html /deep/ .fa-university:before {
+  content: "\f19c";
+}
+html /deep/ .fa-mortar-board:before,
+html /deep/ .fa-graduation-cap:before {
+  content: "\f19d";
+}
+html /deep/ .fa-yahoo:before {
+  content: "\f19e";
+}
+html /deep/ .fa-google:before {
+  content: "\f1a0";
+}
+html /deep/ .fa-reddit:before {
+  content: "\f1a1";
+}
+html /deep/ .fa-reddit-square:before {
+  content: "\f1a2";
+}
+html /deep/ .fa-stumbleupon-circle:before {
+  content: "\f1a3";
+}
+html /deep/ .fa-stumbleupon:before {
+  content: "\f1a4";
+}
+html /deep/ .fa-delicious:before {
+  content: "\f1a5";
+}
+html /deep/ .fa-digg:before {
+  content: "\f1a6";
+}
+html /deep/ .fa-pied-piper:before {
+  content: "\f1a7";
+}
+html /deep/ .fa-pied-piper-alt:before {
+  content: "\f1a8";
+}
+html /deep/ .fa-drupal:before {
+  content: "\f1a9";
+}
+html /deep/ .fa-joomla:before {
+  content: "\f1aa";
+}
+html /deep/ .fa-language:before {
+  content: "\f1ab";
+}
+html /deep/ .fa-fax:before {
+  content: "\f1ac";
+}
+html /deep/ .fa-building:before {
+  content: "\f1ad";
+}
+html /deep/ .fa-child:before {
+  content: "\f1ae";
+}
+html /deep/ .fa-paw:before {
+  content: "\f1b0";
+}
+html /deep/ .fa-spoon:before {
+  content: "\f1b1";
+}
+html /deep/ .fa-cube:before {
+  content: "\f1b2";
+}
+html /deep/ .fa-cubes:before {
+  content: "\f1b3";
+}
+html /deep/ .fa-behance:before {
+  content: "\f1b4";
+}
+html /deep/ .fa-behance-square:before {
+  content: "\f1b5";
+}
+html /deep/ .fa-steam:before {
+  content: "\f1b6";
+}
+html /deep/ .fa-steam-square:before {
+  content: "\f1b7";
+}
+html /deep/ .fa-recycle:before {
+  content: "\f1b8";
+}
+html /deep/ .fa-automobile:before,
+html /deep/ .fa-car:before {
+  content: "\f1b9";
+}
+html /deep/ .fa-cab:before,
+html /deep/ .fa-taxi:before {
+  content: "\f1ba";
+}
+html /deep/ .fa-tree:before {
+  content: "\f1bb";
+}
+html /deep/ .fa-spotify:before {
+  content: "\f1bc";
+}
+html /deep/ .fa-deviantart:before {
+  content: "\f1bd";
+}
+html /deep/ .fa-soundcloud:before {
+  content: "\f1be";
+}
+html /deep/ .fa-database:before {
+  content: "\f1c0";
+}
+html /deep/ .fa-file-pdf-o:before {
+  content: "\f1c1";
+}
+html /deep/ .fa-file-word-o:before {
+  content: "\f1c2";
+}
+html /deep/ .fa-file-excel-o:before {
+  content: "\f1c3";
+}
+html /deep/ .fa-file-powerpoint-o:before {
+  content: "\f1c4";
+}
+html /deep/ .fa-file-photo-o:before,
+html /deep/ .fa-file-picture-o:before,
+html /deep/ .fa-file-image-o:before {
+  content: "\f1c5";
+}
+html /deep/ .fa-file-zip-o:before,
+html /deep/ .fa-file-archive-o:before {
+  content: "\f1c6";
+}
+html /deep/ .fa-file-sound-o:before,
+html /deep/ .fa-file-audio-o:before {
+  content: "\f1c7";
+}
+html /deep/ .fa-file-movie-o:before,
+html /deep/ .fa-file-video-o:before {
+  content: "\f1c8";
+}
+html /deep/ .fa-file-code-o:before {
+  content: "\f1c9";
+}
+html /deep/ .fa-vine:before {
+  content: "\f1ca";
+}
+html /deep/ .fa-codepen:before {
+  content: "\f1cb";
+}
+html /deep/ .fa-jsfiddle:before {
+  content: "\f1cc";
+}
+html /deep/ .fa-life-bouy:before,
+html /deep/ .fa-life-buoy:before,
+html /deep/ .fa-life-saver:before,
+html /deep/ .fa-support:before,
+html /deep/ .fa-life-ring:before {
+  content: "\f1cd";
+}
+html /deep/ .fa-circle-o-notch:before {
+  content: "\f1ce";
+}
+html /deep/ .fa-ra:before,
+html /deep/ .fa-rebel:before {
+  content: "\f1d0";
+}
+html /deep/ .fa-ge:before,
+html /deep/ .fa-empire:before {
+  content: "\f1d1";
+}
+html /deep/ .fa-git-square:before {
+  content: "\f1d2";
+}
+html /deep/ .fa-git:before {
+  content: "\f1d3";
+}
+html /deep/ .fa-hacker-news:before {
+  content: "\f1d4";
+}
+html /deep/ .fa-tencent-weibo:before {
+  content: "\f1d5";
+}
+html /deep/ .fa-qq:before {
+  content: "\f1d6";
+}
+html /deep/ .fa-wechat:before,
+html /deep/ .fa-weixin:before {
+  content: "\f1d7";
+}
+html /deep/ .fa-send:before,
+html /deep/ .fa-paper-plane:before {
+  content: "\f1d8";
+}
+html /deep/ .fa-send-o:before,
+html /deep/ .fa-paper-plane-o:before {
+  content: "\f1d9";
+}
+html /deep/ .fa-history:before {
+  content: "\f1da";
+}
+html /deep/ .fa-circle-thin:before {
+  content: "\f1db";
+}
+html /deep/ .fa-header:before {
+  content: "\f1dc";
+}
+html /deep/ .fa-paragraph:before {
+  content: "\f1dd";
+}
+html /deep/ .fa-sliders:before {
+  content: "\f1de";
+}
+html /deep/ .fa-share-alt:before {
+  content: "\f1e0";
+}
+html /deep/ .fa-share-alt-square:before {
+  content: "\f1e1";
+}
+html /deep/ .fa-bomb:before {
+  content: "\f1e2";
+}
+html /deep/ .fa-soccer-ball-o:before,
+html /deep/ .fa-futbol-o:before {
+  content: "\f1e3";
+}
+html /deep/ .fa-tty:before {
+  content: "\f1e4";
+}
+html /deep/ .fa-binoculars:before {
+  content: "\f1e5";
+}
+html /deep/ .fa-plug:before {
+  content: "\f1e6";
+}
+html /deep/ .fa-slideshare:before {
+  content: "\f1e7";
+}
+html /deep/ .fa-twitch:before {
+  content: "\f1e8";
+}
+html /deep/ .fa-yelp:before {
+  content: "\f1e9";
+}
+html /deep/ .fa-newspaper-o:before {
+  content: "\f1ea";
+}
+html /deep/ .fa-wifi:before {
+  content: "\f1eb";
+}
+html /deep/ .fa-calculator:before {
+  content: "\f1ec";
+}
+html /deep/ .fa-paypal:before {
+  content: "\f1ed";
+}
+html /deep/ .fa-google-wallet:before {
+  content: "\f1ee";
+}
+html /deep/ .fa-cc-visa:before {
+  content: "\f1f0";
+}
+html /deep/ .fa-cc-mastercard:before {
+  content: "\f1f1";
+}
+html /deep/ .fa-cc-discover:before {
+  content: "\f1f2";
+}
+html /deep/ .fa-cc-amex:before {
+  content: "\f1f3";
+}
+html /deep/ .fa-cc-paypal:before {
+  content: "\f1f4";
+}
+html /deep/ .fa-cc-stripe:before {
+  content: "\f1f5";
+}
+html /deep/ .fa-bell-slash:before {
+  content: "\f1f6";
+}
+html /deep/ .fa-bell-slash-o:before {
+  content: "\f1f7";
+}
+html /deep/ .fa-trash:before {
+  content: "\f1f8";
+}
+html /deep/ .fa-copyright:before {
+  content: "\f1f9";
+}
+html /deep/ .fa-at:before {
+  content: "\f1fa";
+}
+html /deep/ .fa-eyedropper:before {
+  content: "\f1fb";
+}
+html /deep/ .fa-paint-brush:before {
+  content: "\f1fc";
+}
+html /deep/ .fa-birthday-cake:before {
+  content: "\f1fd";
+}
+html /deep/ .fa-area-chart:before {
+  content: "\f1fe";
+}
+html /deep/ .fa-pie-chart:before {
+  content: "\f200";
+}
+html /deep/ .fa-line-chart:before {
+  content: "\f201";
+}
+html /deep/ .fa-lastfm:before {
+  content: "\f202";
+}
+html /deep/ .fa-lastfm-square:before {
+  content: "\f203";
+}
+html /deep/ .fa-toggle-off:before {
+  content: "\f204";
+}
+html /deep/ .fa-toggle-on:before {
+  content: "\f205";
+}
+html /deep/ .fa-bicycle:before {
+  content: "\f206";
+}
+html /deep/ .fa-bus:before {
+  content: "\f207";
+}
+html /deep/ .fa-ioxhost:before {
+  content: "\f208";
+}
+html /deep/ .fa-angellist:before {
+  content: "\f209";
+}
+html /deep/ .fa-cc:before {
+  content: "\f20a";
+}
+html /deep/ .fa-shekel:before,
+html /deep/ .fa-sheqel:before,
+html /deep/ .fa-ils:before {
+  content: "\f20b";
+}
+html /deep/ .fa-meanpath:before {
+  content: "\f20c";
+}
+
+
+</style>
+    <link rel="stylesheet" href="css/noflo-ui.css">
+    <style shim-shadowdom="">
+
+html /deep/ h1,
+html /deep/ h2, 
+html /deep/ h3 {
+  font-weight: normal;
+}
+
+html /deep/ input:focus, 
+html /deep/ select:focus, 
+html /deep/ textarea:focus, 
+html /deep/ button:focus, 
+html /deep/ h1, 
+html /deep/ h2, 
+html /deep/ h3, 
+html /deep/ div, 
+html /deep/ a, 
+html /deep/ p, 
+html /deep/ div {
+  outline:none;
+}
+
+html /deep/ th {
+  text-align: left;
+}
+
+html /deep/ div.error {
+  color: hsla( 0, 98%, 46%, .8);
+}
+
+html /deep/ the-panel {
+  background-color: hsla(0, 0%, 0%, 0.98) !important;
+  transition: left 0.3s ease-in-out, bottom 0.3s ease-in-out, right 0.3s ease-in-out, top 0.3s ease-in-out, width 0.1s ease-in-out;
+  position: fixed;
+  border: 0px solid hsla(190, 90%, 80%, 0.3);
+  box-sizing: border-box;
+}
+html /deep/ the-panel#account {
+  top: 0px;
+  border-right-width: 1px;
+}
+html /deep/ the-panel#account:before {
+  font-family: FontAwesome;
+  content: '\f03a';
+  color: hsl(189, 50%, 80%);
+  position: absolute;
+  text-align: center;
+  right: 0px;
+  width: 36px;
+  top: 50%;
+  top: calc(50% - 7px);
+  font-size: 17px;
+  opacity: 0.25;
+  transition: opacity 0.3s ease-in-out;
+}
+html /deep/ the-panel#account:not([open]):before {
+  cursor: e-resize;
+  opacity: 1;
+}
+html /deep/ the-panel#account header,
+html /deep/ the-panel#account main {
+  display: block;
+  margin-left: 36px;
+  margin-right: 36px;
+}
+html /deep/ the-panel#account header h1 {
+  text-align: center;
+  border-bottom: 1px solid hsl(189, 50%, 80%);
+  height: 36px;
+  line-height: 36px;
+  font-size: 17px;
+  white-space: nowrap;
+}
+html /deep/ the-panel#account main ul {
+  margin: 0px;
+  padding: 0px;
+  list-style: none;
+}
+html /deep/ the-panel#account main ul li {
+  line-height: 36px;
+  min-height: 36px;
+}
+html /deep/ the-panel#account main ul li a {
+  color: white;
+  text-decoration: none;
+  display: block;
+  cursor: pointer;
+}
+html /deep/ the-panel#account main ul li a i {
+  float: right;
+  line-height: 36px;
+  color: hsl(189, 50%, 80%);
+  margin-right: 4px;
+}
+
+
+
+html /deep/ the-panel#fixed {
+  padding-left: 36px;
+  padding-top: 72px;
+  top: 0px;
+  border-left-width: 1px;
+}
+html /deep/ the-panel#fixed:before {
+  font-family: FontAwesome;
+  content: '\f06e';
+  color: hsl(189, 50%, 80%);
+  position: absolute;
+  text-align: center;
+  left: 0px;
+  width: 36px;
+  top: 50%;
+  top: calc(50% - 7px);
+  font-size: 17px;
+  opacity: 0.25;
+  transition: opacity 0.3s ease-in-out;
+}
+html /deep/ the-panel#fixed:not([open]):before {
+  opacity: 1;
+  cursor: w-resize;
+}
+html /deep/ the-panel#fixed ::shadow footer {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+}
+
+html /deep/ the-card .the-card-content {
+  display: block;
+  margin: 0px;
+  padding: 10px 10px 10px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-bottom: 1px hsla(190, 100%, 30%, 0.1) solid;
+  border-right: 1px hsla(190, 100%, 30%, 0.1) solid;
+  background-color: hsla(0, 0%, 0%, 0.99) !important;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+}
+
+html /deep/ the-card[type="noflo-runtime-preview"] {
+  padding: 0px;
+  width: calc(72px * 4);
+  overflow: hidden;
+}
+
+html /deep/ the-card.maximized {
+  background-color: hsla(0, 0%, 0%, 0.99);
+  width: calc(100% - 36px);
+  height: calc(100% - 36px);
+  max-height: none;
+  position: fixed;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  top: 72px;
+  left: 36px;
+  transition: height 0.3s ease-in-out, width 0.3s ease-in-out;
+  z-index: 3;
+  border: none;
+}
+html /deep/ the-card.maximized ::shadow .the-card-content {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+}
+html /deep/ the-card-stack  ::shadow .sticky-head {
+  background-color: hsla(0, 0%, 5%, 0.99) !important;
+  background-image: radial-gradient(1px at 0px 0px, hsl(210, 50%, 60%) 0.5px, hsla(0, 0%, 0%, 0) 1px);
+  background-size: calc(100% - 1px) 100%;
+  background-position: 0px;
+}
+
+html /deep/ the-card-stack ::shadow .sticky-head h1 {
+  font-size:15px;
+}
+
+html /deep/ the-card ::shadow button {
+  width: 36px;
+  height: 36px;
+  font-size: 10px;
+  background-color: transparent;
+  border: none;
+  color: white;
+  text-align: center;
+}
+
+html /deep/ the-card ::shadow h1 {
+  font-size: 12px;
+  line-height: 36px;
+  margin: 0px;
+  margin-bottom: 0px;
+  text-shadow: 0 1px hsl(0, 0%, 0%);  
+  text-align: left;
+}
+
+html /deep/ the-card ::shadow header h1 {
+  display: block;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: calc(72px * 3 - 1px);
+  height: 36px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+html /deep/ the-card ::shadow header h1.clear {
+  cursor: pointer;
+}
+html /deep/ the-card ::shadow header h2 {
+  line-height: 36px;
+  width: 72px;
+  height: 36px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  margin: 0px;
+  text-align: right;
+  font-size: 10px;
+  color: hsla(190, 100%, 80%, 0.8);
+  display: block;
+  cursor: default;
+}
+html /deep/ the-card ::shadow header {
+  height: 36px;
+}
+
+html /deep/ the-card ::shadow ul {
+  margin: 0px;
+  padding: 0px;
+  list-style: none;
+}
+
+html /deep/ the-card ::shadow textarea {
+  width: 100%;
+  min-height: 100px;
+  max-height: calc(72px * 4);
+}
+
+html /deep/ the-card ::shadow ul li {
+  display: block;
+  padding: 0px;
+  margin: 0px;
+}
+html /deep/ the-card ::shadow ul.toolbar2right {
+  width: 180px;
+  display: block;
+  position: absolute;
+  right: 36px;
+  top: 10px;
+  text-align: right;
+}
+html /deep/ the-card ::shadow ul.toolbar li {
+  float: left;
+  display: block;
+  width: calc(100%/2);  
+  height: 36px;
+  text-align: center;
+  margin: 0px;
+  margin-right: 0px;
+}
+html /deep/ the-card ::shadow ul.toolbar2right li {
+  float: right;
+  width: auto;
+}
+html /deep/ the-card ::shadow ul.toolbar li * {
+  line-height: 36px;
+}
+html /deep/ the-card ::shadow ul.toolbar li button {
+  width:100%;
+  height:100%;
+}
+
+html /deep/ .red-button {
+  background-color: hsla(0, 100%, 20%, 0.2);
+  color: hsl(0, 100%, 65%);
+}
+html /deep/ .blue-button {
+  background-color: hsla(190, 100%, 20%, 0.2);
+  color: hsl(190, 100%, 65%);
+}
+
+
+/*
+html /deep/ the-card ::shadow ul li h2 {
+  font-size: 10px;
+  margin: 0px;
+}
+html /deep/ the-card ::shadow ul li i {
+  margin-right: 5px;
+}
+html /deep/ the-card ::shadow ul li p {
+  margin: 0px;
+  margin-top: 10px;
+  padding: 0px;
+  font-size: 8px;
+}
+*/
+
+.modal-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: hsla(192, 25%, 92%, 0.1);
+  overflow: auto;
+}
+
+html /deep/ .modal-container {
+  background-color: hsl(192, 25%, 92%);
+  color: black;
+  display: block;
+  position: absolute;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  top: 36px;
+  width: calc(72px * 9);
+  /*max-width: 100%;*/
+  left: calc(50% - 72px * 4.5);
+  /*left: 50%;*/
+  /*margin-left: calc(72px * -4.5);*/
+  z-index: 5;
+  padding: 36px;
+  box-sizing: border-box;
+  border-radius: 3px;
+  box-shadow: hsl(189, 47%, 6%) 0px 0px 2px;
+}
+
+html /deep/ .modal-content /deep/ h1 {
+  font-size: 17px;
+  line-height: 36px;
+}
+html /deep/ .modal-content /deep/ label {
+  display: block;
+  font-size: 13px;
+  margin-top: 17px;
+  color: black;
+  line-height: 17px;
+}
+html /deep/ .modal-content /deep/ label > span {
+  line-height: 17px;
+}
+html /deep/ .modal-content /deep/ input,
+html /deep/ .modal-content /deep/ select,
+html /deep/ .modal-content /deep/ textarea {
+  display: block;
+  font-size: 17px;
+  background-color: rgba(0, 42, 51, 0.498039);
+  background-image: none;
+  font-family: "SourceCodePro",Helvetica,Arial,sans-serif;
+  color: white;
+  border-radius: 3px;
+  padding: 3px;
+  border: none;
+  margin: 0px;
+  width: 100%;
+  box-sizing: border-box;
+}
+html /deep/ .modal-content /deep/ div.CodeMirror {
+  border: 1px solid hsl(189, 47%, 6%);
+  border-radius: 3px;
+}
+
+html /deep/ .modal-content /deep/ .toolbar {
+  display: block;
+  line-height: 36px;
+  margin-top: 36px;
+}
+html /deep/ .modal-content /deep/ .toolbar button {
+  background-color: transparent;
+  color: hsl(190, 100%, 30%);
+  border: 1px solid hsl(190, 100%, 30%);
+  font-size: 13px;
+  border-radius: 3px;
+  font-family: "SourceCodePro",Helvetica,Arial,sans-serif;
+  height: 36px;
+  padding-left: 36px;
+  padding-right: 36px;
+  margin: 0px;
+}
+html /deep/ .modal-content /deep/ .toolbar button.disabled {
+  opacity: 0.1;
+}
+html /deep/ .modal-content /deep/ .toolbar a {
+  font-size: 13px;
+  color: hsl(190, 100%, 30%);
+  text-decoration: none;
+  height: 36px;
+  padding-left: 36px;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+html polymer-element.modal-content {
+  display: none;
+}
+
+</style>
+
+  
+  
+    <!-- $NOFLO_APP_ANALYTICS -->
+    <div id="loading">Preparing NoFlo UI...</div>
+    <noflo-ui id="container"></noflo-ui>
+    <script src="app/main.js"></script>
+  
+
+<script src="index.js"></script></body></html>
