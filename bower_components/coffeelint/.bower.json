@@ -1,0 +1,13 @@
+{
+  "name": "coffeelint",
+  "homepage": "https://github.com/clutchski/coffeelint",
+  "_release": "217d4edcd5",
+  "_resolution": {
+    "type": "branch",
+    "branch": "gh-pages",
+    "commit": "217d4edcd5f2d4fb0a76a82247b5c3b69147e965"
+  },
+  "_source": "git://github.com/clutchski/coffeelint.git",
+  "_target": "gh-pages",
+  "_originalSource": "clutchski/coffeelint"
+}

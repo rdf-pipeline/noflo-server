@@ -1,0 +1,274 @@
+* {
+  padding:0;
+  margin:0;
+}
+
+html {
+  width:100%;
+}
+
+body {
+  background: -webkit-radial-gradient(circle, #eee, #555);
+  background: -moz-radial-gradient(circle, #eee, #555);
+  font-family:monospace;
+  width:100%;
+  margin-bottom:40px;
+  font-size:14px;
+  line-height:1.5em;
+}
+
+/**
+ * Header styles.
+ */
+
+.header {
+  background-color: #111;
+  border-bottom: 1px solid black;
+  width:100%;
+  vertical-align:bottom;
+  position:relative;
+  height:40px;
+}
+
+.title {
+  font-weight:normal;
+  display:inline-block;
+  float:left;
+  font-size:30px;
+  margin-right: 40px;
+  color: #fff;
+  position:relative;
+  top:8px;
+}
+
+.header_links {
+  font-size:13px;
+  position:relative;
+  top:10px;
+}
+
+.header_links li {
+  display:inline;
+  float:left;
+}
+
+.header_links a {
+  color: #eee;
+  text-decoration:none;
+  margin-right:10px;
+  padding:5px;
+}
+
+.header_links a:hover {
+  color: #fff;
+  background-color:#2b2b2b;
+  border-radius:5px;
+}
+
+
+/**
+ * Body styles.
+ */
+
+.container {
+  width: 900px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.row {
+  margin-top:20px;
+  box-shadow: 2px -2px 6px rgba(0, 0, 0, 0.5);
+  border: 2px solid #555;
+  background: white;
+  border-radius:5px;
+}
+
+.report_row, .doc_row {
+  padding-left:75px;
+  padding-right:75px;
+}
+
+.doc_row {
+  font-family: "Helvetica Neue", "Lucida Grande", "Lucida Sans Unicode",
+    Helvetica, Arial, sans-serif !important;
+  padding-bottom:20px;
+}
+
+p {
+  margin-bottom:10px;
+}
+
+.section_title {
+  margin-top:35px;
+  margin-bottom:15px;
+  font-size:25px;
+  font-family:monospace;
+}
+
+a {
+  color:#C00000;
+
+}
+
+.forkme {
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  right: 0;
+  border: 0;
+}
+
+.clear {
+  clear:both;
+}
+
+code, .error_report {
+  font-family:monospace;
+  border: 1px dotted black;
+  display:block;
+  padding:10px;
+  margin-top:10px;
+  margin-bottom:10px;
+  background-color:#eee;
+}
+
+/* Editor styling */
+
+.row.editor_row {
+  padding-left:20px;
+  background-color:#111;
+  border: 0;
+}
+
+.editor {
+  background-color:#111;
+  min-height:250px;
+  color:#339933;
+  font-family:monospace;
+  font-size:16px;
+  font-weight:normal;
+  resize:none;
+  outline:none;
+  width:100%;
+  border:none;
+}
+
+tt {
+  padding:3px;
+  background-color:#eee;
+  font-family:monospace;
+  border:1px dotted #aaa;
+}
+
+.run {
+  font-size:20px;
+  float:right;
+  text-transform:uppercase;
+  display:inline;
+  position:relative;
+  top:20px;
+  right:20px;
+  background-color: #eee;
+  padding:4px;
+  border:1px solid #2b2b2b;
+  border-radius:5px;
+  cursor:pointer;
+  background: -webkit-radial-gradient(circle, #fff, #bbb);
+  background: -moz-radial-gradient(circle, #fff, #bbb);
+  width:3em;
+  text-align:center;
+  position:relative;
+  z-index:10;
+}
+
+/** Report style **/
+
+.report_row {
+  display:none;
+  padding-bottom:10px;
+}
+
+.report_row.success {
+  background: #b2e0c2;
+  background: -webkit-radial-gradient(circle, #B2e0c2, #99D6AD);
+}
+
+.report_row.failure {
+  background-color:#ffe6e6;
+  background: -webkit-radial-gradient(circle, #ffe6e6, #ffcccc);
+}
+
+.error_report {
+  width:100%;
+  border: 1px dotted black;
+}
+
+.error_report .lineNumber {
+  min-width:100px;
+  text-align:right;
+  padding-right:10px;
+}
+
+/* Options table */
+.options {
+  margin-top:20px;
+  border-width: 1px 1px 1px 1px;
+  border-spacing: 0;
+  border-collapse: collapse;
+  border-color: #2b2b2b;
+  border-style: solid;
+}
+
+.options thead tr {
+  color:black;
+  font-weight:bold;
+}
+
+.options tbody tr:nth-child(odd) {
+  background-color: #efefef;
+}
+
+.options td, th {
+  margin: 0;
+  padding: 15px;
+  border-width: 1px 1px 1px 1px;
+  border-color: #2b2b2b;
+  border-style: solid;
+}
+
+.options .rule {
+  text-align:center;
+  vertical-align:middle;
+  font-family:monospace;
+  font-weight:bold;
+}
+
+.options code {
+  background-color:#ffffdd;
+  margin-bottom:0;
+  font-size:13px;
+}
+
+.changelog_header {
+  margin-bottom:0.8em;
+  display:inline;
+}
+
+.changelog_date {
+  display:inline;
+  color:#444;
+  font-size:80%;
+}
+
+.changelog_history {
+  margin-left:2em;
+  margin-bottom:1em;
+}
+
+.api_call {
+  margin-top:15px;
+  font-family:monospace;
+  margin-bottom:8px;
+  font-weight:bold;
+}

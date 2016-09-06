@@ -1,0 +1,35 @@
+{
+  "name": "syn",
+  "version": "0.0.3",
+  "author": {
+    "name": "Bitovi",
+    "email": "contact@bitovi.com",
+    "web": "http://bitovi.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:bitovi/syn.git",
+    "github": "https://github.com/bitovi/syn"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://opensource.org/licenses/mit-license.php"
+    }
+  ],
+  "devDependencies": {
+    "grunt": "0.4.x",
+    "grunt-contrib-connect": "0.5.x",
+    "grunt-contrib-concat": "0.3.0",
+    "grunt-contrib-uglify": "~0.3.2",
+    "grunt-exec": "0.4.2",
+    "steal": "https://github.com/bitovi/steal-build/tarball/master",
+    "testee": "0.0.x",
+		"bower": "1.2.x",
+    "grunt-contrib-jshint": "^0.8.0",
+		"grunt-jsbeautifier": "^0.2.6"
+  },
+  "scripts": {
+    "test": "grunt test"
+  }
+}

@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+    <title>CoffeeLint - Lint your CoffeeScript</title>
+    <link rel="stylesheet" type="text/css" href="css/coffeelint.css" />
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-27677530-2']);
+      _gaq.push(['_setDomainName', 'coffeelint.org']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body>
+
+    <!-- HEADER -->
+    <div class="header">
+      <div class="container">
+        <h1 class="title">
+          CoffeeLint
+        </h1>
+        <ul class="header_links">
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#install">Install</a></li>
+          <li><a href="#usage">Usage</a></li>
+          <li><a href="#options">Options</a></li>
+          <li><a href="#api">API</a></li>
+          <li><a href="#plugins">Plugins</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#changelog">Change Log</a></li>
+          <li><a href="https://github.com/clutchski/coffeelint">Source</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <!-- EDITOR -->
+      <div class="row editor_row">
+        <div class="run">Run</div>
+<textarea class="editor" spellcheck="false"># Lint your CoffeeScript!
+
+class Gangster
+
+  wasItAGoodDay : () ->
+    yes
+</textarea>
+      </div>
+
+      <!-- LINT REPORT -->
+      <div class="row report_row">
+        <div class="report_container section_container">
+          <div class="report">
+            <h1 class="section_title"></h1>
+            <div class="section_body"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DOCUMENTATION -->
+      <div class="row doc_row">
+        <h2 class="section_title" id="overview">Overview</h2>
+        <p>
+          CoffeeLint is a style checker that helps keep
+          <a href="http://coffeescript.org">CoffeeScript</a>
+          code clean and consistent. CoffeeScript does a great job at
+          insulating programmers from many of
+          JavaScript's bad parts, but it won't help enforce a consistent style
+          across a code base. CoffeeLint can help with that.
+        </p>
+        <p>
+          If you have an idea, a bug report or anything else to say, reach out
+          on the
+          <a href="http://github.com/clutchski/coffeelint/issues">issues page</a>.
+        </p>
+
+        <h2 class="section_title" id="install">Installation</h2>
+        <p>
+          To install, make sure you have a working version of the latest
+          stable version of <a href="http://nodejs.org/">Node</a> and
+          <a href="http://npmjs.org/">NPM</a> (the Node Package Manager) and then
+          run:
+        </p>
+        <code>
+        npm install -g coffeelint
+        </code>
+        <p>Leave off the <tt>g</tt> if you do not want to install globally.</p>
+
+        <h2 class="section_title">Getting Started</h2>
+        <ul>
+            <li>
+                <a href="https://github.com/clutchski/coffeelint/blob/master/doc/user.md">Users</a>
+            </li>
+            <li>
+                <a href="https://github.com/clutchski/coffeelint/blob/master/doc/integration.md">Plugin Developers</a>
+            </li>
+        </ul>
+
+        <h2 class="section_title" id="usage">Usage</h2>
+        <p>
+          Once you have Coffeelint installed, to lint your scripts, run:
+        </p>
+        <code>coffeelint application.coffee</code>
+        <p>
+          To specify your own configuration file, do the following:
+        </p>
+        <code>coffeelint -f coffeelint.json application.coffee</code>
+        <p>
+          If any errors were found, a non-zero code will be returned.
+        </p>
+        <p>
+          To generate a configuration file, do
+        </p>
+        <code>coffeelint --makeconfig &gt; coffeelint.json</code>
+        <p>
+          You can then configure the rules to your liking.
+        </p>
+        <p>
+          New in 1.0: CoffeeLint will automatically pick up config files. When
+          linting a file (as opposed to stdin) it will walk up the directory
+          tree looking for a coffeelint.json or a package.json that has a
+          "coffeelintConfig" object. If neither of those are found or you're
+          linting from stdin it will check your home for a coffeelint.json
+          file.
+        </p>
+        <h2 class="section_title" id="options">Options</h2>
+        </p>
+        <p>
+          By default, CoffeeLint will help ensure you are writing idiomatic
+          CoffeeScript, but every rule is optional and configurable so it can
+          be tuned to fit your preferred coding style. To override any of
+          CoffeeLint's default options, <a href="#usage">generate a
+          configuration file</a> and tweak it as needed. To enable an option,
+          set its level to <tt>error</tt>, and to disable an option, set its
+          level to <tt>ignore</tt>. If you set the level to <tt>warn</tt>,
+          violations will be reported, but won't cause a non-zero exit code.
+        </p>
+        <p>
+          To disable a rule inline use the following:
+        </p>
+        <pre><code>
+# coffeelint: disable=max_line_length
+foo = "some/huge/line/string/with/embed/#{values}.that/surpasses/the/max/column/width"
+# coffeelint: enable=max_line_length
+        </code></pre>
+        <p>Here's a rundown of CoffeeLint's rules:</p>
+        <table class="options">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+<tr>
+<td class="rule">arrow_spacing</td>
+<td class="description">
+    <p>This rule checks to see that there is spacing before and after
+the arrow operator that declares a function. This rule is disabled
+by default.</p> <p>Note that if arrow_spacing is enabled, and you
+pass an empty function as a parameter, arrow_spacing will accept
+either a space or no space in-between the arrow operator and the
+parenthesis</p>
+<pre><code># Both of this will not trigger an error,
+# even with arrow_spacing enabled.
+x(-> 3)
+x( -> 3)
+
+# However, this will trigger an error
+x((a,b)-> 3)
+</code>
+</pre>
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">braces_spacing</td>
+<td class="description">
+    This rule checks to see that there is the proper spacing inside
+curly braces. The spacing amount is specified by "spaces".
+The spacing amount for empty objects is specified by
+"empty_object_spaces".
+
+<pre><code>
+# Spaces is 0
+{a: b}     # Good
+{a: b }    # Bad
+{ a: b}    # Bad
+{ a: b }   # Bad
+
+# Spaces is 1
+{a: b}     # Bad
+{a: b }    # Bad
+{ a: b}    # Bad
+{ a: b }   # Good
+{ a: b  }  # Bad
+{  a: b }  # Bad
+{  a: b  } # Bad
+
+# Empty Object Spaces is 0
+{}         # Good
+{ }        # Bad
+
+# Empty Object Spaces is 1
+{}         # Bad
+{ }        # Good
+</code></pre>
+
+This rule is disabled by default.
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">camel_case_classes</td>
+<td class="description">
+    This rule mandates that all class names are UpperCamelCased.
+Camel casing class names is a generally accepted way of
+distinguishing constructor functions - which require the 'new'
+prefix to behave properly - from plain old functions.
+<pre>
+<code># Good!
+class BoaConstrictor
+
+# Bad!
+class boaConstrictor
+</code>
+</pre>
+This rule is enabled by default.
+    <p><em>default level: error</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">coffeescript_error</td>
+<td class="description">
+    [no description provided]
+    <p><em>default level: error</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">colon_assignment_spacing</td>
+<td class="description">
+    <p>This rule checks to see that there is spacing before and
+after the colon in a colon assignment (i.e., classes, objects).
+The spacing amount is specified by
+spacing.left and spacing.right, respectively.
+A zero value means no spacing required.
+</p>
+<pre><code>
+#
+# If spacing.left and spacing.right is 1
+#
+
+# Good
+object = {spacing : true}
+class Dog
+  canBark : true
+
+# Bad
+object = {spacing: true}
+class Cat
+  canBark: false
+</code></pre>
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">cyclomatic_complexity</td>
+<td class="description">
+    Examine the complexity of your application.
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">duplicate_key</td>
+<td class="description">
+    Prevents defining duplicate keys in object literals and classes
+    <p><em>default level: error</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">empty_constructor_needs_parens</td>
+<td class="description">
+    Requires constructors with no parameters to include the parens
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">ensure_comprehensions</td>
+<td class="description">
+    This rule makes sure that parentheses are around comprehensions.
+    <p><em>default level: warn</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">eol_last</td>
+<td class="description">
+    Checks that the file ends with a single newline
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">indentation</td>
+<td class="description">
+    This rule imposes a standard number of spaces to be used for
+indentation. Since whitespace is significant in CoffeeScript, it's
+critical that a project chooses a standard indentation format and
+stays consistent. Other roads lead to darkness. <pre> <code>#
+Enabling this option will prevent this ugly
+# but otherwise valid CoffeeScript.
+twoSpaces = () ->
+  fourSpaces = () ->
+      eightSpaces = () ->
+            'this is valid CoffeeScript'
+
+</code>
+</pre>
+Two space indentation is enabled by default.
+    <p><em>default level: error</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">line_endings</td>
+<td class="description">
+    This rule ensures your project uses only <tt>windows</tt> or
+<tt>unix</tt> line endings. This rule is disabled by default.
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">max_line_length</td>
+<td class="description">
+    This rule imposes a maximum line length on your code. <a
+href="http://www.python.org/dev/peps/pep-0008/">Python's style
+guide</a> does a good job explaining why you might want to limit the
+length of your lines, though this is a matter of taste.
+
+Lines can be no longer than eighty characters by default.
+    <p><em>default level: error</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">missing_fat_arrows</td>
+<td class="description">
+    Warns when you use `this` inside a function that wasn't defined
+with a fat arrow. This rule does not apply to methods defined in a
+class, since they have `this` bound to the class instance (or the
+class itself, for class methods). The option `is_strict` is
+available for checking bindings of class methods.
+
+It is impossible to statically determine whether a function using
+`this` will be bound with the correct `this` value due to language
+features like `Function.prototype.call` and
+`Function.prototype.bind`, so this rule may produce false positives.
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">newlines_after_classes</td>
+<td class="description">
+    <p>Checks the number of newlines between classes and other code.</p>
+
+Options:
+- <pre><code>value</code></pre> - The number of required newlines
+after class definitions. Defaults to 3.
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_backticks</td>
+<td class="description">
+    Backticks allow snippets of JavaScript to be embedded in
+CoffeeScript. While some folks consider backticks useful in a few
+niche circumstances, they should be avoided because so none of
+JavaScript's "bad parts", like <tt>with</tt> and <tt>eval</tt>,
+sneak into CoffeeScript.
+This rule is enabled by default.
+    <p><em>default level: error</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_debugger</td>
+<td class="description">
+    This rule detects `debugger` and optionally `console` calls
+This rule is `warn` by default.
+    <p><em>default level: warn</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_empty_functions</td>
+<td class="description">
+    Disallows declaring empty functions. The goal of this rule is that
+unintentional empty callbacks can be detected:
+<pre>
+<code>someFunctionWithCallback ->
+doSomethingSignificant()
+</code>
+</pre>
+The problem is that the call to
+<tt>doSomethingSignificant</tt> will be made regardless
+of <tt>someFunctionWithCallback</tt>'s execution. It can
+be because you did not indent the call to
+<tt>doSomethingSignificant</tt> properly.
+
+If you really meant that <tt>someFunctionWithCallback</tt>
+should call a callback that does nothing, you can write your code
+this way:
+<pre>
+<code>someFunctionWithCallback ->
+    undefined
+doSomethingSignificant()
+</code>
+</pre>
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_empty_param_list</td>
+<td class="description">
+    This rule prohibits empty parameter lists in function definitions.
+<pre>
+<code># The empty parameter list in here is unnecessary:
+myFunction = () -&gt;
+
+# We might favor this instead:
+myFunction = -&gt;
+</code>
+</pre>
+Empty parameter lists are permitted by default.
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_implicit_braces</td>
+<td class="description">
+    This rule prohibits implicit braces when declaring object literals.
+Implicit braces can make code more difficult to understand,
+especially when used in combination with optional parenthesis.
+<pre>
+<code># Do you find this code ambiguous? Is it a
+# function call with three arguments or four?
+myFunction a, b, 1:2, 3:4
+
+# While the same code written in a more
+# explicit manner has no ambiguity.
+myFunction(a, b, {1:2, 3:4})
+</code>
+</pre>
+Implicit braces are permitted by default, since their use is
+idiomatic CoffeeScript.
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_implicit_parens</td>
+<td class="description">
+    This rule prohibits implicit parens on function calls.
+<pre>
+<code># Some folks don't like this style of coding.
+myFunction a, b, c
+
+# And would rather it always be written like this:
+myFunction(a, b, c)
+</code>
+</pre>
+Implicit parens are permitted by default, since their use is
+idiomatic CoffeeScript.
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_interpolation_in_single_quotes</td>
+<td class="description">
+    This rule prohibits string interpolation in a single quoted string.
+<pre>
+<code># String interpolation in single quotes is not allowed:
+foo = '#{bar}'
+
+# Double quotes is OK of course
+foo = "#{bar}"
+</code>
+</pre>
+String interpolation in single quoted strings is permitted by
+default.
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_nested_string_interpolation</td>
+<td class="description">
+    This rule warns about nested string interpolation,
+as it tends to make code harder to read and understand.
+<pre>
+<code># Good!
+str = "Book by #{firstName.toUpperCase()} #{lastName.toUpperCase()}"
+
+# Bad!
+str = "Book by #{"#{firstName} #{lastName}".toUpperCase()}"
+</code>
+</pre>
+    <p><em>default level: warn</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_plusplus</td>
+<td class="description">
+    This rule forbids the increment and decrement arithmetic operators.
+Some people believe the <tt>++</tt> and <tt>--</tt> to be cryptic
+and the cause of bugs due to misunderstandings of their precedence
+rules.
+This rule is disabled by default.
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_private_function_fat_arrows</td>
+<td class="description">
+    Warns when you use the fat arrow for a private function
+inside a class definition scope. It is not necessary and
+it does not do anything.
+    <p><em>default level: warn</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_stand_alone_at</td>
+<td class="description">
+    This rule checks that no stand alone @ are in use, they are
+discouraged. Further information in CoffeScript issue <a
+href="https://github.com/jashkenas/coffee-script/issues/1601">
+#1601</a>
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_tabs</td>
+<td class="description">
+    This rule forbids tabs in indentation. Enough said. It is enabled by
+default.
+    <p><em>default level: error</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_this</td>
+<td class="description">
+    This rule prohibits 'this'.
+Use '@' instead.
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_throwing_strings</td>
+<td class="description">
+    This rule forbids throwing string literals or interpolations. While
+JavaScript (and CoffeeScript by extension) allow any expression to
+be thrown, it is best to only throw <a
+href="https://developer.mozilla.org
+/en/JavaScript/Reference/Global_Objects/Error"> Error</a> objects,
+because they contain valuable debugging information like the stack
+trace. Because of JavaScript's dynamic nature, CoffeeLint cannot
+ensure you are always throwing instances of <tt>Error</tt>. It will
+only catch the simple but real case of throwing literal strings.
+<pre>
+<code># CoffeeLint will catch this:
+throw "i made a boo boo"
+
+# ... but not this:
+throw getSomeString()
+</code>
+</pre>
+This rule is enabled by default.
+    <p><em>default level: error</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_trailing_semicolons</td>
+<td class="description">
+    This rule prohibits trailing semicolons, since they are needless
+cruft in CoffeeScript.
+<pre>
+<code># This semicolon is meaningful.
+x = '1234'; console.log(x)
+
+# This semicolon is redundant.
+alert('end of line');
+</code>
+</pre>
+Trailing semicolons are forbidden by default.
+    <p><em>default level: error</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_trailing_whitespace</td>
+<td class="description">
+    This rule forbids trailing whitespace in your code, since it is
+needless cruft. It is enabled by default.
+    <p><em>default level: error</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_unnecessary_double_quotes</td>
+<td class="description">
+    This rule prohibits double quotes unless string interpolation is
+used or the string contains single quotes.
+<pre>
+<code># Double quotes are discouraged:
+foo = "bar"
+
+# Unless string interpolation is used:
+foo = "#{bar}baz"
+
+# Or they prevent cumbersome escaping:
+foo = "I'm just following the 'rules'"
+</code>
+</pre>
+Double quotes are permitted by default.
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_unnecessary_fat_arrows</td>
+<td class="description">
+    Disallows defining functions with fat arrows when `this`
+is not used within the function.
+    <p><em>default level: warn</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">non_empty_constructor_needs_parens</td>
+<td class="description">
+    Requires constructors with parameters to include the parens
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">prefer_english_operator</td>
+<td class="description">
+    This rule prohibits &&, ||, ==, != and !.
+Use and, or, is, isnt, and not instead.
+!! for converting to a boolean is ignored.
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">space_operators</td>
+<td class="description">
+    This rule enforces that operators have space around them.
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">spacing_after_comma</td>
+<td class="description">
+    This rule requires a space after commas.
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">transform_messes_up_line_numbers</td>
+<td class="description">
+    This rule detects when changes are made by transform function,
+and warns that line numbers are probably incorrect.
+    <p><em>default level: warn</em></p>
+</td>
+</tr>
+              </tbody>
+            </table>
+          </p>
+
+          <h2 class="section_title" id="api">API</h2>
+          <p>
+            If you'd like to run CoffeeScript in the browser or any other
+            Javascript runtime, include
+            <a href="http://coffeescript.org/extras/coffee-script.js">coffee-script.js</a>
+            and
+            <a href="http://www.coffeelint.org/js/coffeelint.js">
+              coffeelint.js
+            </a>
+            and you're off to the races. Then you can call CoffeeLint directly
+            with the following API:
+          </p>
+          <h3 class="api_call">coffeelint.lint(source, configuration)</h3>
+          <p>
+            Lints the CoffeeScript source with the given configuration
+            and returns an array of lint errors and warnings. If the array is
+            empty, all is well.  Compile time errors will be thrown.
+            An error is a Javascript object with the following properties:
+          </p>
+<pre><code>{
+    rule :      'Name of the violated rule',
+    lineNumber: 'Number of the line that caused the violation',
+    level:      'The severity level of the violated rule',
+    message:    'Information about the violated rule',
+    context:    'Optional details about why the rule was violated'
+}</code></pre>
+
+          <h3 class="api_call">coffeelint.registerRule(RuleConstructor)</h3>
+          <p>
+            Registers a custom rule that may be run by CoffeeLint. If the rule
+            is ignored by default it will still require overriding it's level
+            just like the default rules. They have actually all be
+            re-implemented as pluggable rules that come bundled in CoffeeLint.
+          </p>
+
+          <h2 class="section_title" id="loading-custom-rules">Loading Custom Rules</h2>
+          <p>
+            Not every possible rule will be included in the CoffeeLint project.
+            Maybe it's very specific to your project, or it's not specific to
+            CoffeeScript.
+          </p>
+          <p>
+            By convention rule authors add the keyword <tt>coffeelintrule</tt> to their npm package.json so custom rules can be found easily. Click <a href="https://npmjs.org/search?q=coffeelintrule">here</a> to list all currently available custom rules on npm.
+          </p>
+          <p>
+            For example, maybe you want to get a warning if you don't have a
+            newline at the end of your files. We'll imagine you globally
+            installed the package <a
+            href="https://github.com/Dreamscapes/coffeelint-newline-at-eof">"coffeelint-newline-eof"</a>.
+          </p>
+          <!-- Found this example at https://github.com/clutchski/coffeelint/pull/79 -->
+<pre><code>{
+    // This name MUST match the default configuration of the rule being loaded.
+    "newline_at_eof": {
+        // NodeJS module to load. It can also be a path to the rule (useful for devleopment)
+        "module": "coffeelint-newline-at-eof",
+        // Maybe the rule author set it to error by default and you only want a warning.
+        "level": "warn"
+    }
+}</code></pre>
+          <p>
+            Now every time you run CoffeeLint it will load that rule and
+            override it's default level to "warn".
+          </p>
+
+          <h2 class="section_title" id="building-custom-rules">Building Custom Rules</h2>
+          <p>
+              CoffeeLint has three types of linters that run. In no particular order they are.
+
+              <ul>
+                  <li>LineLinter: processes one line at a time, usually with regular expressions</li>
+                  <li>TokenLinter: processes the token stream generated by CoffeeScript.</li>
+                  <li>ASTLinter: Processes the Abstract Syntax Tree. AST rules are
+                  only called with the root node and it is up to the rule to
+                  recurse the tree.</li>
+              </ul>
+          </p>
+
+          <p>
+              Rules may be loaded using <pre><code>--rules /path/to/rules/</code></pre> or
+              <pre><code>coffeelint.registerRule(RuleConstructor)</code></pre> when
+              outside of the CLI.
+          </p>
+
+          <p>
+            Rules do not have to be written in CoffeeScript. A new instance of
+            each rule is constructed for each file, so the RuleConstructor must
+            be a constructor function that generates a new clean instance of
+            your rule when the new operator is used.
+          </p>
+
+          <p>
+              Your rule instance must have a .rule attribute with it's default
+              configuration. "name", "level" "message", and "description" are
+              all required. "level" must be one of 'ignore', 'warn', or
+              'error'. Once you have a valid rule configuration CoffeeLint
+              requires you to implement one function depending on which type of
+              linter your rule needs.
+
+              <code>
+                  lintLine(line, lineApi)<br/>
+                  lintToken(token, tokenApi)<br>
+                  lintNode(node, astApi)
+              </code>
+
+              The second parameter of each is an object with helper functions.
+              It's best to just check the source or look at how other plugins
+              are using those.
+          </p>
+
+          <p>
+              If your function returns true it will generate an error. If you
+              need override how the error is generated, maybe providing a
+              context attribute, you can return an object that will get mixed
+              into the generated error. The NoPlusPlus is a simple example of
+              this.
+          </p>
+
+          <p>
+            The core rules have been rewritten as stand alone rules both to
+            prove the system and provide examples of how to write rules.
+            To get started no_plus_plus is a Token rule, no_tabs is a Line rule,
+            and cyclomatic_complexity is an AST rule.
+          </p>
+
+          <p>
+              The <pre>--rules</pre> option will load every .js or .coffee file
+              it finds and assume they export the RuleConstructor. Since the
+              browser doesn't have a standard export system it's up to you to
+              determine how you'll load your plugin and register it with
+              <pre>coffeelint.registerRule</pre>
+          </p>
+
+          <h2 class="section_title" id="plugins">Plugins</h2>
+          <p>
+            Some nice folks have coded up some cool CoffeeLint plugins for editors and
+            build systems. Check them out:
+            <ul class="changelog_history">
+              <li>The aptly named
+        <a href="https://github.com/kchmck/vim-coffee-script">vim-coffee-script</a>
+                by Mick Koch. </li>
+              <li>
+                <a href="https://github.com/purcell/flymake-coffee">flymake-coffee</a>, en emacs flymake plugin by Steve Purcell.
+              <li>
+        <a href="https://github.com/ajkavanagh/coffeelintnode">CoffeeLintNode</a>,
+        an emacs plugin, by Alex Kavanagh.</li>
+              <li><a href="https://github.com/ilkosta/coffeelint-brunch">CoffeeLint-brunch</a>
+              is a plugin for <a
+              href="http://brunch.io">Brunch.io</a>, by Costantino Giuliodori.
+              </li>
+              <li><a href="https://github.com/vojtajina/grunt-coffeelint">Grunt-CoffeeLint</a>
+              is a plugin for <a
+              href="http://gruntjs.com">Grunt.js</a>, by Vojta Jina.
+              </li>
+              <li><a href="https://github.com/scrooloose/syntastic">Syntastic</a>
+              a Vim syntax checker, now support CoffeeLint.
+              </li>
+              <li><a href="https://github.com/dbashford/mimosa-coffeelint">mimosa-coffeelint</a>
+              is a plugin for <a
+              href="http://mimosa.io">Mimosa</a>, by David Bashford.
+              </li>
+              <li><a href="https://github.com/synaway/arcanist-coffee-lib">arcanist-coffee-lib</a>
+              is a set of <a href="https://github.com/facebook/arcanist">Arcanist</a> extensions,
+              including a wrapper for CoffeeLint.
+              </li>
+              <li>
+                  <a href="https://github.com/janraasch/gulp-coffeelint">gulp-coffeelint</a>
+                  is a plugin for
+                  <a href="https://github.com/wearefractal/gulp">gulp</a>, by Jan Raasch.
+              </li>
+              <li>
+                <a href="https://github.com/zipcodeman/coffeelint-ruby">coffeelint-ruby</a>
+                is a set of bindings for ruby, by Zachary Bush
+              </li>
+              <li>
+                <a href="https://github.com/brigade/overcommit">overcommit</a>
+                is a fully configurable and extendable Git hook manager
+                including support for CoffeeLint.
+              </li>
+            </ul>
+          </p>
+
+          <h2 class="section_title" id="about">About</h2>
+          <p>
+          CoffeeLint is open sourced under the MIT License. If you want to
+          hack on the code, report a bug or suggest a new feature, head on
+          over <a href="http://github.com/clutchski/coffeelint">here</a>.
+          </p>
+          <p>
+            Thanks to CoffeeScript's
+            <a href="https://github.com/jashkenas/coffee-script/contributors">developers</a>
+            for a great language (and a re-usable Lexer). Thanks to the creators of
+            <a href="http://www.jslint.com/">JSLint</a>,
+            <a href="http://www.jshint.com/">JSHint</a>,
+            <a href="http://www.logilab.org/857">Pylint</a>,
+            <a href="http://en.wikipedia.org/wiki/Lint_(software)">lint</a>
+            and my mother for inspiration.
+          </p>
+
+          <h2 class="section_title" id="changelog">Change Log</h2>
+
+          <div>
+            <h3 class="changelog_header">1.11.0-1.13.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.11.0...v1.13.0">2015.10.7<a></a></small>
+            <p>The v1.12.x versions are considered buggy and you should upgrade to v1.13.x if you experience problems</p>
+            <strong>These releases were largely for bugfixes!</strong>
+          <ul class="changelog_history">
+            <li>Bugfix for <tt>no_implicit_braces</tt> causing errors in classes and other edge cases</li>
+            <li>Bugfix for <tt>ensure_comprehensions</tt> where it failed if a nested loop had an equal sign</li>
+            <li>Bugfix for <tt>braces_spacing</tt> failing over generated curly braces</li>
+            <li>Several changes to <tt>indentation</tt> See <a href="https://github.com/clutchski/coffeelint/commit/bffa2532efd8bcca5d9c1b3a9d3b5914e882dd5f">bffa25</a>
+              for the full list of changes. However between the release of v1.12.0 and v1.13.0, a regression was caused by fixing one of the indentation requests and
+              as a result the change was reverted. The revert will most likely not affect too many users
+            <li>Bugfix for <tt>newlines_after_classes</tt>, also fixed regressions caused between v1.12.0 and v1.13.0. If you have v1.12.x and are experiencing problems, please upgrade.
+              Also note nested classes are now ignored completely
+            </li>
+            <li><tt>no_this</tt> is now compatible with <tt>no_stand_alone_at</tt> and will make checks against singular `this`</li>
+            <li>Bugfix for <tt>missing_fat_arrows</tt>, declaring a class prototype (via '::' operator) no longer fail if they don't use a fat arrow</li>
+            <li>Bugfix for <tt>eol_last</tt>, it now fails if there are multiple newlines at the end of a file (thanks <a href="https://github.com/charlierudolph">charlierudolph</a>)<li>
+            <li>Bugfix for <tt>arrow_spacing</tt>, now ignores arrow spacing in empty functions (thanks <a href="https://github.com/sgentle">sgentle</a>)</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">1.10.0-1.11.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.10.0...v1.11.0">2015.8.19<a></a></small>
+          <ul class="changelog_history">
+            <li>New config option <tt>{ "extends": "coffeelint-config-myconfig" } based on <a href="http://eslint.org/docs/developer-guide/shareable-configs">eslint's shareable configs</a></tt></li>
+            <li>New rule <tt>no_nested_string_interpolation</tt></li>
+            <li>New rule <tt>no_private_function_fat_arrows</tt></li>
+            <li>New CLI option <tt>--ext</tt> to specify alternate file extensions to check</li>
+            <li>Bugfixes including tracking nested string interpolation which eleminates some misleading warnings</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">1.9.7-1.10.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.9.7...v1.10.0">2015.5.31<a></a></small>
+          <ul class="changelog_history">
+            <li>New option <tt>--trimconfig</tt>. shows the minimal config to implement your customizations.</li>
+            <li>New rule <tt>eol_last</tt></li>
+            <li>New rule <tt>no_this</tt> (prefer @ instead)</li>
+            <li>New option in <tt>no_debugger</tt> to flag console calls</li>
+
+            <li>Many small bug fixes</li>
+          </ul>
+          </div>
+
+
+          <div>
+            <h3 class="changelog_header">1.9.4-1.9.6</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.9.4...v1.9.6">2015.5.5<a></a></small>
+          <ul class="changelog_history">
+              <li>Fix no_interpolation_in_single_quotes to only handle single quotes #400</li>
+              <li>Avoid non-standard String.prototype.trimRight #401</li>
+              <li>Strip comments from config file before parsing #407</li>
+              <li>missing_fat_arrows: fix constructor checking in strict mode #409</li>
+              <li>Use configfilter to expand module names</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">1.9.3-1.9.4</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.9.3...v1.9.4">2015.4.6<a></a></small>
+          <ul class="changelog_history">
+              <li>missing_fat_arrows: added strict-mode option, defaults to false</li>
+              <li>Add "empty_object_spaces" to braces_spacing</li>
+          </ul>
+          </div>
+
+
+          <div>
+            <h3 class="changelog_header">1.9.1-1.9.3</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.9.1...v1.9.3">2015.3.29<a></a></small>
+          <ul class="changelog_history">
+              <li>Add fat arrow to `arrow_spacing`</li>
+              <li>Fix an exception when package.json can't be parsed.</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">1.9.0-1.9.1</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.9.0...v1.9.1">2015.2.22<a></a></small>
+          <ul class="changelog_history">
+              <li>Small change to make CoffeeLint compatible with atom.io</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">1.8.1-1.9.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.8.1...v1.9.0">2015.2.20<a></a></small>
+          <ul class="changelog_history">
+              <li>Updated to CoffeeScript 1.9.1 thanks to swang</li>
+              <li>Fix <tt>no_implicit_braces error</tt> in class declarations</li>
+              <li>New rule <tt>braces_padding</tt></li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">1.7.1-1.8.1</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.7.1...v1.8.1">2014.12.20<a></a></small>
+          <ul class="changelog_history">
+              <li>New rule <tt>ensure_comprehensions</tt> (warn by default)</li>
+              <li>Added options to
+                  <a href="https://github.com/clutchski/coffeelint/blob/master/doc/user.md#how-do-i-use-jsx-reactjs">
+                      transform
+                  </a>
+                  code before processing it. (JSX support) or to use a different
+                  <a href="https://github.com/clutchski/coffeelint/blob/master/doc/user.md#what-about-different-flavors-of-coffeescript-like-icedcoffeescript">
+                      flavor of CoffeeScript
+                  </a>
+                  .
+              </li>
+              <li>New rule <tt>transform_messes_up_line_numbers</tt>. This simply tells you if a transform you're using changes the total number of lines in the file.</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">1.7.0-1.7.1</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.7.0...v1.7.1">2014.12.15<a></a></small>
+          <ul class="changelog_history">
+              <li>Fix for <tt>spacing_after_comma</tt> so that newlines count as space after commas</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">1.6.0-1.7.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.6.0...v1.7.0">2014.12.12<a></a></small>
+          <ul class="changelog_history">
+              <li>New rule <tt>spacing_after_comma</tt></li>
+              <li>Indentation improvements</li>
+              <li>Fix Block RegExp triggering in <tt>no_unnecessary_double_quotes</tt></li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">1.5.7-1.6.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.5.7...v1.6.0">2014.08.30<a></a></small>
+          <ul class="changelog_history">
+              <li>New rule <tt>prefer_english_operator</tt></li>
+              <li>New behavior <tt>.coffeelintignore</tt> works just like a .gitignore</li>
+              <li>Exposed <tt>ErrorReporter</tt> to 3rd parties so reporters can be used outside our CLI implementation. See <a href="https://github.com/clutchski/coffeelint/pull/330">#330</a> for details</li>
+              <li>Linting from STDIN will look for config files.</li>
+              <li><tt>-f</tt> option can specify a package.json that contains <tt>coffeelintConfig</tt></li>
+              <li>Depricated <tt>--no-color</tt> in favor of new <tt>--color=<always/never/auto></tt> option</li>
+              <li>Fixed an indentation bug when you have a blank line in the middle of a chained call.</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">1.5.3-1.5.5</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.5.3...v1.5.5">2014.08.12<a></a></small>
+          <ul class="changelog_history">
+              <li>#317 Change $HOME search priority to account for non-default windows users.</li>
+              <li>#320 Remove support for chaining calls using a dot at the end of a line.</li>
+              <li>Removed extra messages that broke XML output.</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">1.5.2-1.5.3</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.5.2...v1.5.3">2014.08.08<a></a></small>
+          <ul class="changelog_history">
+              <li>Indentation improvements for chained calls. See #285</li>
+              <li>Fixed some missing cases for <tt>space_operators</tt></li>
+              <li>Fix for a last-line edge case in <tt>no_implicit_parens</tt></li>
+              <li>Fixed trailing semicolons in multi-line strings with multiple embedded tokens</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">1.5.0-1.5.2</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.5.0...master">2014.06.07<a></a></small>
+          <ul class="changelog_history">
+              <li>#280 Fix for fat-arrow false positives. It was producing errors when the class is defined inside a function (AMD style)</li>
+              <li>MANY indentation fixes. See #282.</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">1.4.1-1.5.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.4.1...v1.5.0">2014.05.28<a></a></small>
+          <ul class="changelog_history">
+              <li>New: --cache and coffeelint.setCache(obj)</li>
+              <li>Rule module loading is not limited to running from the commandline.  See #279</li>
+              <li>Fix for #173: Empty functions surrounded by parens don't require
+              spacing.</li>
+              <li>Fix for #271: trailing semicolons multiline strings are ignored</li>
+              <li>Fix for #214: <tt>no_unnecessary_fat_arrows</tt> doesn't trigger if the function contains super.</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">1.3.0-1.4.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.3.0...v1.4.0">2014.05.16<a></a></small>
+          <ul class="changelog_history">
+            <li>Similar to grunt-cli, the coffeelint command will now load the project-specific version of coffeelint if there is one there.</li>
+            <li>3rd party rules don't have to be globally installed any more.</li>
+            <li>Added --reporter option that also supports 3rd party reporters. <a href="https://github.com/janraasch/coffeelint-stylish">coffeelint-stylish</a> is the first one available.</li>
+
+            <li>Documentation for <a href="https://github.com/clutchski/coffeelint/blob/master/doc/user.md">new users</a> and <a href="https://github.com/clutchski/coffeelint/blob/master/doc/integration.md">3rd party developers</a>.</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">1.2.0-1.3.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.2.0...v1.3.0">2014.04.17<a></a></small>
+          <ul class="changelog_history">
+            <li>New rule <tt>no_empty_functions</tt></li>
+            <li>Improved documentation on how to contribute in README.md</li>
+            <li>Rules using the AST work with a minified version of CoffeeScript</li>
+            <li>Fixed line length check to account for windows line endings</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">1.1.0-1.2.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.1.0...v1.2.0">2014.03.07<a></a></small>
+          <ul class="changelog_history">
+            <li>New rule <tt>no_debugger</tt></li>
+            <li>New rule <tt>no_interpolation_in_single_quotes</tt></li>
+            <li>New rule <tt>no_unnecessary_double_quotes</tt></li>
+            <li>Strict mode for <tt>no_implicit_parens</tt>. Turning it off allows implicit parens when they span multiple lines.</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">1.0.8-1.1.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.0.8...v1.1.0">2014.02.22<a></a></small>
+          <ul class="changelog_history">
+            <li>CoffeeScript 1.7 support</li>
+            <li>Dropped support for CoffeeScript 1.6. (Use ~1.0.0 if you still need it)</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">0.6.0-1.0.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v0.6.0...v1.0.0">2013.11.21<a></a></small>
+          <ul class="changelog_history">
+
+            <li>CoffeeLint will detect config files by default.</li>
+
+            <li>New rule <tt>colon_assignment_spacing</tt></li>
+            <li>New rule <tt>no_unnecessary_fat_arrows</tt></li>
+            <li>New rule <tt>missing_fat_arrows</tt></li>
+            <li>Added an option to <tt>no_trailing_whitespace</tt> to forbid trailing space on empty lines</li>
+            <li>Added an option to <tt>no_implicit_braces</tt> to allow unambiguous implicit braces</li>
+            <li>Fixed --makeconfig</li>
+            <li>New option: --checkstyle</li>
+
+            <li>Fixed invalid XML produced by --jslint</li>
+            <li>Removed the need for the -r flag. It remains for backward compatibility but doesn't do anything now</li>
+
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">0.5.7-0.6.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v0.5.7...v0.6.0">2013.10.10<a></a></small>
+          <ul class="changelog_history">
+            <li>New internal structure to support custom rules.</li>
+            <li>Dropped support for NodeJS 0.6.</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">0.5.6-0.5.7</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v0.5.6...v0.5.7">2013.08.10<a></a></small>
+          <ul class="changelog_history">
+            <li>CSVReporter now has a column for last line to account for cyclomatic complexity spanning the length of the function</li>
+            <li>Added support for literate CoffeeScript</li>
+            <li>Dropped support for CoffeeScript 1.4 and 1.5</li>
+            <li>Fixed <tt>non_empty_constructor_needs_parens</tt> for namespaced constructors</li>
+            <li>Simplified the build process to allow installing direct from the git repo</li>
+            <li>More fixes to indentation checking (continued https://github.com/clutchski/coffeelint/issues/107)</li>
+            <li>Fixed spacing error when returning negative numbers (https://github.com/clutchski/coffeelint/issues/129)</li>
+            <li>Fixed arrow spacing in callback parameters (https://github.com/clutchski/coffeelint/issues/131)</li>
+            <li>Added beginning and end line numbers for cyclomatic complexity (https://github.com/clutchski/coffeelint/pull/134)</li>
+            <li>Added header to CSVReporter</li>
+            <li>Fixes for <tt>space_operators</tt>(https://github.com/clutchski/coffeelint/issues/137)</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">0.5.5-0.5.6</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v0.5.4...v0.5.6">2013.06.07<a></a></small>
+          <ul class="changelog_history">
+            <li>Added <tt>no_empty_param_list</tt> rule.</li>
+            <li>Added the <tt>--makeconfig</tt> option.</li>
+            <li>CoffeeScript 1.5 and 1.6 compatibility</li>
+            <li>Fixed indentation of chained functions. (https://github.com/clutchski/coffeelint/issues/107, fixed 1/2 of #4)</li>
+            <li>Fixed bug in <tt>no_stand_alone_at</tt> (https://github.com/jashkenas/coffee-script/issues/1601)</li>
+            <li>Added <tt>arrow_spacing</tt> rule (require spaces around arrows)</li>
+            <li>Added <tt>empty_constructor_needs_parens</tt></li>
+            <li>Added <tt>non_empty_constructor_needs_parens</tt></li>
+            <li>Added <tt>duplicate_key</tt> (http://jslinterrors.com/duplicate-key-a/)</li>
+            <li>Added <tt>no_trailing_whitespace.allowed_in_comments</tt> rule option (Allow trailing space in comments. Created to allow markdown)</li>
+            <li>Added <tt>newlines_after_classes</tt> rule</li>
+            <li>Line length exception. Lines containing only a link are ignored.</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">0.5.4</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v0.5.3...v0.5.4">2012.11.06<a></a></small>
+          <ul class="changelog_history">
+            <li>Support for default configuration file using environment variable <tt>COFFEELINT_CONFIG</tt>.</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">0.5.3</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v0.5.2...v0.5.3">2012.11.06<a></a></small>
+          <ul class="changelog_history">
+            <li>Added <tt>no_stand_alone_at</tt> rule.</li>
+            <li>Fixed correctly reporting line numbers of compilation errors after line 10.</li>
+            <li>Fixed incomplete results output.</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">0.5.2</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v0.5.1...v0.5.2">2012.09.18</a></small>
+          </div>
+          <ul class="changelog_history">
+            <li>Added <tt>--nocolor</tt> option.</li>
+            <li>My main man ruddzw fixed issue #58, in which the <tt>-q</tt> option was
+            suppressing information even when it was off.</li>
+            <li>Fixed broken <tt>jslint</tt> option.</li>
+            <li>The <tt>no_trailing_semicolons</tt> rule now works on Windows
+            files.</li>
+          </ul>
+
+          <div>
+            <h3 class="changelog_header">0.5.1</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v0.5.0...v0.5.1">2012.09.15</a></small>
+          </div>
+          <ul class="changelog_history">
+            <li>Show CoffeeScript syntax errors in the same manner as lint
+            errors.</li>
+            <li>Brad Dunbar added the <tt>-q</tt> command line option, which
+            only prints errors.</li>
+          </ul>
+
+          <div>
+            <h3 class="changelog_header">0.5.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v0.4.0...v0.5.0">2012.09.08</a></small>
+          </div>
+          <ul class="changelog_history">
+            <li>Lint code from stdin with the <tt>--stdin</tt> option, thanks
+            to sjz.</li>
+            <li>Added the <tt>no_implicit_parens</tt> rule.</li>
+            <li>Leandro Ostera added the <tt>--jslint</tt> reporter, to allow
+            CoffeeLint to integrate with the Jenkin's violations plugin.</li>
+            <li>Implicit braces are always allowed in in class
+            defiinitions, thanks to Omar Khan.</li>
+            <li>CoffeeLint now requires CoffeeScript 1.3.3</li>
+          </ul>
+
+          <div>
+            <h3 class="changelog_header">0.4.0</h3>
+            <small class="changelog_date">- 2012.04.06</small>
+          </div>
+          <ul class="changelog_history">
+            <li>Added fancy coloured output and proper CSV output.</li>
+            <li>Directories can be recursively linted.</li>
+            <li>Added the <tt>line endings</tt> rule.</li>
+            <li>Rewrote the command line tool in CoffeeScript.</li>
+          </ul>
+
+          <div>
+            <h3 class="changelog_header">0.3.0</h3>
+            <small class="changelog_date">- 2012.03.13</small>
+          </div>
+          <ul class="changelog_history">
+            <li>Added the <tt>no_backticks</tt> rule.</li>
+            <li>Colorized the command line output.</li>
+            <li>Added validation for the rule names.</li>
+            <li>Allowed windows line endings, thanks to <a
+              href="https://github.com/szinsli">szinsli</a>.</li>
+          </ul>
+
+          <div>
+            <h3 class="changelog_header">0.2.0</h3>
+            <small class="changelog_date">- 2012.01.26</small>
+          </div>
+          <ul class="changelog_history">
+            <li>Added warnings, which will be reported, but won't fail
+            the command line tool.
+            </li>
+          </ul>
+
+          <div>
+            <h3 class="changelog_header">0.1.0</h3>
+            <small class="changelog_date">- 2012.01.22</small>
+          </div>
+          <ul class="changelog_history">
+            <li>Initial CoffeeLint release.</li>
+          </ul>
+      </div>
+    </div>
+
+    <a href="http://github.com/clutchski/coffeelint">
+      <img class="forkme"
+             src="http://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"
+             alt="Fork me on GitHub"/>
+    </a>
+
+    <script type="text/javascript" src="js/vendor/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="js/vendor/coffee-script.js"></script>
+    <script type="text/javascript" src="js/coffeelint.js"></script>
+    <script type="text/javascript" src="js/trycoffeelint.js"></script>
+  </body>
+</html>
