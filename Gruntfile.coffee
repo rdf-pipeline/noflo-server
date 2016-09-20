@@ -10,17 +10,37 @@ module.exports = ->
           forceLatest: false
           directory: 'bower_components'
 
-    # Updating the package manifest files
-    noflo_manifest:
-      update:
-        files:
-          'component.json': ['graphs/*', 'components/*']
-
     # Browser build of NoFlo
     noflo_browser:
+      options:
+        baseDir: './'
+        webpack:
+          externals:
+            'repl': 'commonjs repl' # somewhere inside coffee-script
+            'module': 'commonjs module' # somewhere inside coffee-script
+            'child_process': 'commonjs child_process' # somewhere inside coffee-script
+            'jison': 'commonjs jison'
+            'should': 'commonjs should' # used by tests in octo
+            'express': 'commonjs express' # used by tests in octo
+            'highlight': 'commonjs highlight' # used by octo?
+            'microflo-emscripten': 'commonjs microflo-emscripten' # optional?
+            'acorn': 'commonjs acorn' # optional?
+          module:
+            loaders: [
+              { test: /\.coffee$/, loader: "coffee-loader" }
+              { test: /\.json$/, loader: "json-loader" }
+              { test: /\.fbp$/, loader: "fbp-loader" }
+            ]
+          resolve:
+            extensions: ["", ".coffee", ".js"]
+          node:
+            fs: "mock"
+        ignores: [
+          /bin\/coffee/
+        ]
       main:
         files:
-          'browser/noflo-ui.js': ['component.json']
+          'browser/noflo-ui.js': ['./app/main.js']
 
     # Vulcanization compiles the Polymer elements into a HTML file
     vulcanize:
@@ -101,7 +121,7 @@ module.exports = ->
             replacement: process.env.NOFLO_OAUTH_ENDPOINT_AUTHORIZE or '/login/authorize'
           ,
             pattern: /\$NOFLO_OAUTH_ENDPOINT_TOKEN/ig
-            replacement: process.env.NOFLO_OAUTH_ENDPOINT_TOKEN or '/token'
+            replacement: process.env.NOFLO_OAUTH_ENDPOINT_TOKEN or '/login/authorize/token'
           ,
             pattern: /\$NOFLO_OAUTH_ENDPOINT_AUTHENTICATE/ig
             replacement: process.env.NOFLO_OAUTH_ENDPOINT_AUTHENTICATE or '/authenticate'
@@ -170,23 +190,23 @@ module.exports = ->
         options:
           archive: 'noflo-<%= pkg.version %>.zip'
         files: [
-          src: ['browser/noflo-noflo-indexeddb/vendor/*']
-          expand: true
-          dest: '/'
-        ,
           src: ['browser/noflo-ui.js']
           expand: true
           dest: '/'
         ,
           src: [
-            'bower_components/codemirror/**/*.js'
-            'bower_components/codemirror/addon/lint/lint.css'
-            'bower_components/codemirror/lib/*.css'
-            'bower_components/codemirror/theme/mdn-like.css'
-            'bower_components/coffee-script/extras/*.js'
-            'bower_components/coffeelint/js/coffeelint.js'
-            'bower_components/jshint/dist/jshint.js'
+            'node_modules/codemirror/**/*.js'
+            'node_modules/codemirror/addon/lint/lint.css'
+            'node_modules/codemirror/lib/*.css'
+            'node_modules/codemirror/theme/mdn-like.css'
+            'node_modules/coffee-script/extras/*.js'
+            'node_modules/coffeelint/lib/coffeelint.js'
+            'node_modules/jshint/dist/jshint.js'
             'bower_components/ease-djdeath/*.js'
+            'node_modules/font-awesome/css/*.css'
+            'node_modules/font-awesome/**/*.woff'
+            'node_modules/font-awesome/**/*.ttf'
+            'node_modules/font-awesome/**/*.svg'
             'bower_components/font-awesome/css/*.css'
             'bower_components/font-awesome/**/*.woff'
             'bower_components/font-awesome/**/*.ttf'
@@ -197,12 +217,12 @@ module.exports = ->
             'bower_components/polymer/*.js'
             'bower_components/react/*.js'
             'bower_components/react.animate-djdeath/*.js'
-            'bower_components/requirejs/*.js'
-            'bower_components/rtc/dist/rtc.js'
-            'bower_components/rtc/dist/rtc.js.map'
+            'node_modules/rtc/dist/rtc.js'
+            'node_modules/rtc/dist/rtc.js.map'
             'bower_components/the-graph/**/*.js'
             'bower_components/the-graph/**/*.css'
-            'bower_components/webcomponentsjs/webcomponents.js'
+            'node_modules/webcomponents.js/webcomponents.min.js'
+            'node_modules/indexeddbshim/dist/indexeddbshim.min.js'
           ]
           expand: true
           dest: '/'
@@ -250,14 +270,6 @@ module.exports = ->
           expand: true
           dest: '/'
         ]
-
-    "phonegap-build":
-      app:
-        options:
-          archive: 'noflo-<%= pkg.version %>.zip'
-          appId: process.env.PHONEGAP_APP_ID
-          user:
-            token: process.env.PHONEGAP_TOKEN
 
     unzip:
       dist: 'noflo-<%= pkg.version %>.zip'
@@ -325,10 +337,6 @@ module.exports = ->
             platform: 'OS X 10.11'
             version: '9'
           ,
-            browserName: 'ipad'
-            platform: 'OS X 10.9'
-            version: '9.2'
-          ,
             browserName: 'internet explorer'
             platform: 'Windows 8.1',
             version: '11'
@@ -345,7 +353,6 @@ module.exports = ->
 
   # Grunt plugins used for building
   @loadNpmTasks 'grunt-bower-install-simple'
-  @loadNpmTasks 'grunt-noflo-manifest'
   @loadNpmTasks 'grunt-noflo-browser'
   @loadNpmTasks 'grunt-vulcanize'
   @loadNpmTasks 'grunt-contrib-uglify'
@@ -357,7 +364,6 @@ module.exports = ->
   @loadNpmTasks 'grunt-contrib-compress'
   @loadNpmTasks 'grunt-zip'
   @loadNpmTasks 'grunt-gh-pages'
-  @loadNpmTasks 'grunt-phonegap-build'
 
   # Grunt plugins used for testing
   #@loadNpmTasks 'grunt-mocha-phantomjs'
@@ -375,9 +381,9 @@ module.exports = ->
 
   # Our local tasks
   @registerTask 'nuke', ['clean']
-  @registerTask 'build', ['inlinelint', 'noflo_manifest', 'bower-install-simple',
+  @registerTask 'build', ['inlinelint', 'bower-install-simple',
                           'noflo_browser',
-                          'copy', 'vulcanize', 'string-replace:app', 'compress']
+                          'copy:themes', 'vulcanize', 'string-replace:app', 'compress']
   @registerTask 'rebuild', ['nuke', 'build']
   @registerTask 'test', [
     'coffeelint:app'
@@ -387,7 +393,6 @@ module.exports = ->
     'connect'
     'saucelabs-mocha'
   ]
-  @registerTask 'app', ['build', 'phonegap-build']
   @registerTask 'default', ['test']
   @registerTask 'pages', ['build', 'clean:dist', 'unzip', 'string-replace:analytics', 'gh-pages']
   @registerTask 'spec', ['coffeelint:spec', 'coffee:spec', 'connect:server', 'watch']
