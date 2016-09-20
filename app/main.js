@@ -1,17 +1,40 @@
 console.time('noflo-ui-init');
 console.time('polymer-ready');
 
+var exported = {
+  noflo: require('noflo'),
+  underscore: require('underscore'),
+  'coffee-script': require('coffee-script'),
+  'child_process': null,
+  'uuid': require('uuid'),
+  'flowhub-registry': require('flowhub-registry'),
+  'noflo-ui/src/JournalStore': require('../src/JournalStore')
+};
+
+window.require = function (moduleName) {
+  if (typeof exported[moduleName] !== 'undefined') {
+    return exported[moduleName];
+  }
+  throw new Error('Module ' + moduleName + ' not available');
+};
+
 window.addEventListener('polymer-ready', function() {
   var noflo = require('noflo');
   var runtime = require('noflo-runtime-webrtc');
 
   var baseDir = '/noflo-ui';
-  var mainGraph = 'noflo-ui/graphs/main.fbp';
+  var mainGraph = require('../graphs/main.fbp');
 
   var loadGraphs = function(callback) {
-    noflo.graph.loadJSON(require(mainGraph), function (err, g) {
+    noflo.graph.loadJSON(mainGraph, function (err, g) {
+      if (err) {
+        throw err;
+      }
       g.baseDir = baseDir;
       noflo.createNetwork(g, function (err, n) {
+        if (err) {
+          throw err;
+        }
         n.on('process-error', function (err) {
           console.log(err);
         });
@@ -21,7 +44,7 @@ window.addEventListener('polymer-ready', function() {
   };
   var loadGraphsDebuggable = function(callback) {
     var secret = Math.random().toString(36).substring(7);
-    noflo.graph.loadJSON(require(mainGraph), function (err, graph) {
+    noflo.graph.loadJSON(mainGraph, function (err, graph) {
       if (err) {
         console.log(err);
       }
@@ -59,7 +82,7 @@ window.addEventListener('polymer-ready', function() {
   document.body.classList.remove('loading');
   window.nofloStarted = false;
   console.time('noflo-prepare');
-  var load = (true) ? loadGraphsDebuggable : loadGraphs;
+  var load = (false) ? loadGraphsDebuggable : loadGraphs;
   load(function() {
       console.timeEnd('noflo-prepare');
       console.timeEnd('noflo-ui-init');
