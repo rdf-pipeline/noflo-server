@@ -3,6 +3,8 @@
 
 ## Development of NoFlo UI
 
+**NOTE: As of Aug 2016 the grunt build of noflo-server was not working, so this zip file (in two parts) was uploaded as a work-around:** https://github.com/rdf-pipeline/noflo-server/commit/12f4a5f05d54a9e286713ece6c25a53352c9d090 
+
 Only necessary if you want to hack on NoFlo UI itself. Not neccesary for making apps with FBP.
 To be able to work on the NoFlo UI you need a checkout of this repository and a working [Node.js](http://nodejs.org/) installation. Go to the checkout folder and run:
 
